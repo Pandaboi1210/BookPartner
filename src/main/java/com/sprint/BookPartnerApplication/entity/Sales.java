@@ -1,33 +1,63 @@
 package com.sprint.BookPartnerApplication.entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sales")
+@IdClass(SalesId.class)
 public class Sales {
-	 @EmbeddedId
-	    private SaleId id;
 
-	    private Integer qty;
+    @Id
+    @Column(name = "stor_id", length = 4, nullable = false)
+    private String storId;
 
-	    private String payterms;
+    @Id
+    @Column(name = "ord_num", length = 20, nullable = false)
+    private String ordNum;
 
-//	    // 🔗 Relationship with Store
-//	    @ManyToOne
-//	    @MapsId("stor_id")
-//	    @JoinColumn(name = "stor_id")
-//	    private Store store;
-//
-//	    // 🔗 Relationship with Book (titles)
-//	    @ManyToOne
-//	    @MapsId("title_id")
-//	    @JoinColumn(name = "title_id")
-//	    private Book book;
-	
+    @Id
+    @Column(name = "title_id", length = 10, nullable = false)
+    private String titleId;
 
+    @Column(name = "ord_date", nullable = false)
+    private LocalDateTime ordDate;
+
+    @Column(name = "qty", nullable = false)
+    private short qty;
+
+    @Column(name = "payterms", length = 12, nullable = false)
+    private String payterms;
+
+    @ManyToOne
+    @JoinColumn(name = "stor_id", insertable = false, updatable = false)
+    private Store store;
+
+    @ManyToOne
+    @JoinColumn(name = "title_id", insertable = false, updatable = false)
+    private Title title;
+
+    public String getStorId() { return storId; }
+    public void setStorId(String storId) { this.storId = storId; }
+
+    public String getOrdNum() { return ordNum; }
+    public void setOrdNum(String ordNum) { this.ordNum = ordNum; }
+
+    public String getTitleId() { return titleId; }
+    public void setTitleId(String titleId) { this.titleId = titleId; }
+
+    public LocalDateTime getOrdDate() { return ordDate; }
+    public void setOrdDate(LocalDateTime ordDate) { this.ordDate = ordDate; }
+
+    public short getQty() { return qty; }
+    public void setQty(short qty) { this.qty = qty; }
+
+    public String getPayterms() { return payterms; }
+    public void setPayterms(String payterms) { this.payterms = payterms; }
+
+    public Store getStore() { return store; }
+    public void setStore(Store store) { this.store = store; }
+
+    public Title getTitle() { return title; }
+    public void setTitle(Title title) { this.title = title; }
 }
