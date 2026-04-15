@@ -1,10 +1,10 @@
 package com.sprint.BookPartnerApplication.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.sprint.BookPartnerApplication.entity.Authors;
 import com.sprint.BookPartnerApplication.repository.AuthorsRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,28 +13,22 @@ import java.util.Optional;
 public class AuthorsService {
 
     @Autowired
-    private AuthorsRepository repo;
-
-    public Authors saveAuthor(Authors author) {
-        return repo.save(author);
-    }
-
+    private AuthorsRepository authorRepository;
 
     public List<Authors> getAllAuthors() {
-        return repo.findAll();
+        return authorRepository.findAll();
     }
 
-   
-    public Optional<Authors> getAuthorById(String id) {
-        return repo.findById(id);
+    public Authors getAuthorById(String id) {
+        Optional<Authors> author = authorRepository.findById(id);
+        return author.orElse(null); 
     }
 
-
-    public Authors updateAuthor(Authors author) {
-        return repo.save(author);
+    public Authors saveAuthor(Authors author) {
+        return authorRepository.save(author);
     }
 
     public void deleteAuthor(String id) {
-        repo.deleteById(id);
+        authorRepository.deleteById(id);
     }
 }
