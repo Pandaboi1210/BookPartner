@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "authors")
@@ -11,12 +13,18 @@ public class Authors {
 
     @Id
     @Column(name = "au_id")
+    @NotNull(message = "Author ID cannot be null")
+    @NotBlank(message = "Author ID cannot be empty")
     private String auId;
 
     @Column(name = "au_lname")
+    @NotNull(message = "Last name cannot be null")
+    @NotBlank(message = "Last name cannot be empty")
     private String auLname;
 
     @Column(name = "au_fname")
+    @NotNull(message = "First name cannot be null")
+    @NotBlank(message = "First name cannot be empty")
     private String auFname;
 
     private String phone = "UNKNOWN";
@@ -30,6 +38,7 @@ public class Authors {
     private String zip;
 
     private int contract;
+
 
 
     public String getAuId() { return auId; }
