@@ -1,7 +1,7 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -13,24 +13,20 @@ public class Store {
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
-    @NotBlank(message = "Store name is required")
-    @Column(name = "stor_name", length = 40, nullable = true)
+    // nullable = true in DB → no validation annotation
+    @Column(name = "stor_name", length = 40)
     private String storName;
 
-    @NotBlank(message = "Store address is required")
-    @Column(name = "stor_address", length = 40, nullable = true)
+    @Column(name = "stor_address", length = 40)
     private String storAddress;
 
-    @NotBlank(message = "City is required")
-    @Column(name = "city", length = 20, nullable = true)
+    @Column(name = "city", length = 20)
     private String city;
 
-    @NotBlank(message = "State is required")
-    @Column(name = "state", length = 2, nullable = true)
+    @Column(name = "state", length = 2)
     private String state;
 
-    @NotBlank(message = "Zip is required")
-    @Column(name = "zip", length = 5, nullable = true)
+    @Column(name = "zip", length = 5)
     private String zip;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
