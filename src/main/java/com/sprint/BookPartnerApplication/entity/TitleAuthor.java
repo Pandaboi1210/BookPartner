@@ -10,23 +10,20 @@ public class TitleAuthor {
     @Id
     @Column(name = "au_id")
     private String auId;
-
     @Id
     @Column(name = "title_id")
     private String titleId;
-
     @ManyToOne
     @JoinColumn(name = "au_id", insertable = false, updatable = false)
     private Authors author;
-
     @ManyToOne
     @JoinColumn(name = "title_id", insertable = false, updatable = false)
     private Title title; 
-
     @Column(name = "au_ord")
     private Byte auOrd;
-
     private Integer royaltyper;
+    
+    
 
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
