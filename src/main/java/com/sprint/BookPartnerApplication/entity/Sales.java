@@ -1,7 +1,8 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +29,7 @@ public class Sales {
     @Column(name = "ord_date", nullable = false)
     private LocalDateTime ordDate;
 
-    @NotNull(message = "Quantity is required")
+    // primitive short cannot be null → no @NotNull needed
     @Column(name = "qty", nullable = false)
     private short qty;
 
