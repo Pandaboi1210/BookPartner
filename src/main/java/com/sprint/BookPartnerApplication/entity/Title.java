@@ -1,6 +1,8 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,10 +11,13 @@ public class Title {
 
     @Id
     @Column(name = "title_id")
-    private String titleId;
+    @NotBlank(message = "Title ID is required")
+    private String titleId;    
     
+    @NotBlank(message = "Title cannot be blank")
     private String title;
     
+    @NotBlank(message = "Type is required")
     private String type = "UNDECIDED";
 
     @ManyToOne
@@ -28,8 +33,10 @@ public class Title {
 
     private String notes;
 
+    @NotNull(message = "Publication date is required")
     private LocalDateTime pubdate;
-
+    
+    
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
 
