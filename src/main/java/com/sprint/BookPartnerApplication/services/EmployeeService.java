@@ -22,7 +22,7 @@ public class EmployeeService {
 
     // READ ONE 
     public Employee getOne(Object id) {
-        return repo.findById((Long) id).orElse(null);
+        return repo.findById((String) id).orElse(null);
     }
 
     // UPDATE 
@@ -32,6 +32,6 @@ public class EmployeeService {
 
     // DELETE 
     public void delete(Object id) {
-        repo.deleteById((Long) id);
+        repo.deleteById((String) id);
     }
 }
