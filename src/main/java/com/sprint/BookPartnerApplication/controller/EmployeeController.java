@@ -25,13 +25,14 @@ public class EmployeeController {
         return service.getOne(id);
     }
 
-    @PutMapping
-    public Employee update(@RequestBody Employee emp) {
+    @PutMapping("/{id}")
+    public Employee update(@PathVariable String id, @RequestBody Employee emp) {
+        emp.setEmpId(id);
         return service.update(emp);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Object id) {
+    public String delete(@PathVariable String id) {
         service.delete(id);
         return "Deleted";
     }

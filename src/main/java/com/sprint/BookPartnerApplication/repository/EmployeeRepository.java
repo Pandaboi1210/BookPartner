@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import com.sprint.BookPartnerApplication.entity.Employee;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 }
