@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "titleauthor")
@@ -9,18 +10,25 @@ public class TitleAuthor {
 
     @Id
     @Column(name = "au_id")
+    @NotBlank(message = "Author ID is required")
     private String auId;
+
     @Id
     @Column(name = "title_id")
+    @NotBlank(message = "Title ID is required")
     private String titleId;
+
     @ManyToOne
     @JoinColumn(name = "au_id", insertable = false, updatable = false)
     private Authors author;
+
     @ManyToOne
     @JoinColumn(name = "title_id", insertable = false, updatable = false)
     private Title title; 
+
     @Column(name = "au_ord")
     private Byte auOrd;
+
     private Integer royaltyper;
     
     
