@@ -1,9 +1,9 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "jobs")
@@ -11,56 +11,54 @@ public class Jobs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "job_id")
+    private Short jobId;
 
-    @NotBlank(message = "Job title cannot be empty")
-    @Column(name = "title")
-    private String title;
+    @NotBlank(message = "Job description cannot be empty")
+    @Column(name = "job_desc", nullable = false, length = 50)
+    private String jobDesc;
 
-    @NotNull(message = "Salary cannot be null")
-    @Positive(message = "Salary must be positive")
-    @Column(name = "salary")
-    private Double salary;
+    @Min(value = 10, message = "Minimum level must be >= 10")
+    @Column(name = "min_lvl", nullable = false)
+    private Integer minLvl;
 
-    @NotBlank(message = "Location cannot be empty")
-    @Column(name = "location")
-    private String location;
+    @Max(value = 250, message = "Maximum level must be <= 250")
+    @Column(name = "max_lvl", nullable = false)
+    private Integer maxLvl;
 
     // Constructors
     public Jobs() {}
 
-    public Jobs(String title, Double salary, String location) {
-        this.title = title;
-        this.salary = salary;
-        this.location = location;
-    }
-
     // Getters & Setters
-    public Long getId() {
-        return id;
+    public Short getJobId() {
+        return jobId;
     }
 
-    public String getTitle() {
-        return title;
+    public void setJobId(Short jobId) {
+        this.jobId = jobId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getJobDesc() {
+        return jobDesc;
     }
 
-    public Double getSalary() {
-        return salary;
+    public void setJobDesc(String jobDesc) {
+        this.jobDesc = jobDesc;
     }
 
-    public void setSalary(Double salary) {
-        this.salary = salary;
+    public Integer getMinLvl() {
+        return minLvl;
     }
 
-    public String getLocation() {
-        return location;
+    public void setMinLvl(Integer minLvl) {
+        this.minLvl = minLvl;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public Integer getMaxLvl() {
+        return maxLvl;
+    }
+
+    public void setMaxLvl(Integer maxLvl) {
+        this.maxLvl = maxLvl;
     }
 }
