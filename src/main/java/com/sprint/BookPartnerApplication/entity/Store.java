@@ -10,28 +10,26 @@ public class Store {
 
     @Id
     @NotBlank(message = "Store ID is required")
-    @Size(max = 4, message = "Store ID must be at most 4 characters")
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
-    @Size(max = 40, message = "Store name must be at most 40 characters")
+    @NotBlank(message = "Store name is required")
     @Column(name = "stor_name", length = 40, nullable = true)
     private String storName;
 
-    @Size(max = 40, message = "Store address must be at most 40 characters")
+    @NotBlank(message = "Store address is required")
     @Column(name = "stor_address", length = 40, nullable = true)
     private String storAddress;
 
-    @Size(max = 20, message = "City must be at most 20 characters")
+    @NotBlank(message = "City is required")
     @Column(name = "city", length = 20, nullable = true)
     private String city;
 
-    @Size(max = 2, message = "State must be at most 2 characters")
+    @NotBlank(message = "State is required")
     @Column(name = "state", length = 2, nullable = true)
     private String state;
 
-    @Size(max = 5, message = "Zip must be at most 5 characters")
-    @Pattern(regexp = "^[0-9]{5}$", message = "Zip must be exactly 5 digits")
+    @NotBlank(message = "Zip is required")
     @Column(name = "zip", length = 5, nullable = true)
     private String zip;
 

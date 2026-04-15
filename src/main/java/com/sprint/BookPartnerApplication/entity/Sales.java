@@ -11,19 +11,16 @@ public class Sales {
 
     @Id
     @NotBlank(message = "Store ID is required")
-    @Size(max = 4, message = "Store ID must be at most 4 characters")
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
     @Id
     @NotBlank(message = "Order number is required")
-    @Size(max = 20, message = "Order number must be at most 20 characters")
     @Column(name = "ord_num", length = 20, nullable = false)
     private String ordNum;
 
     @Id
     @NotBlank(message = "Title ID is required")
-    @Size(max = 10, message = "Title ID must be at most 10 characters")
     @Column(name = "title_id", length = 10, nullable = false)
     private String titleId;
 
@@ -32,12 +29,10 @@ public class Sales {
     private LocalDateTime ordDate;
 
     @NotNull(message = "Quantity is required")
-    @Min(value = 1, message = "Quantity must be at least 1")
     @Column(name = "qty", nullable = false)
     private short qty;
 
     @NotBlank(message = "Payment terms are required")
-    @Size(max = 12, message = "Payment terms must be at most 12 characters")
     @Column(name = "payterms", length = 12, nullable = false)
     private String payterms;
 
