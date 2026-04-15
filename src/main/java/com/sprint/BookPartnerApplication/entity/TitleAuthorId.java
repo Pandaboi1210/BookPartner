@@ -1,11 +1,15 @@
 package com.sprint.BookPartnerApplication.entity;
 
+import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class TitleAuthorId implements Serializable {
 
+    @NotBlank
     private String auId;
+    
+    @NotBlank
     private String titleId;
 
     public TitleAuthorId() {}
