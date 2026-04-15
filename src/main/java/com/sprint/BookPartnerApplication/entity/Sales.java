@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,23 +10,29 @@ import java.time.LocalDateTime;
 public class Sales {
 
     @Id
+    @NotBlank(message = "Store ID is required")
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
     @Id
+    @NotBlank(message = "Order number is required")
     @Column(name = "ord_num", length = 20, nullable = false)
     private String ordNum;
 
     @Id
+    @NotBlank(message = "Title ID is required")
     @Column(name = "title_id", length = 10, nullable = false)
     private String titleId;
 
+    @NotNull(message = "Order date is required")
     @Column(name = "ord_date", nullable = false)
     private LocalDateTime ordDate;
 
+    @NotNull(message = "Quantity is required")
     @Column(name = "qty", nullable = false)
     private short qty;
 
+    @NotBlank(message = "Payment terms are required")
     @Column(name = "payterms", length = 12, nullable = false)
     private String payterms;
 

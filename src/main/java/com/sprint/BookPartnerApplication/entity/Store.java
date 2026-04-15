@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.List;
 
 @Entity
@@ -8,21 +9,27 @@ import java.util.List;
 public class Store {
 
     @Id
+    @NotBlank(message = "Store ID is required")
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
+    @NotBlank(message = "Store name is required")
     @Column(name = "stor_name", length = 40, nullable = true)
     private String storName;
 
+    @NotBlank(message = "Store address is required")
     @Column(name = "stor_address", length = 40, nullable = true)
     private String storAddress;
 
+    @NotBlank(message = "City is required")
     @Column(name = "city", length = 20, nullable = true)
     private String city;
 
+    @NotBlank(message = "State is required")
     @Column(name = "state", length = 2, nullable = true)
     private String state;
 
+    @NotBlank(message = "Zip is required")
     @Column(name = "zip", length = 5, nullable = true)
     private String zip;
 
