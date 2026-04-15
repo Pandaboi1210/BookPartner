@@ -1,5 +1,4 @@
 package com.sprint.BookPartnerApplication.entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -9,27 +8,21 @@ public class Title {
 
     @Id
     @Column(name = "title_id")
-    private String titleId;
-    
+    private String titleId;    
     private String title;
-    
     private String type = "UNDECIDED";
-
     @ManyToOne
     @JoinColumn(name = "pub_id")
     private Publishers publisher;
-
     private Double price;
     private Double advance;
     private Integer royalty;
-
     @Column(name = "ytd_sales")
     private Integer ytdSales;
-
     private String notes;
-
     private LocalDateTime pubdate;
-
+    
+    
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
 
