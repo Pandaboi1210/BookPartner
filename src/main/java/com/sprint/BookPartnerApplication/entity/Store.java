@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.List;
 
 @Entity
@@ -8,21 +9,29 @@ import java.util.List;
 public class Store {
 
     @Id
+    @NotBlank(message = "Store ID is required")
+    @Size(max = 4, message = "Store ID must be at most 4 characters")
     @Column(name = "stor_id", length = 4, nullable = false)
     private String storId;
 
+    @Size(max = 40, message = "Store name must be at most 40 characters")
     @Column(name = "stor_name", length = 40, nullable = true)
     private String storName;
 
+    @Size(max = 40, message = "Store address must be at most 40 characters")
     @Column(name = "stor_address", length = 40, nullable = true)
     private String storAddress;
 
+    @Size(max = 20, message = "City must be at most 20 characters")
     @Column(name = "city", length = 20, nullable = true)
     private String city;
 
+    @Size(max = 2, message = "State must be at most 2 characters")
     @Column(name = "state", length = 2, nullable = true)
     private String state;
 
+    @Size(max = 5, message = "Zip must be at most 5 characters")
+    @Pattern(regexp = "^[0-9]{5}$", message = "Zip must be exactly 5 digits")
     @Column(name = "zip", length = 5, nullable = true)
     private String zip;
 
