@@ -1,0 +1,52 @@
+package com.sprint.BookPartnerApplication.entity;
+
+import jakarta.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "stores")
+public class Store {
+
+    @Id
+    @Column(name = "stor_id", length = 4, nullable = false)
+    private String storId;
+
+    @Column(name = "stor_name", length = 40, nullable = true)
+    private String storName;
+
+    @Column(name = "stor_address", length = 40, nullable = true)
+    private String storAddress;
+
+    @Column(name = "city", length = 20, nullable = true)
+    private String city;
+
+    @Column(name = "state", length = 2, nullable = true)
+    private String state;
+
+    @Column(name = "zip", length = 5, nullable = true)
+    private String zip;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Sales> sales;
+
+    public String getStorId() { return storId; }
+    public void setStorId(String storId) { this.storId = storId; }
+
+    public String getStorName() { return storName; }
+    public void setStorName(String storName) { this.storName = storName; }
+
+    public String getStorAddress() { return storAddress; }
+    public void setStorAddress(String storAddress) { this.storAddress = storAddress; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getState() { return state; }
+    public void setState(String state) { this.state = state; }
+
+    public String getZip() { return zip; }
+    public void setZip(String zip) { this.zip = zip; }
+
+    public List<Sales> getSales() { return sales; }
+    public void setSales(List<Sales> sales) { this.sales = sales; }
+}
