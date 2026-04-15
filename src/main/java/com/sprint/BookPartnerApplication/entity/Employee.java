@@ -1,119 +1,66 @@
-
-
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "employee")
+@Table(name = "employees")
 public class Employee {
 
     @Id
-    @Column(name = "emp_id")
-    private String empId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "fname", nullable = false)
-    private String fname;
+    @NotBlank(message = "Employee name cannot be empty")
+    @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "minit")
-    private String minit;
+    @NotBlank(message = "Role cannot be empty")
+    @Column(name = "role")
+    private String role;
 
-    @Column(name = "lname", nullable = false)
-    private String lname;
+    @NotNull(message = "Salary cannot be null")
+    @Column(name = "salary")
+    private Double salary;
 
-    @Column(name = "job_lvl")
-    private Integer jobLvl;
-
-    @Column(name = "hire_date")
-    private LocalDateTime hireDate;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id", nullable = false)
-    private Jobs job;
-
-    @ManyToOne
-    @JoinColumn(name = "pub_id", nullable = false)
-    private Publishers publisher;
-
+    // Constructors
     public Employee() {}
 
-    public Employee(String empId, String fname, String minit, String lname,
-                    Integer jobLvl, LocalDateTime hireDate,
-                    Jobs job, Publishers publisher) {
-        this.empId = empId;
-        this.fname = fname;
-        this.minit = minit;
-        this.lname = lname;
-        this.jobLvl = jobLvl;
-        this.hireDate = hireDate;
-        this.job = job;
-        this.publisher = publisher;
+    public Employee(String name, String role, Double salary) {
+        this.name = name;
+        this.role = role;
+        this.salary = salary;
     }
 
-    public String getEmpId() {
-        return empId;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setEmpId(String empId) {
-        this.empId = empId;
+    public String getName() {
+        return name;
     }
 
-    public String getFname() {
-        return fname;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setFname(String fname) {
-        this.fname = fname;
+    public String getRole() {
+        return role;
     }
 
-    public String getMinit() {
-        return minit;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public void setMinit(String minit) {
-        this.minit = minit;
+    public Double getSalary() {
+        return salary;
     }
 
-    public String getLname() {
-        return lname;
-    }
-
-    public void setLname(String lname) {
-        this.lname = lname;
-    }
-
-    public Integer getJobLvl() {
-        return jobLvl;
-    }
-
-    public void setJobLvl(Integer jobLvl) {
-        this.jobLvl = jobLvl;
-    }
-
-    public LocalDateTime getHireDate() {
-        return hireDate;
-    }
-
-    public void setHireDate(LocalDateTime hireDate) {
-        this.hireDate = hireDate;
-    }
-
-    public Jobs getJob() {
-        return job;
-    }
-
-    public void setJob(Jobs job) {
-        this.job = job;
-    }
-
-    public Publishers getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(Publishers publisher) {
-        this.publisher = publisher;
+    public void setSalary(Double salary) {
+        this.salary = salary;
     }
 }
-
-

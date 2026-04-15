@@ -1,7 +1,9 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "jobs")
@@ -9,68 +11,56 @@ public class Jobs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "job_id")
-    private Integer jobId;
+    private Long id;
 
-    @Column(name = "job_desc", nullable = false)
-    private String jobDesc;
+    @NotBlank(message = "Job title cannot be empty")
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "min_lvl", nullable = false)
-    private Integer minLvl;
+    @NotNull(message = "Salary cannot be null")
+    @Positive(message = "Salary must be positive")
+    @Column(name = "salary")
+    private Double salary;
 
-    @Column(name = "max_lvl", nullable = false)
-    private Integer maxLvl;
+    @NotBlank(message = "Location cannot be empty")
+    @Column(name = "location")
+    private String location;
 
-    @OneToMany(mappedBy = "job")
-    private List<Employee> employees;
-
-
+    // Constructors
     public Jobs() {}
 
-    public Jobs(Integer jobId, String jobDesc, Integer minLvl, Integer maxLvl) {
-        this.jobId = jobId;
-        this.jobDesc = jobDesc;
-        this.minLvl = minLvl;
-        this.maxLvl = maxLvl;
+    public Jobs(String title, Double salary, String location) {
+        this.title = title;
+        this.salary = salary;
+        this.location = location;
     }
 
-    public Integer getJobId() {
-        return jobId;
+    // Getters & Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setJobId(Integer jobId) {
-        this.jobId = jobId;
+    public String getTitle() {
+        return title;
     }
 
-    public String getJobDesc() {
-        return jobDesc;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setJobDesc(String jobDesc) {
-        this.jobDesc = jobDesc;
+    public Double getSalary() {
+        return salary;
     }
 
-    public Integer getMinLvl() {
-        return minLvl;
+    public void setSalary(Double salary) {
+        this.salary = salary;
     }
 
-    public void setMinLvl(Integer minLvl) {
-        this.minLvl = minLvl;
+    public String getLocation() {
+        return location;
     }
 
-    public Integer getMaxLvl() {
-        return maxLvl;
-    }
-
-    public void setMaxLvl(Integer maxLvl) {
-        this.maxLvl = maxLvl;
-    }
-
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
