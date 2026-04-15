@@ -1,6 +1,8 @@
 package com.sprint.BookPartnerApplication.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
@@ -10,9 +12,11 @@ public class Discounts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "discount_id")
     private Integer discountId;
 
-    @Column(name = "discounttype")
+    @NotBlank
+    @Column(name = "discounttype", nullable = false)
     private String discounttype;
 
     @Column(name = "lowqty")
@@ -21,11 +25,15 @@ public class Discounts {
     @Column(name = "highqty")
     private Integer highqty;
 
-    @Column(name = "discount")
+    @NotNull
+    @Column(name = "discount", nullable = false)
     private BigDecimal discount;
 
     @ManyToOne
-    @JoinColumn(name = "stor_id")
+    @JoinColumn(
+            name = "stor_id",
+            foreignKey = @ForeignKey(name = "fk_discounts_store")
+    )
     private Store store;
 
     public Discounts() {

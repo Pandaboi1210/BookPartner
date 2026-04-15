@@ -8,20 +8,24 @@ public class Roysched {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "roysched_id")
+    @Column(name = "roysched_id", nullable = false)
     private Integer royschedId;
 
-    @Column(name = "lorange")
+    @Column(name = "lorange", nullable = true)
     private Integer lorange;
 
-    @Column(name = "hirange")
+    @Column(name = "hirange", nullable = true)
     private Integer hirange;
 
-    @Column(name = "royalty")
+    @Column(name = "royalty", nullable = true)
     private Integer royalty;
 
     @ManyToOne
-    @JoinColumn(name = "title_id")
+    @JoinColumn(
+            name = "title_id",
+            nullable = true,
+            foreignKey = @ForeignKey(name = "fk_roysched_title")
+    )
     private Title title;
 
     public Roysched() {
