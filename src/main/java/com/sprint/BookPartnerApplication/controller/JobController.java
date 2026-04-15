@@ -21,7 +21,7 @@ public class JobController {
 
     // GET ONE JOB (optional)
     @GetMapping("/{id}")
-    public Jobs getOne(@PathVariable Object id) {
+    public Jobs getOne(@PathVariable Short id) {
         return service.getOne(id);
     }
 }

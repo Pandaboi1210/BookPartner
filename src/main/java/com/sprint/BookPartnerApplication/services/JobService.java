@@ -18,7 +18,7 @@ public class JobService {
     }
 
     // READ ONE (optional test)
-    public Jobs getOne(Object id) {
-        return repo.findById((Long) id).orElse(null);
+    public Jobs getOne(Short id) {
+        return repo.findById(id).orElse(null);
     }
 }
