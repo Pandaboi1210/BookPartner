@@ -33,15 +33,16 @@ public class Authors {
     private String zip;
     private int contract;
 
-    // 🔥 FIXED RELATION
+
+    //FIXED RELATION
     @OneToMany(mappedBy = "author")
     private List<Title> titles;
 
-    // Getters & Setters
+
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
 
-    public String getAuLname() { return auLname; }
+    public String getAuLname() { return auLname; } 
     public void setAuLname(String auLname) { this.auLname = auLname; }
 
     public String getAuFname() { return auFname; }

@@ -12,12 +12,11 @@ import java.util.List;
 
 public interface PublishersRepository extends JpaRepository<Publishers, String> {
 
-
-    @Query("SELECT t FROM Titles t WHERE t.publisher.pubId = :publisherId")
+    @Query("SELECT t FROM Title t WHERE t.publisher.pubId = :publisherId")
     List<Title> getTitlesByPublisherId(@Param("publisherId") String publisherId);
 
-   
-    @Query("SELECT e FROM Employees e WHERE e.publisher.pubId = :publisherId")
-    List<Employee> getEmployeesByPublisherId(@Param("publisherId") String publisherId);
+   @Query("SELECT e FROM Employee e WHERE e.pubId = :publisherId")
+List<Employee> getEmployeesByPublisherId(@Param("publisherId") String publisherId);
+
     List<Publishers> findByPubName(String pubName);
 }
