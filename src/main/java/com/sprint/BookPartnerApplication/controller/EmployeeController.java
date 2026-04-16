@@ -1,44 +1,48 @@
 package com.sprint.BookPartnerApplication.controller;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.sprint.BookPartnerApplication.entity.Employee;
-import com.sprint.BookPartnerApplication.servicesImpl.EmployeeServiceImpl;
+import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
     @Autowired
-    private EmployeeServiceImpl service;
+    private EmployeeService service;
 
+    // POST /employees
     @PostMapping
-    public Employee save(@RequestBody Employee emp) {
-        return service.save(emp);
+    public Employee create(@RequestBody Employee emp) {
+        return service.createEmployee(emp);
     }
 
+    // GET /employees
     @GetMapping
     public List<Employee> getAll() {
-        return service.getAll();
+        return service.getAllEmployees();
     }
 
-    @GetMapping("/{id}")
-    public Employee getOne(@PathVariable String id) {
-        return service.getOne(id);
+    // GET /employees/{employeeId}
+    @GetMapping("/{employeeId}")
+    public Employee getById(@PathVariable String employeeId) {
+        return service.getEmployeeById(employeeId);
     }
 
-    @PutMapping("/{id}")
-    public Employee update(@PathVariable String id, @RequestBody Employee emp) {
-        emp.setEmpId(id);
-        return service.update(emp);
+    //Update
+    @PutMapping("/{employeeId}")
+    public Employee update(@PathVariable String employeeId, @RequestBody Employee emp) {
+        return service.updateEmployee(employeeId, emp);
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable String id) {
-        service.delete(id);
-        return "Employee deleted successfully!";
+    // Custom method
+    @GetMapping("/publisher/{publisherId}")
+    public List<Employee> getByPublisher(@PathVariable String publisherId) {
+        return service.getEmployeesByPublisher(publisherId);
     }
 }

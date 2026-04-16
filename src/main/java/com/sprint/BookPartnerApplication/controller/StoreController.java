@@ -1,44 +1,58 @@
 package com.sprint.BookPartnerApplication.controller;
 
+import com.sprint.BookPartnerApplication.entity.Discounts;
+import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
-import com.sprint.BookPartnerApplication.servicesImpl.StoreServiceImpl;
-
+import com.sprint.BookPartnerApplication.services.StoreService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/stores")
+@RequestMapping("/api/v1/stores")   // ✅ FIXED BASE PATH
 public class StoreController {
 
     @Autowired
-    private StoreServiceImpl storeService;
+    private StoreService storeService;
 
-    @GetMapping
-    public List<Store> getAllStores() {
-        return storeService.getAllStores();
-    }
-
-    @GetMapping("/{storId}")
-    public Optional<Store> getStoreById(@PathVariable String storId) {
-        return storeService.getStoreById(storId);
-    }
-
+    // POST /api/v1/stores
     @PostMapping
-    public Store createStore(@RequestBody Store store) {
-        return storeService.saveStore(store);
+    public ResponseEntity<Store> createStore(@Valid @RequestBody Store store) {
+        return ResponseEntity.ok(storeService.createStore(store));
     }
 
-    @PutMapping("/{storId}")
-    public Store updateStore(@PathVariable String storId, @RequestBody Store store) {
-        store.setStorId(storId);
-        return storeService.saveStore(store);
+    // GET /api/v1/stores
+    @GetMapping
+    public ResponseEntity<List<Store>> getAllStores() {
+        return ResponseEntity.ok(storeService.getAllStores());
     }
 
-    @DeleteMapping("/{storId}")
-    public void deleteStore(@PathVariable String storId) {
-        storeService.deleteStore(storId);
+    // GET /api/v1/stores/{storeId}
+    @GetMapping("/{storeId}")
+    public ResponseEntity<Store> getStoreById(@PathVariable String storeId) {
+        return ResponseEntity.ok(storeService.getStoreById(storeId));
+    }
+
+    // PUT /api/v1/stores/{storeId}
+    @PutMapping("/{storeId}")
+    public ResponseEntity<Store> updateStore(
+            @PathVariable String storeId,
+            @Valid @RequestBody Store store) {
+        return ResponseEntity.ok(storeService.updateStore(storeId, store));
+    }
+
+    // GET /api/v1/stores/{storeId}/sales
+    @GetMapping("/{storeId}/sales")
+    public ResponseEntity<List<Sales>> getSalesByStore(@PathVariable String storeId) {
+        return ResponseEntity.ok(storeService.getSalesByStore(storeId));
+    }
+
+    // GET /api/v1/stores/{storeId}/discounts
+    @GetMapping("/{storeId}/discounts")
+    public ResponseEntity<List<Discounts>> getDiscountsByStore(@PathVariable String storeId) {
+        return ResponseEntity.ok(storeService.getDiscountsByStore(storeId));
     }
 }
