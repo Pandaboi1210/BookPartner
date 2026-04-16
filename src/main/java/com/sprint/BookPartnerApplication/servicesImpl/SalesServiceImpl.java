@@ -1,8 +1,10 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Sales;
+
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
+
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.services.SalesService;
