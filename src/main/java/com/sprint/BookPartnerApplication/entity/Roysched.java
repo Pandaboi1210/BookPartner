@@ -11,19 +11,18 @@ public class Roysched {
     @Column(name = "roysched_id", nullable = false)
     private Integer royschedId;
 
-    @Column(name = "lorange", nullable = true)
+    @Column(name = "lorange")
     private Integer lorange;
 
-    @Column(name = "hirange", nullable = true)
+    @Column(name = "hirange")
     private Integer hirange;
 
-    @Column(name = "royalty", nullable = true)
+    @Column(name = "royalty")
     private Integer royalty;
 
     @ManyToOne
     @JoinColumn(
             name = "title_id",
-            nullable = true,
             foreignKey = @ForeignKey(name = "fk_roysched_title")
     )
     private Title title;

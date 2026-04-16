@@ -21,8 +21,12 @@ public class StoreService {
     public Optional<Store> getStoreById(String storId) {
         return storeRepository.findById(storId);
     }
-
     public Store saveStore(Store store) {
+
+        System.out.println("===== DEBUG START =====");
+        System.out.println("storId received: " + store.getStorId());
+        System.out.println("===== DEBUG END =====");
+
         return storeRepository.save(store);
     }
 

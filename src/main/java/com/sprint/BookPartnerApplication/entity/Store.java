@@ -5,15 +5,18 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "stores")
+@Table(name = "stores") 
 public class Store {
 
-    @Id
-    @NotBlank(message = "Store ID is required")
-    @Column(name = "stor_id", length = 4, nullable = false)
-    private String storId;
+	@Id
+	@NotBlank(message = "Store ID is required")
+	@JsonProperty("storId")
+	@Column(name = "stor_id", length = 4, nullable = false)
+	private String storId;
+
 
     // nullable = true in DB → no validation annotation
     @Column(name = "stor_name", length = 40)
