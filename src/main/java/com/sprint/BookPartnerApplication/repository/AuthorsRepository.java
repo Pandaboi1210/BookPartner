@@ -13,7 +13,8 @@ import java.util.List;
 
 public interface AuthorsRepository extends JpaRepository<Authors, String> {
 
-    List<Authors> findByName(String name);
-    @Query("SELECT t FROM Titles t WHERE t.author.auId = :authorId")
+    List<Authors> findByAuFname(String auFname);
+
+    @Query("SELECT t FROM Title t WHERE t.author.auId = :authorId")
     List<Title> getTitlesByAuthorId(@Param("authorId") String authorId);
 }

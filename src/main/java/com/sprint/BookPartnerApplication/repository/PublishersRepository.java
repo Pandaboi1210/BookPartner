@@ -17,7 +17,7 @@ public interface PublishersRepository extends JpaRepository<Publishers, String> 
     List<Title> getTitlesByPublisherId(@Param("publisherId") String publisherId);
 
    
-    @Query("SELECT e FROM Employees e WHERE e.publisher.pubId = :publisherId")
+    @Query("SELECT e FROM Employee e WHERE e.pubId = :publisherId")
     List<Employee> getEmployeesByPublisherId(@Param("publisherId") String publisherId);
     List<Publishers> findByPubName(String pubName);
 }
