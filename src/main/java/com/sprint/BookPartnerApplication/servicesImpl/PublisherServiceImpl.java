@@ -1,6 +1,8 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Publishers;
+import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
+
 import com.sprint.BookPartnerApplication.entity.Title;
 
 import com.sprint.BookPartnerApplication.entity.Employee;
@@ -25,12 +27,10 @@ public class PublisherServiceImpl implements PublisherService {
         return publisherRepository.findAll();
     }
 
-
     @Override
     public Publishers getPublisherById(String id) {
-        return publisherRepository.findById(id).orElse(null);
+        return publisherRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
     }
-
     
     @Override
     public Publishers createPublisher(Publishers publisher) {
@@ -48,12 +48,15 @@ public class PublisherServiceImpl implements PublisherService {
         return null;
     }
 
-   
     @Override
     public void deletePublisher(String id) {
-        publisherRepository.deleteById(id);
-    }
+        Publishers publisher = publisherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
 
+        publisherRepository.delete(publisher);
+    }
+    
+    
     @Override
     public List<Title> getTitlesByPublisher(String publisherId) {
         return publisherRepository.getTitlesByPublisherId(publisherId);
