@@ -12,17 +12,22 @@ public class Title {
     @Id
     @Column(name = "title_id")
     @NotBlank(message = "Title ID is required")
-    private String titleId;    
-    
+    private String titleId;
+
     @NotBlank(message = "Title cannot be blank")
     private String title;
-    
+
     @NotBlank(message = "Type is required")
     private String type = "UNDECIDED";
 
     @ManyToOne
     @JoinColumn(name = "pub_id")
     private Publishers publisher;
+
+    // 🔥 FIX ADDED HERE
+    @ManyToOne
+    @JoinColumn(name = "au_id")
+    private Authors author;
 
     private Double price;
     private Double advance;
@@ -35,8 +40,8 @@ public class Title {
 
     @NotNull(message = "Publication date is required")
     private LocalDateTime pubdate;
-    
-    
+
+    // Getters & Setters
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
 
@@ -48,6 +53,9 @@ public class Title {
 
     public Publishers getPublisher() { return publisher; }
     public void setPublisher(Publishers publisher) { this.publisher = publisher; }
+
+    public Authors getAuthor() { return author; }
+    public void setAuthor(Authors author) { this.author = author; }
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }

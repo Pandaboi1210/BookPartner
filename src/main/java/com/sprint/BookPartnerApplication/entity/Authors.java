@@ -27,23 +27,17 @@ public class Authors {
     private String auFname;
 
     private String phone = "UNKNOWN";
-
     private String address;
-
     private String city;
-
     private String state;
-
     private String zip;
-
     private int contract;
 
-    
+    // 🔥 FIXED RELATION
     @OneToMany(mappedBy = "author")
     private List<Title> titles;
 
-    
-
+    // Getters & Setters
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
 
@@ -71,6 +65,6 @@ public class Authors {
     public int getContract() { return contract; }
     public void setContract(int contract) { this.contract = contract; }
 
-   
-  
+    public List<Title> getTitles() { return titles; }
+    public void setTitles(List<Title> titles) { this.titles = titles; }
 }
