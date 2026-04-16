@@ -1,7 +1,7 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Authors;
-import com.sprint.BookPartnerApplication.services.AuthorsService;
+import com.sprint.BookPartnerApplication.servicesImpl.AuthorsServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 public class AuthorsController {
 
     @Autowired
-    private AuthorsService authorsService;
+    private AuthorsServiceImpl authorsService;
 
     @PostMapping
     public Authors createAuthor(@RequestBody Authors author) {

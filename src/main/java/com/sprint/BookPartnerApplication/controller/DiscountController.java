@@ -1,7 +1,8 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Discounts;
-import com.sprint.BookPartnerApplication.services.DiscountService;
+import com.sprint.BookPartnerApplication.servicesImpl.DiscountServiceImpl;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +12,9 @@ import java.util.Optional;
 @RequestMapping("/discounts")
 public class DiscountController {
 
-    private final DiscountService discountsService;
+    private final DiscountServiceImpl discountsService;
 
-    public DiscountController(DiscountService discountsService) {
+    public DiscountController(DiscountServiceImpl discountsService) {
         this.discountsService = discountsService;
     }
 

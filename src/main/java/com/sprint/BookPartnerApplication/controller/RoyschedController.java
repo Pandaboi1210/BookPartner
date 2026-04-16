@@ -1,7 +1,8 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Roysched;
-import com.sprint.BookPartnerApplication.services.RoyschedService;
+import com.sprint.BookPartnerApplication.servicesImpl.RoyschedServiceImpl;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +12,9 @@ import java.util.Optional;
 @RequestMapping("/roysched")
 public class RoyschedController {
 
-    private final RoyschedService royschedService;
+    private final RoyschedServiceImpl royschedService;
 
-    public RoyschedController(RoyschedService royschedService) {
+    public RoyschedController(RoyschedServiceImpl royschedService) {
         this.royschedService = royschedService;
     }
 

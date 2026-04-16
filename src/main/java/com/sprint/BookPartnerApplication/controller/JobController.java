@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.sprint.BookPartnerApplication.entity.Jobs;
-import com.sprint.BookPartnerApplication.services.JobService;
+import com.sprint.BookPartnerApplication.servicesImpl.JobServiceImpl;
+
 import java.util.List;
 
 @RestController
@@ -12,7 +13,7 @@ import java.util.List;
 public class JobController {
 
     @Autowired
-    private JobService service;
+    private JobServiceImpl service;
 
     @PostMapping
     public Jobs save(@RequestBody Jobs job) {

@@ -1,4 +1,4 @@
-package com.sprint.BookPartnerApplication.services;
+package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DiscountService {
+public class DiscountServiceImpl {
 
     private final DiscountRepository discountsRepository;
 

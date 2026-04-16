@@ -1,4 +1,4 @@
-package com.sprint.BookPartnerApplication.services;
+package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Authors;
 import com.sprint.BookPartnerApplication.repository.AuthorsRepository;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AuthorsService {
+public class AuthorsServiceImpl {
 
     @Autowired
     private AuthorsRepository authorRepository;

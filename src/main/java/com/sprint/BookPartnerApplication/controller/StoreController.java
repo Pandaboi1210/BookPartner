@@ -1,7 +1,8 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Store;
-import com.sprint.BookPartnerApplication.services.StoreService;
+import com.sprint.BookPartnerApplication.servicesImpl.StoreServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 public class StoreController {
 
     @Autowired
-    private StoreService storeService;
+    private StoreServiceImpl storeService;
 
     @GetMapping
     public List<Store> getAllStores() {

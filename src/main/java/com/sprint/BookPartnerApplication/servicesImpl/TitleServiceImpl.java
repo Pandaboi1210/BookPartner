@@ -1,4 +1,4 @@
-package com.sprint.BookPartnerApplication.services;
+package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.entity.Publishers;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TitleService 
+public class TitleServiceImpl 
 {
 
     @Autowired

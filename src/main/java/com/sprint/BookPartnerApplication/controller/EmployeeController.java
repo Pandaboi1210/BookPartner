@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.sprint.BookPartnerApplication.entity.Employee;
-import com.sprint.BookPartnerApplication.services.EmployeeService;
+import com.sprint.BookPartnerApplication.servicesImpl.EmployeeServiceImpl;
 
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
-    private EmployeeService service;
+    private EmployeeServiceImpl service;
 
     @PostMapping
     public Employee save(@RequestBody Employee emp) {

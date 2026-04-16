@@ -1,7 +1,7 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Publishers;
-import com.sprint.BookPartnerApplication.services.PublishersService;
+import com.sprint.BookPartnerApplication.servicesImpl.PublishersServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 public class PublishersController {
 
     @Autowired
-    private PublishersService publishersService;
+    private PublishersServiceImpl publishersService;
 
   
     @PostMapping

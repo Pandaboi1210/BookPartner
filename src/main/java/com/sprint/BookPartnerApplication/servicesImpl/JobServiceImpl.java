@@ -1,4 +1,4 @@
-package com.sprint.BookPartnerApplication.services;
+package com.sprint.BookPartnerApplication.servicesImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import java.util.List;
 
 @Service
-public class JobService {
+public class JobServiceImpl {
 
     @Autowired
     private JobsRepository repo;

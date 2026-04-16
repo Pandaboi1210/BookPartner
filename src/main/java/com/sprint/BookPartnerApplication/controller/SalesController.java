@@ -2,7 +2,8 @@ package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.SalesId;
-import com.sprint.BookPartnerApplication.services.SalesService;
+import com.sprint.BookPartnerApplication.servicesImpl.SalesServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class SalesController {
 
     @Autowired
-    private SalesService salesService;
+    private SalesServiceImpl salesService;
 
     @GetMapping
     public List<Sales> getAllSales() {

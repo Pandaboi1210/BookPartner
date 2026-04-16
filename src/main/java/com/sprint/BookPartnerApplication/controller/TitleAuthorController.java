@@ -2,7 +2,8 @@ package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.TitleAuthor;
 import com.sprint.BookPartnerApplication.entity.TitleAuthorId;
-import com.sprint.BookPartnerApplication.services.TitleAuthorService;
+import com.sprint.BookPartnerApplication.servicesImpl.TitleAuthorServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class TitleAuthorController 
 {
     @Autowired
-    private TitleAuthorService titleAuthorService;
+    private TitleAuthorServiceImpl titleAuthorService;
 
     @GetMapping
     public List<TitleAuthor> getAllTitleAuthors()

@@ -1,7 +1,8 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Title;
-import com.sprint.BookPartnerApplication.services.TitleService;
+import com.sprint.BookPartnerApplication.servicesImpl.TitleServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class TitleController
 {
 
     @Autowired
-    private TitleService titleService;
+    private TitleServiceImpl titleService;
 
     @GetMapping
     public List<Title> getAllTitles() 

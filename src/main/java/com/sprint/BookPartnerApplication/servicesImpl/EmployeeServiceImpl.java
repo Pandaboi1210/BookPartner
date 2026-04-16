@@ -1,4 +1,4 @@
-package com.sprint.BookPartnerApplication.services;
+package com.sprint.BookPartnerApplication.servicesImpl;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 
 @Service
-public class EmployeeService {
+public class EmployeeServiceImpl {
 
     @Autowired
     private EmployeeRepository repo;
