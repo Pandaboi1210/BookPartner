@@ -1,6 +1,5 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
+import com.sprint.BookPartnerApplication.exception.EmployeeException;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import com.sprint.BookPartnerApplication.repository.PublishersRepository;
@@ -29,14 +29,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee createEmployee(Employee emp) {
 
         if (empRepo.existsById(emp.getEmpId())) {
-            throw new RuntimeException("Employee already exists");
+            throw new EmployeeException("Employee already exists with id: " + emp.getEmpId());
         }
 
         Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new EmployeeException("Job not found"));
 
         if (!pubRepo.existsById(emp.getPubId())) {
-            throw new RuntimeException("Publisher not found");
+            throw new EmployeeException("Publisher not found");
         }
 
         emp.setJob(job);
@@ -51,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeeById(String empId) {
         return empRepo.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found with id: " + empId));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (emp.getJob() != null) {
             Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                    .orElseThrow(() -> new RuntimeException("Job not found"));
+                    .orElseThrow(() -> new EmployeeException("Job not found"));
             existing.setJob(job);
         }
 
