@@ -39,15 +39,11 @@ public class Authors {
     private int contract;
 
     
-    @OneToMany(mappedBy = "author")
-    private List<Title> titles;
-
-    
 
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
 
-    public String getAuLname() { return auLname; }
+    public String getAuLname() { return auLname; } 
     public void setAuLname(String auLname) { this.auLname = auLname; }
 
     public String getAuFname() { return auFname; }

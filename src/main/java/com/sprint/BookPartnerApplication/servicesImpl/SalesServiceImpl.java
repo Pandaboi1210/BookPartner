@@ -1,7 +1,6 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Sales;
-import com.sprint.BookPartnerApplication.entity.SalesId;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
