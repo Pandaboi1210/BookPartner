@@ -23,6 +23,10 @@ public class Title {
     @ManyToOne
     @JoinColumn(name = "pub_id")
     private Publishers publisher;
+    
+    @ManyToOne
+    @JoinColumn(name = "au_id")  // foreign key column
+    private Authors author;
 
     // 🔥 FIX ADDED HERE
     @ManyToOne
