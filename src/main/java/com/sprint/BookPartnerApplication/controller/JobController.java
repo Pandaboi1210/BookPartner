@@ -1,44 +1,35 @@
 package com.sprint.BookPartnerApplication.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.sprint.BookPartnerApplication.entity.Jobs;
-import com.sprint.BookPartnerApplication.servicesImpl.JobServiceImpl;
-
-import java.util.List;
+import com.sprint.BookPartnerApplication.services.JobsService;
 
 @RestController
-@RequestMapping("/jobs")
+@RequestMapping("/api/v1/jobs")
 public class JobController {
 
     @Autowired
-    private JobServiceImpl service;
+    private JobsService service;
 
+    // POST 
     @PostMapping
-    public Jobs save(@RequestBody Jobs job) {
-        return service.save(job);
+    public Jobs create(@RequestBody Jobs job) {
+        return service.createJob(job);
     }
 
+    // GET 
     @GetMapping
     public List<Jobs> getAll() {
-        return service.getAll();
+        return service.getAllJobs();
     }
 
-    @GetMapping("/{id}")
-    public Jobs getOne(@PathVariable Short id) {
-        return service.getOne(id);
-    }
-
-    @PutMapping("/{id}")
-    public Jobs update(@PathVariable Short id, @RequestBody Jobs job) {
-        job.setJobId(id);
-        return service.save(job);
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable Short id) {
-        service.delete(id);
-        return "Job deleted successfully!";
+    // GET 
+    @GetMapping("/{jobId}")
+    public Jobs getById(@PathVariable Short jobId) {
+        return service.getJobById(jobId);
     }
 }

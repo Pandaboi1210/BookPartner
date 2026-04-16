@@ -38,7 +38,7 @@ public class Employee {
     private Integer jobLvl = 10;
 
     @Column(name = "pub_id", length = 4)
-    private String pubId = "9952"; // simplified (can map later)
+    private String pubId = "9952"; 
 
     @Column(name = "hire_date")
     private LocalDateTime hireDate = LocalDateTime.now();

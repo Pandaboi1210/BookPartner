@@ -1,5 +1,6 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,48 +10,70 @@ import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
+import com.sprint.BookPartnerApplication.repository.PublishersRepository;
+import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @Service
-public class EmployeeServiceImpl {
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
-    private EmployeeRepository repo;
-    
+    private EmployeeRepository empRepo;
+
     @Autowired
-    private JobsRepository jobsRepository;
+    private JobsRepository jobRepo;
 
-    public Employee save(Employee emp) {
-        if (emp.getJob() != null && emp.getJob().getJobId() != null) {
-            Jobs job = jobsRepository.findById(emp.getJob().getJobId()).orElse(null);
-            if (job == null) {
-                throw new IllegalArgumentException("Job with ID " + emp.getJob().getJobId() + " does not exist");
-            }
-            emp.setJob(job);
+    @Autowired
+    private PublishersRepository pubRepo;
+
+    @Override
+    public Employee createEmployee(Employee emp) {
+
+        if (empRepo.existsById(emp.getEmpId())) {
+            throw new RuntimeException("Employee already exists");
         }
-        return repo.save(emp);
-    }
 
-    public List<Employee> getAll() {
-        return repo.findAll();
-    }
+        Jobs job = jobRepo.findById(emp.getJob().getJobId())
+                .orElseThrow(() -> new RuntimeException("Job not found"));
 
-    public Employee getOne(String id) {
-        return repo.findById(id).orElse(null);
-    }
-
-    public Employee update(Employee emp) {
-        // If a job is provided, validate it exists in DB
-        if (emp.getJob() != null && emp.getJob().getJobId() != null) {
-            Jobs job = jobsRepository.findById(emp.getJob().getJobId()).orElse(null);
-            if (job == null) {
-                throw new IllegalArgumentException("Job with ID " + emp.getJob().getJobId() + " does not exist");
-            }
-            emp.setJob(job);
+        if (!pubRepo.existsById(emp.getPubId())) {
+            throw new RuntimeException("Publisher not found");
         }
-        return repo.save(emp);
+
+        emp.setJob(job);
+        return empRepo.save(emp);
     }
 
-    public void delete(String id) {
-        repo.deleteById(id);
+    @Override
+    public List<Employee> getAllEmployees() {
+        return empRepo.findAll();
+    }
+
+    @Override
+    public Employee getEmployeeById(String empId) {
+        return empRepo.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
+    @Override
+    public Employee updateEmployee(String empId, Employee emp) {
+
+        Employee existing = getEmployeeById(empId);
+
+        existing.setFname(emp.getFname());
+        existing.setLname(emp.getLname());
+        existing.setJobLvl(emp.getJobLvl());
+
+        if (emp.getJob() != null) {
+            Jobs job = jobRepo.findById(emp.getJob().getJobId())
+                    .orElseThrow(() -> new RuntimeException("Job not found"));
+            existing.setJob(job);
+        }
+
+        return empRepo.save(existing);
+    }
+
+    @Override
+    public List<Employee> getEmployeesByPublisher(String publisherId) {
+        return empRepo.findByPubId(publisherId);
     }
 }

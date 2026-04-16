@@ -1,31 +1,34 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sprint.BookPartnerApplication.entity.Jobs;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
-import java.util.List;
+import com.sprint.BookPartnerApplication.services.JobsService;
 
 @Service
-public class JobServiceImpl {
+public class JobServiceImpl implements JobsService {
 
     @Autowired
     private JobsRepository repo;
 
-    public Jobs save(Jobs job) {
+    @Override
+    public Jobs createJob(Jobs job) {
         return repo.save(job);
     }
 
-    public List<Jobs> getAll() {
+    @Override
+    public List<Jobs> getAllJobs() {
         return repo.findAll();
     }
 
-    public Jobs getOne(Short id) {
-        return repo.findById(id).orElse(null);
-    }
-
-    public void delete(Short id) {
-        repo.deleteById(id);
+    @Override
+    public Jobs getJobById(Short jobId) {
+        return repo.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
     }
 }
