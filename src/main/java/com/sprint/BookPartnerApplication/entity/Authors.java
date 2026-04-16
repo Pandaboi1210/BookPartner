@@ -1,9 +1,8 @@
 package com.sprint.BookPartnerApplication.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.List;
+
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -39,7 +38,11 @@ public class Authors {
 
     private int contract;
 
+    
+    @OneToMany(mappedBy = "author")
+    private List<Title> titles;
 
+    
 
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
@@ -67,4 +70,7 @@ public class Authors {
 
     public int getContract() { return contract; }
     public void setContract(int contract) { this.contract = contract; }
+
+   
+  
 }
