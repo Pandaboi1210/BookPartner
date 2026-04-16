@@ -25,6 +25,7 @@ public class RoyschedService {
     }
 
     public Roysched createRoysched(Roysched roysched) {
+    	System.out.println("check");
         return royschedRepository.save(roysched);
     }
 
