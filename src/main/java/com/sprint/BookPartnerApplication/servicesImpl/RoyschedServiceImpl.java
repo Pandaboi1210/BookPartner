@@ -2,13 +2,13 @@ package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Roysched;
 import com.sprint.BookPartnerApplication.repository.RoyschedRepository;
+import com.sprint.BookPartnerApplication.services.RoyschedService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class RoyschedServiceImpl {
+public class RoyschedServiceImpl implements RoyschedService {
 
     private final RoyschedRepository royschedRepository;
 
@@ -16,22 +16,20 @@ public class RoyschedServiceImpl {
         this.royschedRepository = royschedRepository;
     }
 
-    public List<Roysched> getAllRoysched() {
-        return royschedRepository.findAll();
-    }
-
-    public Optional<Roysched> getRoyschedById(Integer id) {
-        return royschedRepository.findById(id);
-    }
-
+    @Override
     public Roysched createRoysched(Roysched roysched) {
-    	System.out.println("check");
         return royschedRepository.save(roysched);
     }
 
-    public Roysched updateRoysched(Integer id, Roysched royschedDetails) {
-        Roysched roysched = royschedRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Roysched not found"));
+    @Override
+    public List<Roysched> getRoyschedByTitle(String titleId) {
+        return royschedRepository.findByTitle_TitleId(titleId);
+    }
+
+    @Override
+    public Roysched updateRoysched(Integer royaltyId, Roysched royschedDetails) {
+        Roysched roysched = royschedRepository.findById(royaltyId)
+                .orElseThrow(() -> new RuntimeException("Royalty slab not found with id: " + royaltyId));
 
         roysched.setLorange(royschedDetails.getLorange());
         roysched.setHirange(royschedDetails.getHirange());
@@ -39,9 +37,5 @@ public class RoyschedServiceImpl {
         roysched.setTitle(royschedDetails.getTitle());
 
         return royschedRepository.save(roysched);
-    }
-
-    public void deleteRoysched(Integer id) {
-        royschedRepository.deleteById(id);
     }
 }

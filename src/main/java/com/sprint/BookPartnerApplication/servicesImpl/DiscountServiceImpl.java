@@ -2,13 +2,13 @@ package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
+import com.sprint.BookPartnerApplication.services.DiscountService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class DiscountServiceImpl {
+public class DiscountServiceImpl implements DiscountService {
 
     private final DiscountRepository discountsRepository;
 
@@ -16,21 +16,27 @@ public class DiscountServiceImpl {
         this.discountsRepository = discountsRepository;
     }
 
+    @Override
     public List<Discounts> getAllDiscounts() {
         return discountsRepository.findAll();
     }
-    
-    public Optional<Discounts> getDiscountById(Integer id) {
-        return discountsRepository.findById(id);
-    }
 
+    @Override
     public Discounts createDiscount(Discounts discount) {
         return discountsRepository.save(discount);
     }
 
-    public Discounts updateDiscount(Integer id, Discounts discountDetails) {
-        Discounts discount = discountsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Discount not found"));
+    @Override
+    public List<Discounts> getDiscountsByStore(String storeId) {
+        return discountsRepository.findByStore_StorId(storeId);
+    }
+
+    @Override
+    public Discounts updateDiscountByType(String discountType, Discounts discountDetails) {
+        Discounts discount = discountsRepository.findByDiscounttype(discountType)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Discount not found for type: " + discountType));
 
         discount.setDiscounttype(discountDetails.getDiscounttype());
         discount.setLowqty(discountDetails.getLowqty());
@@ -39,9 +45,5 @@ public class DiscountServiceImpl {
         discount.setStore(discountDetails.getStore());
 
         return discountsRepository.save(discount);
-    }
-
-    public void deleteDiscount(Integer id) {
-        discountsRepository.deleteById(id);
     }
 }

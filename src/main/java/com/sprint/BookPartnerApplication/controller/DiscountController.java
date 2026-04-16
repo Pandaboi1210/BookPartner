@@ -1,47 +1,43 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.entity.Discounts;
-import com.sprint.BookPartnerApplication.servicesImpl.DiscountServiceImpl;
+import com.sprint.BookPartnerApplication.services.DiscountService;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/discounts")
+@RequestMapping("/api/v1/discounts")
 public class DiscountController {
 
-    private final DiscountServiceImpl discountsService;
+    private final DiscountService discountService;
 
-    public DiscountController(DiscountServiceImpl discountsService) {
-        this.discountsService = discountsService;
+    public DiscountController(DiscountService discountService) {
+        this.discountService = discountService;
     }
 
-    @GetMapping
-    public List<Discounts> getAllDiscounts() {
-        return discountsService.getAllDiscounts();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Discounts> getDiscountById(@PathVariable Integer id) {
-        return discountsService.getDiscountById(id);
-    }
-
+    // POST /api/v1/discounts - Create discount
     @PostMapping
     public Discounts createDiscount(@RequestBody Discounts discount) {
-        return discountsService.createDiscount(discount);
+        return discountService.createDiscount(discount);
     }
 
-    @PutMapping("/{id}")
-    public Discounts updateDiscount(
-            @PathVariable Integer id,
-            @RequestBody Discounts discount) {
-        return discountsService.updateDiscount(id, discount);
+    // GET /api/v1/discounts - Get all discounts
+    @GetMapping
+    public List<Discounts> getAllDiscounts() {
+        return discountService.getAllDiscounts();
     }
 
-     @DeleteMapping("/{id}")
-    public void deleteDiscount(@PathVariable Integer id) {
-        discountsService.deleteDiscount(id);
+    // GET /api/v1/discounts/store/{storeId} - Get discounts for a store
+    @GetMapping("/store/{storeId}")
+    public List<Discounts> getDiscountsByStore(@PathVariable String storeId) {
+        return discountService.getDiscountsByStore(storeId);
+    }
+
+    // PUT /api/v1/discounts/{discountType} - Update discount
+    @PutMapping("/{discountType}")
+    public Discounts updateDiscountByType(@PathVariable String discountType, @RequestBody Discounts discount) {
+        return discountService.updateDiscountByType(discountType, discount);
     }
 }
