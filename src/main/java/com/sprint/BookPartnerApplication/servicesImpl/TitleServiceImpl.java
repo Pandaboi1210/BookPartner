@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.*;
+import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.*;
 import com.sprint.BookPartnerApplication.services.TitleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,10 @@ public class TitleServiceImpl implements TitleService
             }
             return titleRepository.save(existingTitle);
         } 
-        else { throw new RuntimeException("Title not found with ID: " + titleId); }
+        else 
+        {
+            throw new ResourceNotFoundException("Title not found with ID: " + titleId);
+        }
     }
 
     @Override
