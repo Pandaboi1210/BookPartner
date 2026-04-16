@@ -15,19 +15,19 @@ public class JobController {
     @Autowired
     private JobsService service;
 
-    // POST /jobs
+    // POST 
     @PostMapping
     public Jobs create(@RequestBody Jobs job) {
         return service.createJob(job);
     }
 
-    // GET /jobs
+    // GET 
     @GetMapping
     public List<Jobs> getAll() {
         return service.getAllJobs();
     }
 
-    // GET /jobs/{jobId}
+    // GET 
     @GetMapping("/{jobId}")
     public Jobs getById(@PathVariable Short jobId) {
         return service.getJobById(jobId);
