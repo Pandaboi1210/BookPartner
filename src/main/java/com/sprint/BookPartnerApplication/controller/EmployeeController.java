@@ -9,7 +9,7 @@ import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/employees")
 public class EmployeeController {
 
     @Autowired
@@ -20,8 +20,13 @@ public class EmployeeController {
         return service.save(emp);
     }
 
+    @GetMapping
+    public List<Employee> getAll() {
+        return service.getAll();
+    }
+
     @GetMapping("/{id}")
-    public Employee getOne(@PathVariable Object id) {
+    public Employee getOne(@PathVariable String id) {
         return service.getOne(id);
     }
 
@@ -34,6 +39,6 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable String id) {
         service.delete(id);
-        return "Deleted";
+        return "Employee deleted successfully!";
     }
 }
