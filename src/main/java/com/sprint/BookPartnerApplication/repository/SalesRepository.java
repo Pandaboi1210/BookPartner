@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SalesRepository extends JpaRepository<Sales, SalesId> 
 {
-	List<Sales> findByTitle_TitleId(String titleId);
+	List<Sales> findByTitleId(String titleId);
 }

@@ -104,7 +104,7 @@ public class TitleServiceImpl implements TitleService
     @Override
     public List<Sales> getSalesByTitleId(String titleId) 
     {
-        return salesRepository.findByTitle_TitleId(titleId);
+        return salesRepository.findByTitleId(titleId);
     }
 
     @Override
