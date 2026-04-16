@@ -10,5 +10,6 @@ import java.util.List;
 public interface RoyschedRepository extends JpaRepository<Roysched, Integer> {
 
     List<Roysched> findByTitle_TitleId(String titleId);
+    boolean existsByTitle_TitleIdAndLorangeAndHirange(String titleId, Integer lorange, Integer hirange);
 
 }

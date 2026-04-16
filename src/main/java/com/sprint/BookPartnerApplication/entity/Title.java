@@ -24,10 +24,6 @@ public class Title {
     @JoinColumn(name = "pub_id")
     private Publishers publisher;
 
-    @ManyToOne
-    @JoinColumn(name = "au_id")
-    private Authors author;
-
     private Double price;
     private Double advance;
     private Integer royalty;
@@ -52,9 +48,6 @@ public class Title {
 
     public Publishers getPublisher() { return publisher; }
     public void setPublisher(Publishers publisher) { this.publisher = publisher; }
-
-    public Authors getAuthor() { return author; }
-    public void setAuthor(Authors author) { this.author = author; }
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }

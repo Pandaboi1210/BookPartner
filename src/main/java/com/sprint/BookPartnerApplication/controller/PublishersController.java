@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/publishers")
+@RequestMapping("/api/v1/publishers") 
 public class PublishersController {
 
     @Autowired
@@ -22,7 +22,6 @@ public class PublishersController {
         return publishersService.createPublisher(publisher);
     }
 
-   
     @GetMapping
     public List<Publishers> getAllPublishers() {
         return publishersService.getAllPublishers();
@@ -38,7 +37,6 @@ public class PublishersController {
         return publishersService.updatePublisher(id, publisher);
     }
 
-
     @DeleteMapping("/{id}")
     public String deletePublisher(@PathVariable String id) {
         publishersService.deletePublisher(id);
@@ -49,7 +47,6 @@ public class PublishersController {
     public List<Title> getTitlesByPublisher(@PathVariable String id) {
         return publishersService.getTitlesByPublisher(id);
     }
-
 
     @GetMapping("/{id}/employees")
     public List<Employee> getEmployeesByPublisher(@PathVariable String id) {
