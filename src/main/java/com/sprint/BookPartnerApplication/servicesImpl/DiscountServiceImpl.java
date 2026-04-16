@@ -12,7 +12,7 @@ public class DiscountServiceImpl {
 
     private final DiscountRepository discountsRepository;
 
-    public DiscountService(DiscountRepository discountsRepository) {
+    public DiscountServiceImpl(DiscountRepository discountsRepository) {
         this.discountsRepository = discountsRepository;
     }
 

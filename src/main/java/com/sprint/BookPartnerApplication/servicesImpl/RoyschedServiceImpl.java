@@ -12,7 +12,7 @@ public class RoyschedServiceImpl {
 
     private final RoyschedRepository royschedRepository;
 
-    public RoyschedService(RoyschedRepository royschedRepository) {
+    public RoyschedServiceImpl(RoyschedRepository royschedRepository) {
         this.royschedRepository = royschedRepository;
     }
 
