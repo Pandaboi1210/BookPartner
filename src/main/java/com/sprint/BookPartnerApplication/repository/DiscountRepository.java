@@ -21,4 +21,6 @@ public interface DiscountRepository extends JpaRepository<Discounts, Integer> {
             @Param("storId") String storId
     );
 
+    
+
 }
