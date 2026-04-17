@@ -1,41 +1,49 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.request;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "titles")
-public class Title {
-
-    @Id
-    @Column(name = "title_id")
+public class TitleRequestDTO 
+{	
     @NotBlank(message = "Title ID is required")
+    @Size(max = 10, message = "Title ID cannot exceed 10 characters")
     private String titleId;
 
     @NotBlank(message = "Title cannot be blank")
+    @Size(max = 80, message = "Title cannot exceed 80 characters")
     private String title;
 
     @NotBlank(message = "Type is required")
+    @Size(max = 12, message = "Type cannot exceed 12 characters")
     private String type = "UNDECIDED";
 
-    @ManyToOne
-    @JoinColumn(name = "pub_id")
-    private Publishers publisher;
+    @Size(max = 4, message = "Publisher ID cannot exceed 4 characters")
+    private String pubId;
 
+    @PositiveOrZero(message = "Price cannot be negative")
     private Double price;
+
+    @PositiveOrZero(message = "Advance cannot be negative")
     private Double advance;
+
+    @PositiveOrZero(message = "Royalty percentage cannot be negative")
     private Integer royalty;
 
-    @Column(name = "ytd_sales")
+    @PositiveOrZero(message = "Year-to-date sales cannot be negative")
     private Integer ytdSales;
 
+    @Size(max = 200, message = "Notes cannot exceed 200 characters")
     private String notes;
 
     @NotNull(message = "Publication date is required")
     private LocalDateTime pubdate;
 
+    
+    
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
 
@@ -45,8 +53,8 @@ public class Title {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public Publishers getPublisher() { return publisher; }
-    public void setPublisher(Publishers publisher) { this.publisher = publisher; }
+    public String getPubId() { return pubId; }
+    public void setPubId(String pubId) { this.pubId = pubId; }
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }

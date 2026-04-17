@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+import com.sprint.BookPartnerApplication.dto.request.TitleRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.TitleResponseDTO;
 import com.sprint.BookPartnerApplication.entity.*;
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.InvalidInputException;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TitleServiceImpl implements TitleService 
@@ -32,65 +33,76 @@ public class TitleServiceImpl implements TitleService
     private RoyschedRepository royschedRepository; 
     
     @Override
-    public List<Title> getAllTitles() 
+    public List<TitleResponseDTO> getAllTitles() 
     { 
-        return titleRepository.findAll(); 
-    }
-
-    // FIXED: just return the Optional — let the caller handle empty.
-    // Throwing inside an Optional<> return type is contradictory.
-    @Override
-    public Optional<Title> getTitleById(String titleId) 
-    { 
-        return titleRepository.findById(titleId); 
+        return titleRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList(); 
     }
 
     @Override
-    public Title insertTitle(Title title) 
+    public TitleResponseDTO getTitleById(String titleId) 
+    { 
+        Title title = titleRepository.findById(titleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Title not found with ID: " + titleId));
+        return mapToResponseDTO(title);
+    }
+
+    @Override
+    public TitleResponseDTO insertTitle(TitleRequestDTO titleDTO) 
     {
-        if (title.getTitleId() != null && titleRepository.existsById(title.getTitleId())) {
-            throw new DuplicateResourceException("Title already exists with ID: " + title.getTitleId());
-        }
-
-        if (title.getPublisher() != null && title.getPublisher().getPubId() != null) 
+        if (titleDTO.getTitleId() != null && titleRepository.existsById(titleDTO.getTitleId())) 
         {
-            Publishers publisher = publishersRepository.findById(title.getPublisher().getPubId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + title.getPublisher().getPubId()));
+            throw new DuplicateResourceException("Title already exists with ID: " + titleDTO.getTitleId());
+        }
+        
+        Title title = new Title();
+        title.setTitleId(titleDTO.getTitleId());
+        title.setTitle(titleDTO.getTitle());
+        title.setType(titleDTO.getType());
+        title.setPrice(titleDTO.getPrice());
+        title.setAdvance(titleDTO.getAdvance());
+        title.setRoyalty(titleDTO.getRoyalty());
+        title.setYtdSales(titleDTO.getYtdSales());
+        title.setNotes(titleDTO.getNotes());
+        title.setPubdate(titleDTO.getPubdate());
+
+        if (titleDTO.getPubId() != null) 
+        {
+            Publishers publisher = publishersRepository.findById(titleDTO.getPubId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + titleDTO.getPubId()));
             title.setPublisher(publisher);
         }
-        return titleRepository.save(title);
+        
+        Title savedTitle = titleRepository.save(title);
+        return mapToResponseDTO(savedTitle);
     }
 
     @Override
-    public Title updateTitleById(String titleId, Title updatedTitle) 
+    public TitleResponseDTO updateTitleById(String titleId, TitleRequestDTO updatedTitleDTO) 
     {
         Title existingTitle = titleRepository.findById(titleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Title not found with ID: " + titleId));
         
-        existingTitle.setTitle(updatedTitle.getTitle());
-        existingTitle.setType(updatedTitle.getType());
-        existingTitle.setPrice(updatedTitle.getPrice());
-        existingTitle.setAdvance(updatedTitle.getAdvance());
-        existingTitle.setRoyalty(updatedTitle.getRoyalty());
-        existingTitle.setYtdSales(updatedTitle.getYtdSales());
-        existingTitle.setNotes(updatedTitle.getNotes());
-        existingTitle.setPubdate(updatedTitle.getPubdate());
+        existingTitle.setTitle(updatedTitleDTO.getTitle());
+        existingTitle.setType(updatedTitleDTO.getType());
+        existingTitle.setPrice(updatedTitleDTO.getPrice());
+        existingTitle.setAdvance(updatedTitleDTO.getAdvance());
+        existingTitle.setRoyalty(updatedTitleDTO.getRoyalty());
+        existingTitle.setYtdSales(updatedTitleDTO.getYtdSales());
+        existingTitle.setNotes(updatedTitleDTO.getNotes());
+        existingTitle.setPubdate(updatedTitleDTO.getPubdate());
         
-        if (updatedTitle.getPublisher() != null && updatedTitle.getPublisher().getPubId() != null) 
+        if (updatedTitleDTO.getPubId() != null) 
         {
-            Publishers publisher = publishersRepository.findById(updatedTitle.getPublisher().getPubId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + updatedTitle.getPublisher().getPubId()));
+            Publishers publisher = publishersRepository.findById(updatedTitleDTO.getPubId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + updatedTitleDTO.getPubId()));
             existingTitle.setPublisher(publisher);
         }
-        return titleRepository.save(existingTitle);
-    }
-
-    @Override
-    public void deleteTitle(Title title) 
-    { 
-        if (title != null && title.getTitleId() != null) {
-            deleteTitleById(title.getTitleId());
-        }
+        
+        Title savedTitle = titleRepository.save(existingTitle);
+        return mapToResponseDTO(savedTitle);
     }
 
     @Override
@@ -114,18 +126,20 @@ public class TitleServiceImpl implements TitleService
     }
 
     @Override
-    public List<Title> getTitlesByPublisher(String pubId) 
+    public List<TitleResponseDTO> getTitlesByPublisher(String pubId) 
     { 
         if (!publishersRepository.existsById(pubId)) {
             throw new ResourceNotFoundException("Publisher not found with ID: " + pubId);
         }
-        return titleRepository.findByPublisher_PubId(pubId); 
+        return titleRepository.findByPublisher_PubId(pubId)
+                .stream().map(this::mapToResponseDTO).toList(); 
     }
 
     @Override
-    public List<Title> getTitlesByType(String type) 
+    public List<TitleResponseDTO> getTitlesByType(String type) 
     { 
-        return titleRepository.findByType(type); 
+        return titleRepository.findByType(type)
+                .stream().map(this::mapToResponseDTO).toList(); 
     }
     
     @Override
@@ -139,12 +153,13 @@ public class TitleServiceImpl implements TitleService
     }
 
     @Override
-    public List<Title> getTitlesByPriceRange(Double minPrice, Double maxPrice) 
+    public List<TitleResponseDTO> getTitlesByPriceRange(Double minPrice, Double maxPrice) 
     {
         if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
             throw new InvalidInputException("Minimum price cannot be greater than maximum price.");
         }
-        return titleRepository.findByPriceBetween(minPrice, maxPrice);
+        return titleRepository.findByPriceBetween(minPrice, maxPrice)
+                .stream().map(this::mapToResponseDTO).toList();
     }
 
     @Override
@@ -163,5 +178,26 @@ public class TitleServiceImpl implements TitleService
             throw new ResourceNotFoundException("Title not found with ID: " + titleId);
         }
         return royschedRepository.findByTitle_TitleId(titleId);
+    }
+
+    private TitleResponseDTO mapToResponseDTO(Title title) 
+    {
+        TitleResponseDTO dto = new TitleResponseDTO();
+        dto.setTitleId(title.getTitleId());
+        dto.setTitle(title.getTitle());
+        dto.setType(title.getType());
+        dto.setPrice(title.getPrice());
+        dto.setAdvance(title.getAdvance());
+        dto.setRoyalty(title.getRoyalty());
+        dto.setYtdSales(title.getYtdSales());
+        dto.setNotes(title.getNotes());
+        dto.setPubdate(title.getPubdate());
+        
+        if (title.getPublisher() != null) {
+            dto.setPubId(title.getPublisher().getPubId());
+            dto.setPublisherName(title.getPublisher().getPubName());
+        }
+        
+        return dto;
     }
 }
