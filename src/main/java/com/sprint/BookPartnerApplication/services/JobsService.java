@@ -1,15 +1,17 @@
 package com.sprint.BookPartnerApplication.services;
 
 import java.util.List;
-import com.sprint.BookPartnerApplication.entity.Jobs;
+
+import com.sprint.BookPartnerApplication.dto.request.JobsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.JobsResponseDTO;
 
 public interface JobsService {
 
-    Jobs createJob(Jobs job);
+    JobsResponseDTO createJob(JobsRequestDTO dto);
 
-    List<Jobs> getAllJobs();
+    List<JobsResponseDTO> getAllJobs();
 
-    Jobs getJobById(Short jobId);
-    
-    Jobs updateJob(Short jobId, Jobs job);
+    JobsResponseDTO getJobById(Short jobId);
+
+    JobsResponseDTO updateJob(Short jobId, JobsRequestDTO dto);
 }

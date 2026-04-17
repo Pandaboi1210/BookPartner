@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid; // 🚨 Add this import
 
-import com.sprint.BookPartnerApplication.entity.Jobs;
+import jakarta.validation.Valid;
+
+import com.sprint.BookPartnerApplication.dto.request.JobsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.JobsResponseDTO;
 import com.sprint.BookPartnerApplication.services.JobsService;
 
 @RestController
@@ -16,26 +18,32 @@ public class JobController {
     @Autowired
     private JobsService service;
 
-    // POST 
+    //CREATE
     @PostMapping
-    public Jobs create(@Valid @RequestBody Jobs job) { 
-        return service.createJob(job);
+    public JobsResponseDTO create(
+            @Valid @RequestBody JobsRequestDTO dto) {
+
+        return service.createJob(dto);
     }
 
-    // GET 
+    // GET ALL
     @GetMapping
-    public List<Jobs> getAll() {
+    public List<JobsResponseDTO> getAll() {
         return service.getAllJobs();
     }
 
-    // GET 
+    // GET BY ID
     @GetMapping("/{jobId}")
-    public Jobs getById(@PathVariable Short jobId) {
+    public JobsResponseDTO getById(@PathVariable Short jobId) {
         return service.getJobById(jobId);
     }
-    
+
+    // UPDATE
     @PutMapping("/{jobId}")
-    public Jobs update(@PathVariable Short jobId, @Valid @RequestBody Jobs job) {
-        return service.updateJob(jobId, job);
+    public JobsResponseDTO update(
+            @PathVariable Short jobId,
+            @Valid @RequestBody JobsRequestDTO dto) {
+
+        return service.updateJob(jobId, dto);
     }
 }

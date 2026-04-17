@@ -1,16 +1,19 @@
 package com.sprint.BookPartnerApplication.services;
 import java.util.List;
+
+import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Employee;
 
 public interface EmployeeService {
 
-    Employee createEmployee(Employee emp);
+    EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto);
 
-    List<Employee> getAllEmployees();
+    List<EmployeeResponseDTO> getAllEmployees();
 
-    Employee getEmployeeById(String empId);
+    EmployeeResponseDTO getEmployeeById(String empId);
 
-    Employee updateEmployee(String empId, Employee emp);
+    EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto);
 
-    List<Employee> getEmployeesByPublisher(String publisherId);
+    List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId);
 }

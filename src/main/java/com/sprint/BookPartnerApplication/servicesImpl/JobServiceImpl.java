@@ -1,14 +1,15 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sprint.BookPartnerApplication.dto.request.JobsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.JobsResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Jobs;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
-import com.sprint.BookPartnerApplication.exception.InvalidInputException;
-import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
+import com.sprint.BookPartnerApplication.exception.JobsException;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import com.sprint.BookPartnerApplication.services.JobsService;
 
@@ -18,54 +19,70 @@ public class JobServiceImpl implements JobsService {
     @Autowired
     private JobsRepository repo;
 
+    // 🔥 CREATE
     @Override
-    public Jobs createJob(Jobs job) {
-        
-        // 🚨 400 BAD REQUEST: Business rule validation
-        if (job.getMinLvl() < 10 || job.getMaxLvl() > 250) {
-            throw new InvalidInputException("Job level must be between 10 and 250");
+    public JobsResponseDTO createJob(JobsRequestDTO dto) {
+
+        if (dto.getMinLvl() < 10 || dto.getMaxLvl() > 250) {
+            throw new JobsException("Job level must be between 10 and 250");
         }
 
-        // 🚨 409 CONFLICT: Check if the job description already exists!
-        if (repo.existsByJobDesc(job.getJobDesc())) {
-            throw new DuplicateResourceException("A job with the description '" + job.getJobDesc() + "' already exists.");
-        }
+        Jobs job = new Jobs();
+        job.setJobId(dto.getJobId());
+        job.setJobDesc(dto.getJobDesc());
+        job.setMinLvl(dto.getMinLvl());
+        job.setMaxLvl(dto.getMaxLvl());
 
-        //USING CUSTOM INSERT
-        repo.insertJob(job.getJobId(),
-                       job.getJobDesc(),
-                       job.getMinLvl(),
-                       job.getMaxLvl());
+        repo.save(job);
 
-        return job;
-    }
-    @Override
-    public List<Jobs> getAllJobs() {
-        return repo.findAll();
+        return mapToResponse(job);
     }
 
+    // 🔥 GET ALL
     @Override
-    public Jobs getJobById(Short jobId) {
-        // 🚨 404 NOT FOUND: Database lookup failure
-        return repo.findById(jobId)
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
+    public List<JobsResponseDTO> getAllJobs() {
+        return repo.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
+    // 🔥 GET BY ID
     @Override
-    public Jobs updateJob(Short jobId, Jobs job) {
+    public JobsResponseDTO getJobById(Short jobId) {
 
-        // This will automatically throw ResourceNotFoundException if missing!
-        Jobs existing = getJobById(jobId);
+        Jobs job = repo.findById(jobId)
+                .orElseThrow(() -> new JobsException("Job not found with id: " + jobId));
 
-        // 🚨 400 BAD REQUEST: We must re-validate the levels during an update too!
-        if (job.getMinLvl() < 10 || job.getMaxLvl() > 250) {
-            throw new InvalidInputException("Job level must be between 10 and 250");
-        }
+        return mapToResponse(job);
+    }
 
-        existing.setJobDesc(job.getJobDesc());
-        existing.setMinLvl(job.getMinLvl());
-        existing.setMaxLvl(job.getMaxLvl());
+    // 🔥 UPDATE
+    @Override
+    public JobsResponseDTO updateJob(Short jobId, JobsRequestDTO dto) {
 
-        return existing;
+        Jobs existing = repo.findById(jobId)
+                .orElseThrow(() -> new JobsException("Job not found"));
+
+        existing.setJobDesc(dto.getJobDesc());
+        existing.setMinLvl(dto.getMinLvl());
+        existing.setMaxLvl(dto.getMaxLvl());
+
+        repo.save(existing);
+
+        return mapToResponse(existing);
+    }
+
+    // 🔥 COMMON MAPPING
+    private JobsResponseDTO mapToResponse(Jobs job) {
+
+        JobsResponseDTO res = new JobsResponseDTO();
+
+        res.setJobId(job.getJobId());
+        res.setJobDesc(job.getJobDesc());
+        res.setMinLvl(job.getMinLvl());
+        res.setMaxLvl(job.getMaxLvl());
+
+        return res;
     }
 }

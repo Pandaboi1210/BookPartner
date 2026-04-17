@@ -1,22 +1,10 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.response;
 
-import jakarta.persistence.*;
+public class JobsResponseDTO {
 
-@Entity
-@Table(name = "jobs")
-public class Jobs {
-
-    @Id
-    @Column(name = "job_id")
     private Short jobId;
-
-    @Column(name = "job_desc")
     private String jobDesc;
-
-    @Column(name = "min_lvl")
     private int minLvl;
-
-    @Column(name = "max_lvl")
     private int maxLvl;
 
     // 🔹 Getters & Setters
