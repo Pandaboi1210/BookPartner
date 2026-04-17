@@ -7,10 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.Rollback;
+
 import com.sprint.BookPartnerApplication.entity.*;
 import com.sprint.BookPartnerApplication.services.*;
 
 @SpringBootTest
+@Transactional
+@Rollback(false)
 public class DataInsertAllTablesTest {
 
     @Autowired
@@ -46,7 +51,7 @@ public class DataInsertAllTablesTest {
         ---------- AUTHORS ----------
         */
         Authors author = new Authors();
-        author.setAuId("A001");
+        author.setAuId("123-45-6789");
         author.setAuFname("Raj");
         author.setAuLname("Kumar");
         author.setPhone("1234567890");
@@ -61,7 +66,7 @@ public class DataInsertAllTablesTest {
         ---------- PUBLISHERS ----------
         */
         Publishers publisher = new Publishers();
-        publisher.setPubId("P001");
+        publisher.setPubId("9952");
         publisher.setPubName("TechBooks");
         publisher.setCity("Chennai");
         publisher.setState("TN");
@@ -112,7 +117,7 @@ public class DataInsertAllTablesTest {
         employee.setFname("John");
         employee.setLname("Doe");
         employee.setJob(job);
-        employee.setPubId("P001");
+        employee.setPubId("9952");
         employee.setHireDate(LocalDateTime.now());
 
         employeeService.createEmployee(employee);

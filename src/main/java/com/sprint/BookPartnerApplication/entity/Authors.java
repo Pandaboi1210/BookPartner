@@ -1,7 +1,5 @@
 package com.sprint.BookPartnerApplication.entity;
 
-import java.util.List;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,19 +25,13 @@ public class Authors {
     private String auFname;
 
     private String phone = "UNKNOWN";
-
     private String address;
-
     private String city;
-
     private String state;
-
     private String zip;
-
     private int contract;
 
-    
-
+    // Getters & Setters
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
 
@@ -66,7 +58,4 @@ public class Authors {
 
     public int getContract() { return contract; }
     public void setContract(int contract) { this.contract = contract; }
-
-   
-  
 }

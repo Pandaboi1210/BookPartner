@@ -1,5 +1,3 @@
-
-    
 package com.sprint.BookPartnerApplication.repository;
 
 import com.sprint.BookPartnerApplication.entity.Authors;
@@ -14,10 +12,16 @@ import java.util.List;
 public interface AuthorsRepository extends JpaRepository<Authors, String> {
 
 
+
+
     List<Authors> findByAuFname(String auFname);
 
+
     
-    @Query("SELECT ta.title FROM TitleAuthor ta WHERE ta.auId = :authorId")
+   
+
+
+    @Query("SELECT ta.title FROM TitleAuthor ta WHERE ta.author.auId = :authorId")
 
     List<Title> getTitlesByAuthorId(@Param("authorId") String authorId);
 }
