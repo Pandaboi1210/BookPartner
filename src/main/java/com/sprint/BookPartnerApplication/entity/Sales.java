@@ -29,7 +29,6 @@ public class Sales {
     @Column(name = "ord_date", nullable = false)
     private LocalDateTime ordDate;
 
-    // primitive short cannot be null → no @NotNull needed
     @Column(name = "qty", nullable = false)
     private short qty;
 

@@ -3,19 +3,18 @@ package com.sprint.BookPartnerApplication.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "stores") 
+@Table(name = "stores")
 public class Store {
 
-	@Id
-	@NotBlank(message = "Store ID is required")
-	@JsonProperty("storId")
-	@Column(name = "stor_id", length = 4, nullable = false)
-	private String storId;
+    @Id
+    @NotBlank(message = "Store ID is required")
+    @JsonProperty("storId")
+    @Column(name = "stor_id", length = 4, nullable = false)
+    private String storId;
 
     @Column(name = "stor_name", length = 40)
     private String storName;
@@ -33,7 +32,7 @@ public class Store {
     private String zip;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore 
+    @JsonIgnore
     private List<Sales> sales;
 
     public String getStorId() { return storId; }
