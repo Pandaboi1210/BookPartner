@@ -1,23 +1,17 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
-import com.sprint.BookPartnerApplication.entity.Sales;
-import com.sprint.BookPartnerApplication.entity.Store;
-
 import java.util.List;
 
 public interface StoreService {
 
-    Store createStore(StoreRequestDTO dto);
-
-    List<Store> getAllStores();
-
-    Store getStoreById(String storeId);
-
-    Store updateStore(String storeId, StoreRequestDTO dto);
-
-    List<Sales> getSalesByStore(String storeId);
-
+    StoreResponseDTO createStore(StoreRequestDTO dto);
+    List<StoreResponseDTO> getAllStores();
+    StoreResponseDTO getStoreById(String storeId);
+    StoreResponseDTO updateStore(String storeId, StoreRequestDTO dto);
+    List<SalesResponseDTO> getSalesByStore(String storeId);
     List<Discounts> getDiscountsByStore(String storeId);
 }

@@ -1,6 +1,8 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
@@ -11,11 +13,11 @@ import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.services.StoreService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StoreServiceImpl implements StoreService {
@@ -29,7 +31,6 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     private DiscountRepository discountsRepository;
 
-    // ✅ DTO → Entity Mapping
     private Store mapToEntity(StoreRequestDTO dto) {
         Store store = new Store();
         store.setStorId(dto.getStorId());
@@ -41,49 +42,66 @@ public class StoreServiceImpl implements StoreService {
         return store;
     }
 
-    // ✅ CREATE
+    private StoreResponseDTO mapToResponseDTO(Store store) {
+        StoreResponseDTO dto = new StoreResponseDTO();
+        dto.setStorId(store.getStorId());
+        dto.setStorName(store.getStorName());
+        dto.setStorAddress(store.getStorAddress());
+        dto.setCity(store.getCity());
+        dto.setState(store.getState());
+        dto.setZip(store.getZip());
+
+        if (store.getSales() != null) {
+            dto.setTotalSales(store.getSales().size());
+        }
+
+        return dto;
+    }
+
     @Override
-    public Store createStore(StoreRequestDTO dto) {
+    public StoreResponseDTO createStore(StoreRequestDTO dto) {
 
         if (dto.getStorId() == null || dto.getStorId().isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
         }
 
         if (storeRepository.existsById(dto.getStorId())) {
-            throw new DuplicateResourceException(
-                    "Store already exists with ID: " + dto.getStorId());
+            throw new BadRequestException("Store already exists");
         }
 
-        Store store = mapToEntity(dto);
-        return storeRepository.save(store);
+        Store saved = storeRepository.save(mapToEntity(dto));
+        return mapToResponseDTO(saved);
     }
 
-    // ✅ GET ALL
     @Override
-    public List<Store> getAllStores() {
+    public List<StoreResponseDTO> getAllStores() {
         List<Store> stores = storeRepository.findAll();
+
         if (stores.isEmpty()) {
             throw new ResourceNotFoundException("No stores found");
         }
-        return stores;
+
+        return stores.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
     }
 
-    // ✅ GET BY ID
     @Override
-    public Store getStoreById(String storeId) {
+    public StoreResponseDTO getStoreById(String storeId) {
 
         if (storeId == null || storeId.isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
         }
 
-        return storeRepository.findById(storeId)
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + storeId));
+
+        return mapToResponseDTO(store);
     }
 
-    // ✅ UPDATE
     @Override
-    public Store updateStore(String storeId, StoreRequestDTO dto) {
+    public StoreResponseDTO updateStore(String storeId, StoreRequestDTO dto) {
 
         if (storeId == null || storeId.isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
@@ -99,12 +117,12 @@ public class StoreServiceImpl implements StoreService {
         existing.setState(dto.getState());
         existing.setZip(dto.getZip());
 
-        return storeRepository.save(existing);
+        Store updated = storeRepository.save(existing);
+        return mapToResponseDTO(updated);
     }
 
-    // ✅ GET SALES
     @Override
-    public List<Sales> getSalesByStore(String storeId) {
+    public List<SalesResponseDTO> getSalesByStore(String storeId) {
 
         if (storeId == null || storeId.isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
@@ -121,10 +139,18 @@ public class StoreServiceImpl implements StoreService {
                     "No sales found for store ID: " + storeId);
         }
 
-        return sales;
+        return sales.stream().map(s -> {
+            SalesResponseDTO dto = new SalesResponseDTO();
+            dto.setStorId(s.getStorId());
+            dto.setOrdNum(s.getOrdNum());
+            dto.setTitleId(s.getTitleId());
+            dto.setOrdDate(s.getOrdDate());
+            dto.setQty(s.getQty());
+            dto.setPayterms(s.getPayterms());
+            return dto;
+        }).toList();
     }
 
-    // ✅ GET DISCOUNTS
     @Override
     public List<Discounts> getDiscountsByStore(String storeId) {
 
@@ -136,8 +162,7 @@ public class StoreServiceImpl implements StoreService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + storeId));
 
-        List<Discounts> discounts =
-                discountsRepository.findDiscountsByStoreId(storeId);
+        List<Discounts> discounts = discountsRepository.findDiscountsByStoreId(storeId);
 
         if (discounts.isEmpty()) {
             throw new ResourceNotFoundException(
