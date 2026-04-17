@@ -1,27 +1,27 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.request;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "employee")
-public class Employee {
+public class EmployeeRequestDTO {
 
-    @Id
-    @Column(name = "emp_id")
+    @NotBlank(message = "Employee ID is required")
     private String empId;
 
+    @NotBlank(message = "First name is required")
     private String fname;
+
+    @NotBlank(message = "Last name is required")
     private String lname;
 
-    @Column(name = "job_lvl")
-    private int jobLvl;
+    @NotNull(message = "Job level is required")
+    private Integer jobLvl;
 
-    @Column(name = "pub_id")
+    @NotBlank(message = "Publisher ID is required")
     private String pubId;
 
-    @ManyToOne
-    @JoinColumn(name = "job_id")
-    private Jobs job;
+    @NotNull(message = "Job ID is required")
+    private Short jobId;
 
     // 🔹 Getters & Setters
 
@@ -49,11 +49,11 @@ public class Employee {
         this.lname = lname;
     }
 
-    public int getJobLvl() {
+    public Integer getJobLvl() {
         return jobLvl;
     }
 
-    public void setJobLvl(int jobLvl) {
+    public void setJobLvl(Integer jobLvl) {
         this.jobLvl = jobLvl;
     }
 
@@ -65,11 +65,11 @@ public class Employee {
         this.pubId = pubId;
     }
 
-    public Jobs getJob() {
-        return job;
+    public Short getJobId() {
+        return jobId;
     }
 
-    public void setJob(Jobs job) {
-        this.job = job;
+    public void setJobId(Short jobId) {
+        this.jobId = jobId;
     }
 }

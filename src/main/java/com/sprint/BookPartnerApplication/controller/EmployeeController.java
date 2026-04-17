@@ -1,12 +1,14 @@
 package com.sprint.BookPartnerApplication.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.sprint.BookPartnerApplication.entity.Employee;
+import jakarta.validation.Valid;
+
+import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
 import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @RestController
@@ -16,33 +18,42 @@ public class EmployeeController {
     @Autowired
     private EmployeeService service;
 
-    // POST /employees
+    // CREATE
     @PostMapping
-    public Employee create(@RequestBody Employee emp) {
-        return service.createEmployee(emp);
+    public EmployeeResponseDTO create(
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        return service.createEmployee(dto);
     }
 
-    // GET /employees
+    // GET ALL
     @GetMapping
-    public List<Employee> getAll() {
+    public List<EmployeeResponseDTO> getAll() {
         return service.getAllEmployees();
     }
 
-    // GET /employees/{employeeId}
+    // GET BY ID
     @GetMapping("/{employeeId}")
-    public Employee getById(@PathVariable String employeeId) {
+    public EmployeeResponseDTO getById(
+            @PathVariable String employeeId) {
+
         return service.getEmployeeById(employeeId);
     }
 
-    //Update
+    //UPDATE
     @PutMapping("/{employeeId}")
-    public Employee update(@PathVariable String employeeId, @RequestBody Employee emp) {
-        return service.updateEmployee(employeeId, emp);
+    public EmployeeResponseDTO update(
+            @PathVariable String employeeId,
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        return service.updateEmployee(employeeId, dto);
     }
 
-    // Custom method
+    // CUSTOM QUERY
     @GetMapping("/publisher/{publisherId}")
-    public List<Employee> getByPublisher(@PathVariable String publisherId) {
+    public List<EmployeeResponseDTO> getByPublisher(
+            @PathVariable String publisherId) {
+
         return service.getEmployeesByPublisher(publisherId);
     }
 }

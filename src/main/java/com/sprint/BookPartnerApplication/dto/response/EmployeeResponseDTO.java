@@ -1,27 +1,13 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.response;
 
-import jakarta.persistence.*;
+public class EmployeeResponseDTO {
 
-@Entity
-@Table(name = "employee")
-public class Employee {
-
-    @Id
-    @Column(name = "emp_id")
     private String empId;
-
     private String fname;
     private String lname;
-
-    @Column(name = "job_lvl")
     private int jobLvl;
-
-    @Column(name = "pub_id")
     private String pubId;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id")
-    private Jobs job;
+    private String jobDesc;
 
     // 🔹 Getters & Setters
 
@@ -65,11 +51,11 @@ public class Employee {
         this.pubId = pubId;
     }
 
-    public Jobs getJob() {
-        return job;
+    public String getJobDesc() {
+        return jobDesc;
     }
 
-    public void setJob(Jobs job) {
-        this.job = job;
+    public void setJobDesc(String jobDesc) {
+        this.jobDesc = jobDesc;
     }
 }

@@ -1,15 +1,16 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
-import com.sprint.BookPartnerApplication.exception.InvalidInputException;
-import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
+import com.sprint.BookPartnerApplication.exception.EmployeeException;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import com.sprint.BookPartnerApplication.repository.PublishersRepository;
@@ -27,86 +28,106 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private PublishersRepository pubRepo;
 
+    // 🔥 CREATE
     @Override
-    public Employee createEmployee(Employee emp) {
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto) {
 
-        if (emp.getEmpId() != null && empRepo.existsById(emp.getEmpId())) {
-            throw new DuplicateResourceException("Employee already exists with id: " + emp.getEmpId());
+        if (empRepo.existsById(dto.getEmpId())) {
+            throw new EmployeeException("Employee already exists with id: " + dto.getEmpId());
         }
 
-        Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
+        Jobs job = jobRepo.findById(dto.getJobId())
+                .orElseThrow(() -> new EmployeeException("Job not found"));
 
-        if (!pubRepo.existsById(emp.getPubId())) {
-            throw new ResourceNotFoundException("Publisher not found with id: " + emp.getPubId());
+        if (!pubRepo.existsById(dto.getPubId())) {
+            throw new EmployeeException("Publisher not found");
         }
 
-        // ADDED: jobLvl must be within the job's allowed range
-        if (emp.getJobLvl() != null
-                && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
-            throw new InvalidInputException("jobLvl " + emp.getJobLvl()
-                    + " is out of range for job '" + job.getJobDesc()
-                    + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
-        }
-
+        // DTO → Entity
+        Employee emp = new Employee();
+        emp.setEmpId(dto.getEmpId());
+        emp.setFname(dto.getFname());
+        emp.setLname(dto.getLname());
+        emp.setJobLvl(dto.getJobLvl());
+        emp.setPubId(dto.getPubId());
         emp.setJob(job);
 
-        // 🔥 USING CUSTOM INSERT
-        empRepo.insertEmployee(
-                emp.getEmpId(),
-                emp.getFname(),
-                emp.getLname(),
-                emp.getJobLvl(),
-                emp.getPubId(),
-                emp.getJob().getJobId()
-        );
+        empRepo.save(emp);
 
-        return emp;
+        // Entity → ResponseDTO
+        return mapToResponse(emp);
     }
 
+    // 🔥 GET ALL
     @Override
-    public List<Employee> getAllEmployees() {
-        return empRepo.findAll();
+    public List<EmployeeResponseDTO> getAllEmployees() {
+        return empRepo.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
+    // 🔥 GET BY ID
     @Override
-    public Employee getEmployeeById(String empId) {
-        return empRepo.findById(empId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + empId));
+    public EmployeeResponseDTO getEmployeeById(String empId) {
+
+        Employee emp = empRepo.findById(empId)
+                .orElseThrow(() -> new EmployeeException("Employee not found with id: " + empId));
+
+        return mapToResponse(emp);
     }
 
+    // 🔥 UPDATE
     @Override
-    public Employee updateEmployee(String empId, Employee emp) {
+    public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto) {
 
-        Employee existing = getEmployeeById(empId);
+        Employee existing = empRepo.findById(empId)
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
 
-        existing.setFname(emp.getFname());
-        existing.setLname(emp.getLname());
-        existing.setJobLvl(emp.getJobLvl());
+        existing.setFname(dto.getFname());
+        existing.setLname(dto.getLname());
+        existing.setJobLvl(dto.getJobLvl());
 
-        if (emp.getJob() != null) {
-            Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
-
-            // ADDED: same jobLvl range check on update too
-            if (emp.getJobLvl() != null
-                    && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
-                throw new InvalidInputException("jobLvl " + emp.getJobLvl()
-                        + " is out of range for job '" + job.getJobDesc()
-                        + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
-            }
-
+        if (dto.getJobId() != null) {
+            Jobs job = jobRepo.findById(dto.getJobId())
+                    .orElseThrow(() -> new EmployeeException("Job not found"));
             existing.setJob(job);
         }
 
-        return existing;
+        empRepo.save(existing);
+
+        return mapToResponse(existing);
     }
 
+    // 🔥 CUSTOM METHOD
     @Override
-    public List<Employee> getEmployeesByPublisher(String publisherId) {
-        if (!pubRepo.existsById(publisherId)) {
-            throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
-        }
-        return empRepo.findByPubId(publisherId);
+    public List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId) {
+
+        return empRepo.findByPubId(publisherId)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
+
+    // 🔥 COMMON MAPPING METHOD
+    private EmployeeResponseDTO mapToResponse(Employee emp) {
+
+        EmployeeResponseDTO res = new EmployeeResponseDTO();
+
+        res.setEmpId(emp.getEmpId());
+        res.setFname(emp.getFname());
+        res.setLname(emp.getLname());
+        res.setJobLvl(emp.getJobLvl());
+        res.setPubId(emp.getPubId());
+
+        if (emp.getJob() != null) {
+            res.setJobDesc(emp.getJob().getJobDesc());
+        }
+
+        return res;
+    }
+
+	
+
+	
 }
