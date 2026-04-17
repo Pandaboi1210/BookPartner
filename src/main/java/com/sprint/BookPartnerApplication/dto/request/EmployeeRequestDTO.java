@@ -20,10 +20,10 @@ public class EmployeeRequestDTO {
     @NotBlank(message = "Publisher ID is required")
     private String pubId;
 
-    @NotNull(message = "Job ID is required")
+    // 🔥 CHANGE HERE — remove @NotNull
     private Short jobId;
 
-    // 🔹 Getters & Setters
+    // Getters & Setters
 
     public String getEmpId() {
         return empId;
