@@ -1,28 +1,27 @@
-package com.sprint.BookPartnerApplication.dto.request;
+package com.sprint.BookPartnerApplication.dto.response;
 
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-public class DiscountRequestDTO {
+public class DiscountResponseDTO {
 
-    @Size(max = 40, message = "Discount type must not exceed 40 characters")
+    private Integer discountId;
     private String discounttype;
-
-    @PositiveOrZero(message = "Low quantity cannot be negative")
     private Integer lowqty;
-
-    @PositiveOrZero(message = "High quantity cannot be negative")
     private Integer highqty;
-
-    @DecimalMin(value = "0.00", message = "Discount must be greater than or equal to 0")
-    @DecimalMax(value = "99.99", message = "Discount cannot exceed 99.99")
-    @Digits(integer = 2, fraction = 2, message = "Discount must have up to 2 digits and 2 decimals")
     private BigDecimal discount;
-
-    @Size(min = 4, max = 4, message = "Store ID must be exactly 4 characters")
     private String storId;
+    private String storeName;
 
-    public DiscountRequestDTO() {}
+    public DiscountResponseDTO() {
+    }
+
+    public Integer getDiscountId() {
+        return discountId;
+    }
+
+    public void setDiscountId(Integer discountId) {
+        this.discountId = discountId;
+    }
 
     public String getDiscounttype() {
         return discounttype;
@@ -62,5 +61,13 @@ public class DiscountRequestDTO {
 
     public void setStorId(String storId) {
         this.storId = storId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }

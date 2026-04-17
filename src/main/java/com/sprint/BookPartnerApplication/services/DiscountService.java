@@ -1,16 +1,17 @@
 package com.sprint.BookPartnerApplication.services;
 
-import com.sprint.BookPartnerApplication.entity.Discounts;
+import com.sprint.BookPartnerApplication.dto.request.DiscountRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.DiscountResponseDTO;
 
 import java.util.List;
 
 public interface DiscountService {
 
-    List<Discounts> getAllDiscounts();
+    List<DiscountResponseDTO> getAllDiscounts();
 
-    Discounts createDiscount(Discounts discount);
+    DiscountResponseDTO createDiscount(DiscountRequestDTO requestDTO);
 
-    List<Discounts> getDiscountsByStore(String storeId);
+    List<DiscountResponseDTO> getDiscountsByStore(String storeId);
 
-    Discounts updateDiscountByType(String discountType, Discounts discount);
+    DiscountResponseDTO updateDiscountByType(String discountType, DiscountRequestDTO requestDTO);
 }

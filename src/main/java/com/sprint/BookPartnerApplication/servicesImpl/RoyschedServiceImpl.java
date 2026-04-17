@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+import com.sprint.BookPartnerApplication.dto.request.RoyschedRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.RoyschedResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Roysched;
 import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoyschedServiceImpl implements RoyschedService {
@@ -23,66 +26,95 @@ public class RoyschedServiceImpl implements RoyschedService {
     @Autowired
     private TitleRepository titleRepository;
 
+    // ── mapping helpers ──────────────────────────────────────────────────────
+
+    private RoyschedResponseDTO toResponse(Roysched r) {
+        RoyschedResponseDTO dto = new RoyschedResponseDTO();
+        dto.setRoyschedId(r.getRoyschedId());
+        dto.setLorange(r.getLorange());
+        dto.setHirange(r.getHirange());
+        dto.setRoyalty(r.getRoyalty());
+        if (r.getTitle() != null) {
+            dto.setTitleId(r.getTitle().getTitleId());
+            dto.setTitleName(r.getTitle().getTitle());
+        }
+        return dto;
+    }
+
+    // ── service methods ───────────────────────────────────────────────────────
+
     @Override
-    public Roysched createRoysched(Roysched roysched) {
-        
-        if (roysched.getTitle() == null || roysched.getTitle().getTitleId() == null || roysched.getTitle().getTitleId().isBlank()) {
+    public RoyschedResponseDTO createRoysched(RoyschedRequestDTO requestDTO) {
+
+        if (requestDTO.getTitleId() == null || requestDTO.getTitleId().isBlank()) {
             throw new BadRequestException("A valid Title ID is required to create a royalty schedule.");
         }
 
-        Title title = titleRepository.findById(roysched.getTitle().getTitleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Title not found with ID: " + roysched.getTitle().getTitleId()));
-        
-        roysched.setTitle(title);
+        Title title = titleRepository.findById(requestDTO.getTitleId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Title not found with ID: " + requestDTO.getTitleId()));
 
-        if (roysched.getLorange() != null && roysched.getHirange() != null) {
-            if (roysched.getLorange() > roysched.getHirange()) {
+        if (requestDTO.getLorange() != null && requestDTO.getHirange() != null) {
+            if (requestDTO.getLorange() > requestDTO.getHirange()) {
                 throw new InvalidInputException("Low range (lorange) cannot be greater than high range (hirange).");
             }
         }
 
         if (royschedRepository.existsRoyschedRange(
-                title.getTitleId(), roysched.getLorange(), roysched.getHirange())) {
-            throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for this title.");
+                title.getTitleId(),
+                requestDTO.getLorange(),
+                requestDTO.getHirange())) {
+
+            throw new DuplicateResourceException(
+                    "A royalty schedule with this exact low and high range already exists for this title.");
         }
 
-        return royschedRepository.save(roysched);
+        Roysched roysched = new Roysched();
+        roysched.setTitle(title);
+        roysched.setLorange(requestDTO.getLorange());
+        roysched.setHirange(requestDTO.getHirange());
+        roysched.setRoyalty(requestDTO.getRoyalty());
+
+        return toResponse(royschedRepository.save(roysched));
     }
 
     @Override
-    public List<Roysched> getRoyschedByTitle(String titleId) {
+    public List<RoyschedResponseDTO> getRoyschedByTitle(String titleId) {
         List<Roysched> schedules = royschedRepository.findByTitle_TitleId(titleId);
-        
+
         if (schedules.isEmpty()) {
             throw new ResourceNotFoundException("No royalty schedules found for title ID: " + titleId);
         }
-        return schedules;
+
+        return schedules.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Roysched updateRoysched(Integer royaltyId, Roysched royschedDetails) {
-        
-        Roysched roysched = royschedRepository.findById(royaltyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Royalty slab not found with id: " + royaltyId));
+    public RoyschedResponseDTO updateRoysched(Integer royaltyId, RoyschedRequestDTO requestDTO) {
 
-        if (royschedDetails.getLorange() != null && royschedDetails.getHirange() != null) {
-            if (royschedDetails.getLorange() > royschedDetails.getHirange()) {
+        Roysched roysched = royschedRepository.findById(royaltyId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Royalty slab not found with id: " + royaltyId));
+
+        if (requestDTO.getLorange() != null && requestDTO.getHirange() != null) {
+            if (requestDTO.getLorange() > requestDTO.getHirange()) {
                 throw new InvalidInputException("Low range (lorange) cannot be greater than high range (hirange).");
             }
         }
 
-        roysched.setLorange(royschedDetails.getLorange());
-        roysched.setHirange(royschedDetails.getHirange());
-        roysched.setRoyalty(royschedDetails.getRoyalty());
+        roysched.setLorange(requestDTO.getLorange());
+        roysched.setHirange(requestDTO.getHirange());
+        roysched.setRoyalty(requestDTO.getRoyalty());
 
-        // ADDED: update the title if a new one is provided
-        if (royschedDetails.getTitle() != null && royschedDetails.getTitle().getTitleId() != null) {
-            Title title = titleRepository.findById(royschedDetails.getTitle().getTitleId())
+        if (requestDTO.getTitleId() != null && !requestDTO.getTitleId().isBlank()) {
+            Title title = titleRepository.findById(requestDTO.getTitleId())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Title not found with ID: " + royschedDetails.getTitle().getTitleId()));
+                            "Title not found with ID: " + requestDTO.getTitleId()));
             roysched.setTitle(title);
         }
 
-        return royschedRepository.save(roysched);
+        return toResponse(royschedRepository.save(roysched));
     }
 }

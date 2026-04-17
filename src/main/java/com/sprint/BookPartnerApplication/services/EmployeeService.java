@@ -3,7 +3,6 @@ import java.util.List;
 
 import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
-import com.sprint.BookPartnerApplication.entity.Employee;
 
 public interface EmployeeService {
 

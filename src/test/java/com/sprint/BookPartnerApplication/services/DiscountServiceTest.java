@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.DiscountRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.DiscountResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.DiscountServiceImpl;
@@ -24,13 +26,29 @@ public class DiscountServiceTest {
     @InjectMocks
     private DiscountServiceImpl discountService;
 
+    private DiscountRequestDTO testDiscountRequestDTO;
+    private DiscountResponseDTO testDiscountResponseDTO;
     private Discounts testDiscount;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        // Test data - CREATE
+        // Test data - CREATE (RequestDTO)
+        testDiscountRequestDTO = new DiscountRequestDTO();
+        testDiscountRequestDTO.setDiscounttype("BULK");
+        testDiscountRequestDTO.setLowqty(10);
+        testDiscountRequestDTO.setHighqty(50);
+        testDiscountRequestDTO.setDiscount(new BigDecimal("15.00"));
+        
+        // Test data - Response DTO
+        testDiscountResponseDTO = new DiscountResponseDTO();
+        testDiscountResponseDTO.setDiscounttype("BULK");
+        testDiscountResponseDTO.setLowqty(10);
+        testDiscountResponseDTO.setHighqty(50);
+        testDiscountResponseDTO.setDiscount(new BigDecimal("15.00"));
+        
+        // Test data - Entity (for mocking repository)
         testDiscount = new Discounts();
         testDiscount.setDiscountId(1);
         testDiscount.setDiscounttype("BULK");
@@ -41,14 +59,14 @@ public class DiscountServiceTest {
 
     @Test
     public void testCreateDiscount() {
-        when(discountRepository.save(testDiscount)).thenReturn(testDiscount);
+        when(discountRepository.save(any(Discounts.class))).thenReturn(testDiscount);
         
-        Discounts result = discountService.createDiscount(testDiscount);
+        DiscountResponseDTO result = discountService.createDiscount(testDiscountRequestDTO);
         
         assertNotNull(result);
         assertEquals("BULK", result.getDiscounttype());
         assertEquals(new BigDecimal("15.00"), result.getDiscount());
-        verify(discountRepository, times(1)).save(testDiscount);
+        verify(discountRepository, times(1)).save(any(Discounts.class));
     }
 
     @Test
@@ -58,7 +76,7 @@ public class DiscountServiceTest {
         
         when(discountRepository.findAll()).thenReturn(discountsList);
         
-        List<Discounts> result = discountService.getAllDiscounts();
+        List<DiscountResponseDTO> result = discountService.getAllDiscounts();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -69,7 +87,15 @@ public class DiscountServiceTest {
     @Test
     public void testUpdateDiscountByType() {
         java.util.List<Discounts> discountsList = new ArrayList<>();
+        
+        DiscountRequestDTO updatedDiscountDTO = new DiscountRequestDTO();
+        updatedDiscountDTO.setDiscounttype("BULK");
+        updatedDiscountDTO.setLowqty(20);
+        updatedDiscountDTO.setHighqty(100);
+        updatedDiscountDTO.setDiscount(new BigDecimal("20.00"));
+        
         Discounts updatedDiscount = new Discounts();
+        updatedDiscount.setDiscountId(1);
         updatedDiscount.setDiscounttype("BULK");
         updatedDiscount.setLowqty(20);
         updatedDiscount.setHighqty(100);
@@ -79,7 +105,7 @@ public class DiscountServiceTest {
         when(discountRepository.findDiscountsByType("BULK")).thenReturn(discountsList);
         when(discountRepository.save(any(Discounts.class))).thenReturn(updatedDiscount);
         
-        Discounts result = discountService.updateDiscountByType("BULK", updatedDiscount);
+        DiscountResponseDTO result = discountService.updateDiscountByType("BULK", updatedDiscountDTO);
         
         assertNotNull(result);
         verify(discountRepository, times(1)).findDiscountsByType("BULK");

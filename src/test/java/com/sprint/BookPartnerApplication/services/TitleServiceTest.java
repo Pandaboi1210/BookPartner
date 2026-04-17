@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.TitleRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.TitleResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.TitleServiceImpl;
@@ -25,13 +27,39 @@ public class TitleServiceTest {
     @InjectMocks
     private TitleServiceImpl titleService;
 
+    private TitleRequestDTO testTitleRequestDTO;
+    private TitleResponseDTO testTitleResponseDTO;
     private Title testTitle;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        // Test data - CREATE (INSERT)
+        // Test data - CREATE (INSERT) - RequestDTO
+        testTitleRequestDTO = new TitleRequestDTO();
+        testTitleRequestDTO.setTitleId("TC1025");
+        testTitleRequestDTO.setTitle("The Busy Executive's Database Guide");
+        testTitleRequestDTO.setType("Business");
+        testTitleRequestDTO.setPubdate(LocalDateTime.now());
+        testTitleRequestDTO.setPrice(19.99);
+        testTitleRequestDTO.setAdvance(5000.00);
+        testTitleRequestDTO.setRoyalty(10);
+        testTitleRequestDTO.setYtdSales(4095);
+        testTitleRequestDTO.setNotes("An essential reference");
+        
+        // Test data - Response DTO
+        testTitleResponseDTO = new TitleResponseDTO();
+        testTitleResponseDTO.setTitleId("TC1025");
+        testTitleResponseDTO.setTitle("The Busy Executive's Database Guide");
+        testTitleResponseDTO.setType("Business");
+        testTitleResponseDTO.setPubdate(LocalDateTime.now());
+        testTitleResponseDTO.setPrice(19.99);
+        testTitleResponseDTO.setAdvance(5000.00);
+        testTitleResponseDTO.setRoyalty(10);
+        testTitleResponseDTO.setYtdSales(4095);
+        testTitleResponseDTO.setNotes("An essential reference");
+        
+        // Test data - Entity (for mocking repository)
         testTitle = new Title();
         testTitle.setTitleId("TC1025");
         testTitle.setTitle("The Busy Executive's Database Guide");
@@ -46,24 +74,24 @@ public class TitleServiceTest {
 
     @Test
     public void testInsertTitle() {
-        when(titleRepository.save(testTitle)).thenReturn(testTitle);
+        when(titleRepository.save(any(Title.class))).thenReturn(testTitle);
         
-        Title result = titleService.insertTitle(testTitle);
+        TitleResponseDTO result = titleService.insertTitle(testTitleRequestDTO);
         
         assertNotNull(result);
         assertEquals("TC1025", result.getTitleId());
         assertEquals("The Busy Executive's Database Guide", result.getTitle());
-        verify(titleRepository, times(1)).save(testTitle);
+        verify(titleRepository, times(1)).save(any(Title.class));
     }
 
     @Test
     public void testGetTitleById() {
         when(titleRepository.findById("TC1025")).thenReturn(Optional.of(testTitle));
         
-        Optional<Title> result = titleService.getTitleById("TC1025");
+        TitleResponseDTO result = titleService.getTitleById("TC1025");
         
-        assertTrue(result.isPresent());
-        assertEquals("TC1025", result.get().getTitleId());
+        assertNotNull(result);
+        assertEquals("TC1025", result.getTitleId());
         verify(titleRepository, times(1)).findById("TC1025");
     }
 
@@ -74,7 +102,7 @@ public class TitleServiceTest {
         
         when(titleRepository.findAll()).thenReturn(titleList);
         
-        List<Title> result = titleService.getAllTitles();
+        List<TitleResponseDTO> result = titleService.getAllTitles();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -83,16 +111,26 @@ public class TitleServiceTest {
 
     @Test
     public void testUpdateTitleById() {
+        TitleRequestDTO updatedTitleDTO = new TitleRequestDTO();
+        updatedTitleDTO.setTitleId("TC1025");
+        updatedTitleDTO.setTitle("Advanced Executive's Database Guide");
+        updatedTitleDTO.setType("Business");
+        updatedTitleDTO.setPrice(29.99);
+        updatedTitleDTO.setRoyalty(12);
+        updatedTitleDTO.setPubdate(LocalDateTime.now());
+
         Title updatedTitle = new Title();
         updatedTitle.setTitleId("TC1025");
         updatedTitle.setTitle("Advanced Executive's Database Guide");
+        updatedTitle.setType("Business");
         updatedTitle.setPrice(29.99);
         updatedTitle.setRoyalty(12);
+        updatedTitle.setPubdate(LocalDateTime.now());
 
         when(titleRepository.findById("TC1025")).thenReturn(Optional.of(testTitle));
         when(titleRepository.save(any(Title.class))).thenReturn(updatedTitle);
         
-        Title result = titleService.updateTitleById("TC1025", updatedTitle);
+        TitleResponseDTO result = titleService.updateTitleById("TC1025", updatedTitleDTO);
         
         assertNotNull(result);
         verify(titleRepository, times(1)).findById("TC1025");
@@ -106,7 +144,7 @@ public class TitleServiceTest {
         
         when(titleRepository.findByType("Business")).thenReturn(titleList);
         
-        List<Title> result = titleService.getTitlesByType("Business");
+        List<TitleResponseDTO> result = titleService.getTitlesByType("Business");
         
         assertNotNull(result);
         assertEquals(1, result.size());

@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.PublishersRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.PublishersResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Publishers;
 import com.sprint.BookPartnerApplication.repository.PublishersRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.PublisherServiceImpl;
@@ -23,13 +25,31 @@ public class PublisherServiceTest {
     @InjectMocks
     private PublisherServiceImpl publisherService;
 
+    private PublishersRequestDTO testPublisherRequestDTO;
+    private PublishersResponseDTO testPublisherResponseDTO;
     private Publishers testPublisher;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        // Test data - CREATE
+        // Test data - CREATE (RequestDTO)
+        testPublisherRequestDTO = new PublishersRequestDTO();
+        testPublisherRequestDTO.setPubId("0877");
+        testPublisherRequestDTO.setPubName("Tech Publishing House");
+        testPublisherRequestDTO.setCity("San Francisco");
+        testPublisherRequestDTO.setState("CA");
+        testPublisherRequestDTO.setCountry("USA");
+        
+        // Test data - Response DTO
+        testPublisherResponseDTO = new PublishersResponseDTO();
+        testPublisherResponseDTO.setPubId("0877");
+        testPublisherResponseDTO.setPubName("Tech Publishing House");
+        testPublisherResponseDTO.setCity("San Francisco");
+        testPublisherResponseDTO.setState("CA");
+        testPublisherResponseDTO.setCountry("USA");
+        
+        // Test data - Entity (for mocking repository)
         testPublisher = new Publishers();
         testPublisher.setPubId("0877");
         testPublisher.setPubName("Tech Publishing House");
@@ -40,21 +60,21 @@ public class PublisherServiceTest {
 
     @Test
     public void testCreatePublisher() {
-        when(publishersRepository.save(testPublisher)).thenReturn(testPublisher);
+        when(publishersRepository.save(any(Publishers.class))).thenReturn(testPublisher);
         
-        Publishers result = publisherService.createPublisher(testPublisher);
+        PublishersResponseDTO result = publisherService.createPublisher(testPublisherRequestDTO);
         
         assertNotNull(result);
         assertEquals("0877", result.getPubId());
         assertEquals("Tech Publishing House", result.getPubName());
-        verify(publishersRepository, times(1)).save(testPublisher);
+        verify(publishersRepository, times(1)).save(any(Publishers.class));
     }
 
     @Test
     public void testGetPublisherById() {
         when(publishersRepository.findById("0877")).thenReturn(java.util.Optional.of(testPublisher));
         
-        Publishers result = publisherService.getPublisherById("0877");
+        PublishersResponseDTO result = publisherService.getPublisherById("0877");
         
         assertNotNull(result);
         assertEquals("0877", result.getPubId());
@@ -68,7 +88,7 @@ public class PublisherServiceTest {
         
         when(publishersRepository.findAll()).thenReturn(publishersList);
         
-        List<Publishers> result = publisherService.getAllPublishers();
+        List<PublishersResponseDTO> result = publisherService.getAllPublishers();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -77,6 +97,13 @@ public class PublisherServiceTest {
 
     @Test
     public void testUpdatePublisher() {
+        PublishersRequestDTO updatedPublisherDTO = new PublishersRequestDTO();
+        updatedPublisherDTO.setPubId("0877");
+        updatedPublisherDTO.setPubName("Global Tech Publishing");
+        updatedPublisherDTO.setCity("New York");
+        updatedPublisherDTO.setState("NY");
+        updatedPublisherDTO.setCountry("USA");
+
         Publishers updatedPublisher = new Publishers();
         updatedPublisher.setPubId("0877");
         updatedPublisher.setPubName("Global Tech Publishing");
@@ -87,7 +114,7 @@ public class PublisherServiceTest {
         when(publishersRepository.findById("0877")).thenReturn(java.util.Optional.of(testPublisher));
         when(publishersRepository.save(any(Publishers.class))).thenReturn(updatedPublisher);
         
-        Publishers result = publisherService.updatePublisher("0877", updatedPublisher);
+        PublishersResponseDTO result = publisherService.updatePublisher("0877", updatedPublisherDTO);
         
         assertNotNull(result);
         verify(publishersRepository, times(1)).findById("0877");
@@ -96,10 +123,14 @@ public class PublisherServiceTest {
 
     @Test
     public void testDeletePublisher() {
-        doNothing().when(publishersRepository).deleteById("0877");
+        when(publishersRepository.findById("0877")).thenReturn(java.util.Optional.of(testPublisher));
+        when(publishersRepository.getEmployeesByPublisherId("0877")).thenReturn(new java.util.ArrayList<>());
+        when(publishersRepository.getTitlesByPublisherId("0877")).thenReturn(new java.util.ArrayList<>());
+        doNothing().when(publishersRepository).delete(testPublisher);
         
         publisherService.deletePublisher("0877");
         
-        verify(publishersRepository, times(1)).deleteById("0877");
+        verify(publishersRepository, times(1)).findById("0877");
+        verify(publishersRepository, times(1)).delete(testPublisher);
     }
 }

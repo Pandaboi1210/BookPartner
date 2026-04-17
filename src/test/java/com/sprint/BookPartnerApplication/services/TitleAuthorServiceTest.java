@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.TitleAuthorRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.TitleAuthorResponseDTO;
 import com.sprint.BookPartnerApplication.entity.TitleAuthor;
 import com.sprint.BookPartnerApplication.entity.TitleAuthorId;
 import com.sprint.BookPartnerApplication.repository.TitleAuthorRepository;
@@ -21,15 +23,23 @@ public class TitleAuthorServiceTest {
     @InjectMocks
     private TitleAuthorServiceImpl titleAuthorService;
 
+    private TitleAuthorRequestDTO testTitleAuthorRequestDTO;
     private TitleAuthor testTitleAuthor;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        // Test data - CREATE
+        // Test data - CREATE (RequestDTO)
+        testTitleAuthorRequestDTO = new TitleAuthorRequestDTO();
+        testTitleAuthorRequestDTO.setAuId("001-01-0001");
+        testTitleAuthorRequestDTO.setTitleId("TC1025");
+        testTitleAuthorRequestDTO.setAuOrd((byte) 1);
+        testTitleAuthorRequestDTO.setRoyaltyper(100);
+        
+        // Test data - Entity (for mocking repository)
         testTitleAuthor = new TitleAuthor();
-        testTitleAuthor.setAuId("A001");
+        testTitleAuthor.setAuId("001-01-0001");
         testTitleAuthor.setTitleId("TC1025");
         testTitleAuthor.setAuOrd((byte) 1);
         testTitleAuthor.setRoyaltyper(100);
@@ -37,27 +47,29 @@ public class TitleAuthorServiceTest {
 
     @Test
     public void testCreateTitleAuthor() {
-        when(titleAuthorRepository.save(testTitleAuthor)).thenReturn(testTitleAuthor);
+        when(titleAuthorRepository.save(any(TitleAuthor.class))).thenReturn(testTitleAuthor);
         
-        TitleAuthor result = titleAuthorService.createTitleAuthor(testTitleAuthor);
+        TitleAuthorResponseDTO result = titleAuthorService.createTitleAuthor(testTitleAuthorRequestDTO);
         
         assertNotNull(result);
-        assertEquals("A001", result.getAuId());
+        assertEquals("001-01-0001", result.getAuId());
         assertEquals("TC1025", result.getTitleId());
         assertEquals(100, result.getRoyaltyper());
-        verify(titleAuthorRepository, times(1)).save(testTitleAuthor);
+        verify(titleAuthorRepository, times(1)).save(any(TitleAuthor.class));
     }
 
     @Test
     public void testDeleteByAuthorAndTitle() {
         TitleAuthorId id = new TitleAuthorId();
-        id.setAuId("A001");
+        id.setAuId("001-01-0001");
         id.setTitleId("TC1025");
         
+        when(titleAuthorRepository.existsById(id)).thenReturn(true);
         doNothing().when(titleAuthorRepository).deleteById(id);
         
-        titleAuthorService.deleteByAuthorAndTitle("A001", "TC1025");
+        titleAuthorService.deleteByAuthorAndTitle("001-01-0001", "TC1025");
         
+        verify(titleAuthorRepository, times(1)).existsById(id);
         verify(titleAuthorRepository, times(1)).deleteById(id);
     }
 }

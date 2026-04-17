@@ -1,63 +1,111 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+import com.sprint.BookPartnerApplication.dto.request.DiscountRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.DiscountResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
+import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
+import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.services.DiscountService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DiscountServiceImpl implements DiscountService {
 
     private final DiscountRepository discountsRepository;
+    private final StoreRepository storeRepository;
 
-    public DiscountServiceImpl(DiscountRepository discountsRepository) {
+    public DiscountServiceImpl(DiscountRepository discountsRepository,
+                               StoreRepository storeRepository) {
         this.discountsRepository = discountsRepository;
+        this.storeRepository = storeRepository;
+    }
+
+    // ── mapping helpers ──────────────────────────────────────────────────────
+
+    private DiscountResponseDTO toResponse(Discounts d) {
+        DiscountResponseDTO dto = new DiscountResponseDTO();
+        dto.setDiscountId(d.getDiscountId());
+        dto.setDiscounttype(d.getDiscounttype());
+        dto.setLowqty(d.getLowqty());
+        dto.setHighqty(d.getHighqty());
+        dto.setDiscount(d.getDiscount());
+        if (d.getStore() != null) {
+            dto.setStorId(d.getStore().getStorId());
+            dto.setStoreName(d.getStore().getStorName());
+        }
+        return dto;
+    }
+
+    private Store resolveStore(String storId) {
+        if (storId == null || storId.isBlank()) return null;
+        return storeRepository.findById(storId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storId));
+    }
+
+    // ── service methods ───────────────────────────────────────────────────────
+
+    @Override
+    public List<DiscountResponseDTO> getAllDiscounts() {
+        return discountsRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Discounts> getAllDiscounts() {
-        return discountsRepository.findAll();
-    }
+    public DiscountResponseDTO createDiscount(DiscountRequestDTO requestDTO) {
 
-    @Override
-    public Discounts createDiscount(Discounts discount) {
-        if (discount.getDiscounttype() != null && discount.getStore() != null) {
-            List<Discounts> existing = discountsRepository.findDiscountsByType(discount.getDiscounttype());
+        // Block duplicate type for the SAME store
+        if (requestDTO.getDiscounttype() != null && requestDTO.getStorId() != null) {
+            List<Discounts> existing = discountsRepository.findDiscountsByType(requestDTO.getDiscounttype());
             boolean sameStoreExists = existing.stream()
                     .anyMatch(d -> d.getStore() != null
-                            && d.getStore().getStorId().equals(discount.getStore().getStorId()));
+                            && d.getStore().getStorId().equals(requestDTO.getStorId()));
             if (sameStoreExists) {
-                throw new DuplicateResourceException("Discount type '" + discount.getDiscounttype()
+                throw new DuplicateResourceException("Discount type '" + requestDTO.getDiscounttype()
                         + "' already exists for this store.");
             }
         }
-        return discountsRepository.save(discount);
+
+        Discounts discount = new Discounts();
+        discount.setDiscounttype(requestDTO.getDiscounttype());
+        discount.setLowqty(requestDTO.getLowqty());
+        discount.setHighqty(requestDTO.getHighqty());
+        discount.setDiscount(requestDTO.getDiscount());
+        discount.setStore(resolveStore(requestDTO.getStorId()));
+
+        return toResponse(discountsRepository.save(discount));
     }
 
     @Override
-    public List<Discounts> getDiscountsByStore(String storeId) {
-        
-        return discountsRepository.findDiscountsByStoreId(storeId);
+    public List<DiscountResponseDTO> getDiscountsByStore(String storeId) {
+        return discountsRepository.findDiscountsByStoreId(storeId)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Discounts updateDiscountByType(String discountType, Discounts discountDetails) {
-        
+    public DiscountResponseDTO updateDiscountByType(String discountType, DiscountRequestDTO requestDTO) {
+
         Discounts discount = discountsRepository.findDiscountsByType(discountType)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Discount not found for type: " + discountType));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Discount not found for type: " + discountType));
 
-        discount.setDiscounttype(discountDetails.getDiscounttype());
-        discount.setLowqty(discountDetails.getLowqty());
-        discount.setHighqty(discountDetails.getHighqty());
-        discount.setDiscount(discountDetails.getDiscount());
-        discount.setStore(discountDetails.getStore());
+        discount.setDiscounttype(requestDTO.getDiscounttype());
+        discount.setLowqty(requestDTO.getLowqty());
+        discount.setHighqty(requestDTO.getHighqty());
+        discount.setDiscount(requestDTO.getDiscount());
+        discount.setStore(resolveStore(requestDTO.getStorId()));
 
-        return discountsRepository.save(discount);
+        return toResponse(discountsRepository.save(discount));
     }
 }
