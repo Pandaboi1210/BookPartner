@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
+import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
+import com.sprint.BookPartnerApplication.exception.ResourceInUseException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.entity.Authors;
 import com.sprint.BookPartnerApplication.entity.Title;
@@ -17,26 +19,26 @@ public class AuthorsServiceImpl implements AuthorsService {
     @Autowired
     private AuthorsRepository authorRepository;
 
-    // ✅ Get all authors
     @Override
     public List<Authors> getAllAuthors() {
         return authorRepository.findAll();
     }
 
-    // ✅ Get author by ID
     @Override
     public Authors getAuthorById(String id) {
         return authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
     }
 
-    // ✅ Create author
     @Override
-    public Authors createAuthor(Authors author) {
+    public Authors createAuthor(Authors author) 
+    {
+        if (author.getAuId() != null && authorRepository.existsById(author.getAuId())) {
+            throw new DuplicateResourceException("Author already exists with ID: " + author.getAuId());
+        }
         return authorRepository.save(author);
     }
-
-    // ✅ Update author (FIXED - using exception)
+    
     @Override
     public Authors updateAuthor(String authorId, Authors author) {
         Authors existing = authorRepository.findById(authorId)
@@ -51,18 +53,23 @@ public class AuthorsServiceImpl implements AuthorsService {
         return authorRepository.save(existing);
     }
 
-    // ✅ Delete author
     @Override
     public void deleteAuthor(String id) {
         Authors author = authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
+        List<Title> linkedTitles = authorRepository.getTitlesByAuthorId(id);
+        if (linkedTitles != null && !linkedTitles.isEmpty()) {
+            throw new ResourceInUseException("Cannot delete author. Author is currently assigned to one or more titles.");
+        }
 
         authorRepository.delete(author);
     }
 
-    // ✅ Get titles by author
     @Override
     public List<Title> getTitlesByAuthor(String authorId) {
+        if (!authorRepository.existsById(authorId)) {
+            throw new ResourceNotFoundException("Author not found with id: " + authorId);
+        }
         return authorRepository.getTitlesByAuthorId(authorId);
     }
 }

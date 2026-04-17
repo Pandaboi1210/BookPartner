@@ -4,6 +4,7 @@ import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
+import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
@@ -32,10 +33,13 @@ public class StoreServiceImpl implements StoreService {
         if (store.getStorId() == null || store.getStorId().isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
         }
+        
+        // 🚨 409 CONFLICT: Swapped BadRequestException for DuplicateResourceException
         if (storeRepository.existsById(store.getStorId())) {
-            throw new BadRequestException(
+            throw new DuplicateResourceException(
                 "Store already exists with ID: " + store.getStorId());
         }
+        
         return storeRepository.save(store);
     }
 

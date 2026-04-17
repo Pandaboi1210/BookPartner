@@ -17,8 +17,6 @@ public class Store {
 	@Column(name = "stor_id", length = 4, nullable = false)
 	private String storId;
 
-
-    // nullable = true in DB → no validation annotation
     @Column(name = "stor_name", length = 40)
     private String storName;
 

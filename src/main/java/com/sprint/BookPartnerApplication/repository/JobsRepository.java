@@ -8,7 +8,7 @@ import com.sprint.BookPartnerApplication.entity.Jobs;
 public interface JobsRepository extends JpaRepository<Jobs, Short> {
 
 	List<Jobs> findByMinLvlLessThanEqualAndMaxLvlGreaterThanEqual(int level, int level2);
-
+	boolean existsByJobDesc(String jobDesc);
 	
 
 }
