@@ -1,15 +1,18 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
 import com.sprint.BookPartnerApplication.entity.Publishers;
+import com.sprint.BookPartnerApplication.entity.Title;
+import com.sprint.BookPartnerApplication.entity.Employee;
+
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceInUseException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 
-import com.sprint.BookPartnerApplication.entity.Title;
-import com.sprint.BookPartnerApplication.entity.Employee;
-
 import com.sprint.BookPartnerApplication.repository.PublishersRepository;
 import com.sprint.BookPartnerApplication.services.PublisherService;
+
+import com.sprint.BookPartnerApplication.dto.request.PublishersRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.PublishersResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,90 +26,114 @@ public class PublisherServiceImpl implements PublisherService {
     private PublishersRepository publisherRepository;
 
     @Override
-    public List<Publishers> getAllPublishers() {
-        return publisherRepository.findAll();
+    public List<PublishersResponseDTO> getAllPublishers() {
+        return publisherRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-    @Override
-    public Publishers getPublisherById(String id) {
-        return publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
-    }
     
     @Override
-    public Publishers createPublisher(Publishers publisher) {
-        // 🚨 409 CONFLICT: Prevent duplicating an existing publisher ID
-        if (publisher.getPubId() != null && publisherRepository.existsById(publisher.getPubId())) {
-            throw new DuplicateResourceException("Publisher already exists with ID: " + publisher.getPubId());
-        }
-        return publisherRepository.save(publisher);
-    }
-
-    @Override
-    public Publishers updatePublisher(String id, Publishers publisher) {
-        // 🚨 404 NOT FOUND: Replaced the 'return null' logic for much safer error handling
-        Publishers existing = publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
-
-        existing.setPubName(publisher.getPubName());
-        return publisherRepository.save(existing);
-    }
-
-    @Override
-    public void deletePublisher(String id) {
+    public PublishersResponseDTO getPublisherById(String id) {
         Publishers publisher = publisherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
 
-        // 🚨 400 BAD REQUEST: Check if employees are still attached!
-        if (hasEmployees(id)) {
-            throw new ResourceInUseException("Cannot delete publisher. It currently has assigned employees.");
+        return mapToDTO(publisher);
+    }
+
+ 
+    @Override
+    public PublishersResponseDTO createPublisher(PublishersRequestDTO dto) {
+
+        if (dto.getPubId() != null && publisherRepository.existsById(dto.getPubId())) {
+            throw new DuplicateResourceException("Publisher already exists with ID: " + dto.getPubId());
         }
-        
-        // 🚨 400 BAD REQUEST: Check if books are still attached!
-        List<Title> titles = getTitlesByPublisher(id);
+
+        Publishers publisher = new Publishers();
+        publisher.setPubId(dto.getPubId());
+        publisher.setPubName(dto.getPubName());
+        publisher.setCity(dto.getCity());
+        publisher.setState(dto.getState());
+        publisher.setCountry(dto.getCountry());
+
+        Publishers saved = publisherRepository.save(publisher);
+
+        return mapToDTO(saved);
+    }
+
+    @Override
+    public PublishersResponseDTO updatePublisher(String id, PublishersRequestDTO dto) {
+
+        Publishers existing = publisherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+
+        existing.setPubName(dto.getPubName());
+        existing.setCity(dto.getCity());
+        existing.setState(dto.getState());
+        existing.setCountry(dto.getCountry());
+
+        Publishers updated = publisherRepository.save(existing);
+
+        return mapToDTO(updated);
+    }
+
+ 
+    @Override
+    public void deletePublisher(String id) {
+
+        Publishers publisher = publisherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+
+       
+        if (hasEmployees(id)) {
+            throw new ResourceInUseException("Cannot delete publisher. It has employees.");
+        }
+
+        // check titles
+        List<Title> titles = publisherRepository.getTitlesByPublisherId(id);
         if (titles != null && !titles.isEmpty()) {
-            throw new ResourceInUseException("Cannot delete publisher. It currently has published titles.");
+            throw new ResourceInUseException("Cannot delete publisher. It has titles.");
         }
 
         publisherRepository.delete(publisher);
     }
-    
+
+   
     @Override
     public List<Title> getTitlesByPublisher(String publisherId) {
-        // Ensure publisher exists before checking for their titles
-        if (!existsPublisher(publisherId)) {
+        if (!publisherRepository.existsById(publisherId)) {
             throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
         }
         return publisherRepository.getTitlesByPublisherId(publisherId);
     }
 
+    
     @Override
     public List<Employee> getEmployeesByPublisher(String publisherId) {
-        // Ensure publisher exists before checking for their employees
-        if (!existsPublisher(publisherId)) {
+        if (!publisherRepository.existsById(publisherId)) {
             throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
         }
         return publisherRepository.getEmployeesByPublisherId(publisherId);
     }
 
-    @Override
-    public boolean existsPublisher(String id) {
-        return publisherRepository.existsById(id);
-    }
 
-    @Override
-    public long countPublishers() {
-        return publisherRepository.count();
-    }
-
-    @Override
-    public List<Publishers> findPublishersByName(String name) {
-        return publisherRepository.findByPubName(name);
-    }
-
-    @Override
     public boolean hasEmployees(String publisherId) {
         List<Employee> employees = publisherRepository.getEmployeesByPublisherId(publisherId);
         return employees != null && !employees.isEmpty();
+    }
+
+    
+    private PublishersResponseDTO mapToDTO(Publishers publisher) {
+
+        PublishersResponseDTO dto = new PublishersResponseDTO();
+
+        dto.setPubId(publisher.getPubId());
+        dto.setPubName(publisher.getPubName());
+        dto.setCity(publisher.getCity());
+        dto.setState(publisher.getState());
+        dto.setCountry(publisher.getCountry());
+
+        return dto;
     }
 }
