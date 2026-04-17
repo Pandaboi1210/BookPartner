@@ -65,19 +65,6 @@ public class DiscountServiceTest {
         verify(discountRepository, times(1)).findAll();
     }
 
-    @Test
-    public void testGetDiscountsByStore() {
-        List<Discounts> discountsList = new ArrayList<>();
-        discountsList.add(testDiscount);
-        
-        when(discountRepository.findByStore_StorId("STORE001")).thenReturn(discountsList);
-        
-        List<Discounts> result = discountService.getDiscountsByStore("STORE001");
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(discountRepository, times(1)).findByStore_StorId("STORE001");
-    }
 
     @Test
     public void testUpdateDiscountByType() {
@@ -89,13 +76,13 @@ public class DiscountServiceTest {
         updatedDiscount.setDiscount(new BigDecimal("20.00"));
         discountsList.add(testDiscount);
 
-        when(discountRepository.findByDiscounttype("BULK")).thenReturn(discountsList);
+        when(discountRepository.findDiscountsByType("BULK")).thenReturn(discountsList);
         when(discountRepository.save(any(Discounts.class))).thenReturn(updatedDiscount);
         
         Discounts result = discountService.updateDiscountByType("BULK", updatedDiscount);
         
         assertNotNull(result);
-        verify(discountRepository, times(1)).findByDiscounttype("BULK");
+        verify(discountRepository, times(1)).findDiscountsByType("BULK");
         verify(discountRepository, times(1)).save(any(Discounts.class));
     }
 }

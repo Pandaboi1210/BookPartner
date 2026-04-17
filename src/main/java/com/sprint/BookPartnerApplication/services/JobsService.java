@@ -10,7 +10,6 @@ public interface JobsService {
     List<Jobs> getAllJobs();
 
     Jobs getJobById(Short jobId);
-
-  
+    
     Jobs updateJob(Short jobId, Jobs job);
 }

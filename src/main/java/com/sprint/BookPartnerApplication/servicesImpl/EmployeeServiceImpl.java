@@ -50,7 +50,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         emp.setJob(job);
-        return empRepo.save(emp);
+
+        // 🔥 USING CUSTOM INSERT
+        empRepo.insertEmployee(
+                emp.getEmpId(),
+                emp.getFname(),
+                emp.getLname(),
+                emp.getJobLvl(),
+                emp.getPubId(),
+                emp.getJob().getJobId()
+        );
+
+        return emp;
     }
 
     @Override
@@ -88,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             existing.setJob(job);
         }
 
-        return empRepo.save(existing);
+        return existing;
     }
 
     @Override

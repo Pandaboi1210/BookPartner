@@ -41,7 +41,7 @@ public class RoyschedServiceImpl implements RoyschedService {
             }
         }
 
-        if (royschedRepository.existsByTitle_TitleIdAndLorangeAndHirange(
+        if (royschedRepository.existsRoyschedRange(
                 title.getTitleId(), roysched.getLorange(), roysched.getHirange())) {
             throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for this title.");
         }
