@@ -3,7 +3,7 @@ package com.sprint.BookPartnerApplication.servicesImpl;
 import com.sprint.BookPartnerApplication.entity.Roysched;
 import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException; // 🚨 Added import
+import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.InvalidInputException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.RoyschedRepository;
@@ -41,7 +41,6 @@ public class RoyschedServiceImpl implements RoyschedService {
             }
         }
 
-        // 🚨 409 CONFLICT: Prevent duplicate royalty ranges for the same book!
         if (royschedRepository.existsByTitle_TitleIdAndLorangeAndHirange(
                 title.getTitleId(), roysched.getLorange(), roysched.getHirange())) {
             throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for this title.");
@@ -75,6 +74,14 @@ public class RoyschedServiceImpl implements RoyschedService {
         roysched.setLorange(royschedDetails.getLorange());
         roysched.setHirange(royschedDetails.getHirange());
         roysched.setRoyalty(royschedDetails.getRoyalty());
+
+        // ADDED: update the title if a new one is provided
+        if (royschedDetails.getTitle() != null && royschedDetails.getTitle().getTitleId() != null) {
+            Title title = titleRepository.findById(royschedDetails.getTitle().getTitleId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Title not found with ID: " + royschedDetails.getTitle().getTitleId()));
+            roysched.setTitle(title);
+        }
 
         return royschedRepository.save(roysched);
     }

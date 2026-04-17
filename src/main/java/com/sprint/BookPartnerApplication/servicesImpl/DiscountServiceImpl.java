@@ -25,11 +25,16 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Discounts createDiscount(Discounts discount) {
-        // Prevent creating duplicate discount types
-        if (discount.getDiscounttype() != null) {
+        // FIXED: only block duplicate type for the SAME store.
+        // The same discount type (e.g. "Volume Discount") is valid across different stores.
+        if (discount.getDiscounttype() != null && discount.getStore() != null) {
             List<Discounts> existing = discountsRepository.findByDiscounttype(discount.getDiscounttype());
-            if (existing != null && !existing.isEmpty()) {
-                throw new DuplicateResourceException("A discount already exists with type: " + discount.getDiscounttype());
+            boolean sameStoreExists = existing.stream()
+                    .anyMatch(d -> d.getStore() != null
+                            && d.getStore().getStorId().equals(discount.getStore().getStorId()));
+            if (sameStoreExists) {
+                throw new DuplicateResourceException("Discount type '" + discount.getDiscounttype()
+                        + "' already exists for this store.");
             }
         }
         return discountsRepository.save(discount);
@@ -42,7 +47,6 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Discounts updateDiscountByType(String discountType, Discounts discountDetails) {
-        // 🚨 Replaced the generic RuntimeException with your custom ResourceNotFoundException
         Discounts discount = discountsRepository.findByDiscounttype(discountType)
                 .stream()
                 .findFirst()

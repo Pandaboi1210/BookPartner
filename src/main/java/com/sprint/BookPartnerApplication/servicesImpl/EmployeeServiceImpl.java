@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
+import com.sprint.BookPartnerApplication.exception.InvalidInputException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
@@ -29,18 +30,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(Employee emp) {
 
-        // 🚨 409 CONFLICT: Employee already exists
         if (emp.getEmpId() != null && empRepo.existsById(emp.getEmpId())) {
             throw new DuplicateResourceException("Employee already exists with id: " + emp.getEmpId());
         }
 
-        // 🚨 404 NOT FOUND: Job doesn't exist
         Jobs job = jobRepo.findById(emp.getJob().getJobId())
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
 
-        // 🚨 404 NOT FOUND: Publisher doesn't exist
         if (!pubRepo.existsById(emp.getPubId())) {
             throw new ResourceNotFoundException("Publisher not found with id: " + emp.getPubId());
+        }
+
+        // ADDED: jobLvl must be within the job's allowed range
+        if (emp.getJobLvl() != null
+                && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
+            throw new InvalidInputException("jobLvl " + emp.getJobLvl()
+                    + " is out of range for job '" + job.getJobDesc()
+                    + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
         }
 
         emp.setJob(job);
@@ -54,7 +60,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee getEmployeeById(String empId) {
-        // 🚨 404 NOT FOUND
         return empRepo.findById(empId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + empId));
     }
@@ -62,7 +67,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee updateEmployee(String empId, Employee emp) {
 
-        // This automatically throws ResourceNotFoundException if missing!
         Employee existing = getEmployeeById(empId);
 
         existing.setFname(emp.getFname());
@@ -70,9 +74,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         existing.setJobLvl(emp.getJobLvl());
 
         if (emp.getJob() != null) {
-            // 🚨 404 NOT FOUND
             Jobs job = jobRepo.findById(emp.getJob().getJobId())
                     .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
+
+            // ADDED: same jobLvl range check on update too
+            if (emp.getJobLvl() != null
+                    && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
+                throw new InvalidInputException("jobLvl " + emp.getJobLvl()
+                        + " is out of range for job '" + job.getJobDesc()
+                        + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
+            }
+
             existing.setJob(job);
         }
 
@@ -81,7 +93,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> getEmployeesByPublisher(String publisherId) {
-        // Extra safeguard: Check if publisher exists first
         if (!pubRepo.existsById(publisherId)) {
             throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
         }

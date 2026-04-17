@@ -37,25 +37,21 @@ public class TitleServiceImpl implements TitleService
         return titleRepository.findAll(); 
     }
 
+    // FIXED: just return the Optional — let the caller handle empty.
+    // Throwing inside an Optional<> return type is contradictory.
     @Override
     public Optional<Title> getTitleById(String titleId) 
     { 
-        // 🚨 404 NOT FOUND: Verify existence before returning
-        if (!titleRepository.existsById(titleId)) {
-            throw new ResourceNotFoundException("Title not found with ID: " + titleId);
-        }
         return titleRepository.findById(titleId); 
     }
 
     @Override
     public Title insertTitle(Title title) 
     {
-        // 🚨 409 CONFLICT: Prevent overwriting existing titles
         if (title.getTitleId() != null && titleRepository.existsById(title.getTitleId())) {
             throw new DuplicateResourceException("Title already exists with ID: " + title.getTitleId());
         }
 
-        // 🚨 404 NOT FOUND: Ensure publisher actually exists
         if (title.getPublisher() != null && title.getPublisher().getPubId() != null) 
         {
             Publishers publisher = publishersRepository.findById(title.getPublisher().getPubId())
@@ -80,7 +76,6 @@ public class TitleServiceImpl implements TitleService
         existingTitle.setNotes(updatedTitle.getNotes());
         existingTitle.setPubdate(updatedTitle.getPubdate());
         
-        // 🚨 404 NOT FOUND: Ensure publisher actually exists during updates
         if (updatedTitle.getPublisher() != null && updatedTitle.getPublisher().getPubId() != null) 
         {
             Publishers publisher = publishersRepository.findById(updatedTitle.getPublisher().getPubId())
@@ -94,7 +89,7 @@ public class TitleServiceImpl implements TitleService
     public void deleteTitle(Title title) 
     { 
         if (title != null && title.getTitleId() != null) {
-            deleteTitleById(title.getTitleId()); // Route to our safe deletion method below
+            deleteTitleById(title.getTitleId());
         }
     }
 
@@ -105,7 +100,6 @@ public class TitleServiceImpl implements TitleService
             throw new ResourceNotFoundException("Title not found with ID: " + titleId);
         }
 
-        // 🚨 400 BAD REQUEST / CONFLICT: Check all foreign key constraints before deleting!
         if (!titleAuthorRepository.findByTitle_TitleId(titleId).isEmpty()) {
             throw new ResourceInUseException("Cannot delete Title. It has assigned authors.");
         }
@@ -147,7 +141,6 @@ public class TitleServiceImpl implements TitleService
     @Override
     public List<Title> getTitlesByPriceRange(Double minPrice, Double maxPrice) 
     {
-        // 🚨 400 BAD REQUEST: Business validation rule
         if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
             throw new InvalidInputException("Minimum price cannot be greater than maximum price.");
         }
