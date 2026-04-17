@@ -1,25 +1,22 @@
 package com.sprint.BookPartnerApplication.services;
 
-import com.sprint.BookPartnerApplication.entity.Authors;
+import com.sprint.BookPartnerApplication.dto.request.AuthorsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.AuthorsResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Title;
 
 import java.util.List;
 
 public interface AuthorsService {
 
+    List<AuthorsResponseDTO> getAllAuthors();
 
-    List<Authors> getAllAuthors();
+    AuthorsResponseDTO getAuthorById(String id);
 
-    Authors getAuthorById(String authorId);
+    AuthorsResponseDTO createAuthor(AuthorsRequestDTO dto);
 
- 
-    Authors createAuthor(Authors author);
+    AuthorsResponseDTO updateAuthor(String id, AuthorsRequestDTO dto);
 
-    
-    Authors updateAuthor(String authorId, Authors author);
-
-    
-    List<Title> getTitlesByAuthor(String authorId);
-    
     void deleteAuthor(String id);
+
+    List<Title> getTitlesByAuthor(String authorId);
 }
