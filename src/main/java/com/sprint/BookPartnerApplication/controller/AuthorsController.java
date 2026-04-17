@@ -26,8 +26,11 @@ public class AuthorsController {
 
   
     @GetMapping
-    public List<AuthorsResponseDTO> getAllAuthors() {
-        return authorsService.getAllAuthors();
+    public List<AuthorsResponseDTO> getAllAuthors(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) Integer contract) {
+        return authorsService.getAuthorsByFilter(city, state, contract);
     }
 
   

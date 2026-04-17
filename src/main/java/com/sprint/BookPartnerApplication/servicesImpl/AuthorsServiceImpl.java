@@ -30,6 +30,14 @@ public class AuthorsServiceImpl implements AuthorsService {
                 .toList();
     }
 
+    @Override
+    public List<AuthorsResponseDTO> getAuthorsByFilter(String city, String state, Integer contract) {
+        if (city != null)     return authorRepository.findByCity(city).stream().map(this::mapToDTO).toList();
+        if (state != null)    return authorRepository.findByState(state).stream().map(this::mapToDTO).toList();
+        if (contract != null) return authorRepository.findByContract(contract).stream().map(this::mapToDTO).toList();
+        return getAllAuthors();
+    }
+
   
     @Override
     public AuthorsResponseDTO getAuthorById(String id) {

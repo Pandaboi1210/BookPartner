@@ -10,6 +10,8 @@ public interface AuthorsService {
 
     List<AuthorsResponseDTO> getAllAuthors();
 
+    List<AuthorsResponseDTO> getAuthorsByFilter(String city, String state, Integer contract);
+
     AuthorsResponseDTO getAuthorById(String id);
 
     AuthorsResponseDTO createAuthor(AuthorsRequestDTO dto);

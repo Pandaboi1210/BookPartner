@@ -11,17 +11,12 @@ import java.util.List;
 
 public interface AuthorsRepository extends JpaRepository<Authors, String> {
 
+    List<Authors> findByCity(String city);
 
+    List<Authors> findByState(String state);
 
-
-    List<Authors> findByAuFname(String auFname);
-
-
-    
-   
-
+    List<Authors> findByContract(Integer contract);
 
     @Query("SELECT ta.title FROM TitleAuthor ta WHERE ta.author.auId = :authorId")
-
     List<Title> getTitlesByAuthorId(@Param("authorId") String authorId);
 }
