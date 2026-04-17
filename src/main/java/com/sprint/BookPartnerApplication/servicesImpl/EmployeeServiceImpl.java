@@ -28,12 +28,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private PublishersRepository pubRepo;
 
-    //CREATE
     @Override
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto) {
 
         if (empRepo.existsById(dto.getEmpId())) {
-            throw new EmployeeException("Employee already exists with id: " + dto.getEmpId());
+            throw new EmployeeException("Employee already exists");
         }
 
         Jobs job = jobRepo.findById(dto.getJobId())
@@ -43,10 +42,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeException("Publisher not found");
         }
 
-        // DTO → Entity
         Employee emp = new Employee();
         emp.setEmpId(dto.getEmpId());
         emp.setFname(dto.getFname());
+        emp.setMinit(dto.getMinit());
         emp.setLname(dto.getLname());
         emp.setJobLvl(dto.getJobLvl());
         emp.setPubId(dto.getPubId());
@@ -54,11 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         empRepo.save(emp);
 
-        
         return mapToResponse(emp);
     }
 
-    //GET ALL
     @Override
     public List<EmployeeResponseDTO> getAllEmployees() {
         return empRepo.findAll()
@@ -67,39 +64,37 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    //GET BY ID
     @Override
     public EmployeeResponseDTO getEmployeeById(String empId) {
 
         Employee emp = empRepo.findById(empId)
-                .orElseThrow(() -> new EmployeeException("Employee not found with id: " + empId));
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
 
         return mapToResponse(emp);
     }
 
-    //UPDATE
     @Override
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto) {
 
-        Employee existing = empRepo.findById(empId)
+        Employee emp = empRepo.findById(empId)
                 .orElseThrow(() -> new EmployeeException("Employee not found"));
 
-        existing.setFname(dto.getFname());
-        existing.setLname(dto.getLname());
-        existing.setJobLvl(dto.getJobLvl());
+        emp.setFname(dto.getFname());
+        emp.setMinit(dto.getMinit());
+        emp.setLname(dto.getLname());
+        emp.setJobLvl(dto.getJobLvl());
 
         if (dto.getJobId() != null) {
             Jobs job = jobRepo.findById(dto.getJobId())
                     .orElseThrow(() -> new EmployeeException("Job not found"));
-            existing.setJob(job);
+            emp.setJob(job);
         }
 
-        empRepo.save(existing);
+        empRepo.save(emp);
 
-        return mapToResponse(existing);
+        return mapToResponse(emp);
     }
 
-    // CUSTOM METHOD
     @Override
     public List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId) {
 
@@ -109,13 +104,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    // COMMON MAPPING METHOD
     private EmployeeResponseDTO mapToResponse(Employee emp) {
 
         EmployeeResponseDTO res = new EmployeeResponseDTO();
 
         res.setEmpId(emp.getEmpId());
         res.setFname(emp.getFname());
+        res.setMinit(emp.getMinit());
         res.setLname(emp.getLname());
         res.setJobLvl(emp.getJobLvl());
         res.setPubId(emp.getPubId());
@@ -124,10 +119,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             res.setJobDesc(emp.getJob().getJobDesc());
         }
 
+        res.setHireDate(emp.getHireDate());
+
         return res;
     }
-
-	
-
-	
 }

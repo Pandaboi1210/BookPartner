@@ -5,71 +5,46 @@ import jakarta.validation.constraints.NotNull;
 
 public class EmployeeRequestDTO {
 
-    @NotBlank(message = "Employee ID is required")
+    @NotBlank
     private String empId;
 
-    @NotBlank(message = "First name is required")
+    @NotBlank
     private String fname;
 
-    @NotBlank(message = "Last name is required")
+    private String minit;   // optional
+
+    @NotBlank
     private String lname;
 
-    @NotNull(message = "Job level is required")
+    @NotNull
     private Integer jobLvl;
 
-    @NotBlank(message = "Publisher ID is required")
+    @NotBlank
     private String pubId;
 
-    @NotNull(message = "Job ID is required")
+    @NotNull
     private Short jobId;
 
-    // 🔹 Getters & Setters
+    // Getters & Setters
 
-    public String getEmpId() {
-        return empId;
-    }
+    public String getEmpId() { return empId; }
+    public void setEmpId(String empId) { this.empId = empId; }
 
-    public void setEmpId(String empId) {
-        this.empId = empId;
-    }
+    public String getFname() { return fname; }
+    public void setFname(String fname) { this.fname = fname; }
 
-    public String getFname() {
-        return fname;
-    }
+    public String getMinit() { return minit; }
+    public void setMinit(String minit) { this.minit = minit; }
 
-    public void setFname(String fname) {
-        this.fname = fname;
-    }
+    public String getLname() { return lname; }
+    public void setLname(String lname) { this.lname = lname; }
 
-    public String getLname() {
-        return lname;
-    }
+    public Integer getJobLvl() { return jobLvl; }
+    public void setJobLvl(Integer jobLvl) { this.jobLvl = jobLvl; }
 
-    public void setLname(String lname) {
-        this.lname = lname;
-    }
+    public String getPubId() { return pubId; }
+    public void setPubId(String pubId) { this.pubId = pubId; }
 
-    public Integer getJobLvl() {
-        return jobLvl;
-    }
-
-    public void setJobLvl(Integer jobLvl) {
-        this.jobLvl = jobLvl;
-    }
-
-    public String getPubId() {
-        return pubId;
-    }
-
-    public void setPubId(String pubId) {
-        this.pubId = pubId;
-    }
-
-    public Short getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(Short jobId) {
-        this.jobId = jobId;
-    }
+    public Short getJobId() { return jobId; }
+    public void setJobId(Short jobId) { this.jobId = jobId; }
 }
