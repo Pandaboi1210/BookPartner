@@ -1,40 +1,23 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.response;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "titles")
-public class Title {
+public class TitleResponseDTO {
 
-    @Id
-    @Column(name = "title_id")
-    @NotBlank(message = "Title ID is required")
     private String titleId;
-
-    @NotBlank(message = "Title cannot be blank")
     private String title;
-
-    @NotBlank(message = "Type is required")
-    private String type = "UNDECIDED";
-
-    @ManyToOne
-    @JoinColumn(name = "pub_id")
-    private Publishers publisher;
-
+    private String type;
     private Double price;
     private Double advance;
     private Integer royalty;
-
-    @Column(name = "ytd_sales")
     private Integer ytdSales;
-
     private String notes;
-
-    @NotNull(message = "Publication date is required")
     private LocalDateTime pubdate;
+   
+    private String pubId;
+    private String publisherName;
+
+    // --- Getters & Setters ---
 
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
@@ -44,9 +27,6 @@ public class Title {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-
-    public Publishers getPublisher() { return publisher; }
-    public void setPublisher(Publishers publisher) { this.publisher = publisher; }
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
@@ -65,4 +45,10 @@ public class Title {
 
     public LocalDateTime getPubdate() { return pubdate; }
     public void setPubdate(LocalDateTime pubdate) { this.pubdate = pubdate; }
+
+    public String getPubId() { return pubId; }
+    public void setPubId(String pubId) { this.pubId = pubId; }
+
+    public String getPublisherName() { return publisherName; }
+    public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
 }
