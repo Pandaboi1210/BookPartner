@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.controller;
 
 import com.sprint.BookPartnerApplication.dto.request.SalesRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.services.SalesService;
 import jakarta.validation.Valid;
@@ -19,40 +20,30 @@ public class SalesController {
     @Autowired
     private SalesService salesService;
 
-    // POST /api/v1/sales
     @PostMapping
-    public ResponseEntity<Sales> createSale(@Valid @RequestBody SalesRequestDTO dto) {
-        Sales created = salesService.createSale(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<SalesResponseDTO> createSale(@Valid @RequestBody SalesRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(salesService.createSale(dto));
     }
 
-    // GET /api/v1/sales
     @GetMapping
-    public ResponseEntity<List<Sales>> getAllSales() {
-        List<Sales> sales = salesService.getAllSales();
-        return ResponseEntity.ok(sales);
+    public ResponseEntity<List<SalesResponseDTO>> getAllSales() {
+        return ResponseEntity.ok(salesService.getAllSales());
     }
 
-    // GET /api/v1/sales/store/{storeId}
     @GetMapping("/store/{storeId}")
-    public ResponseEntity<List<Sales>> getSalesByStore(@PathVariable String storeId) {
-        List<Sales> sales = salesService.getSalesByStore(storeId);
-        return ResponseEntity.ok(sales);
+    public ResponseEntity<List<SalesResponseDTO>> getSalesByStore(@PathVariable String storeId) {
+        return ResponseEntity.ok(salesService.getSalesByStore(storeId));
     }
 
-    // GET /api/v1/sales/title/{titleId}
     @GetMapping("/title/{titleId}")
-    public ResponseEntity<List<Sales>> getSalesByTitle(@PathVariable String titleId) {
-        List<Sales> sales = salesService.getSalesByTitle(titleId);
-        return ResponseEntity.ok(sales);
+    public ResponseEntity<List<SalesResponseDTO>> getSalesByTitle(@PathVariable String titleId) {
+        return ResponseEntity.ok(salesService.getSalesByTitle(titleId));
     }
 
-    // GET /api/v1/sales/date-range?from=&to=
     @GetMapping("/date-range")
-    public ResponseEntity<List<Sales>> getSalesByDateRange(
+    public ResponseEntity<List<SalesResponseDTO>> getSalesByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
-        List<Sales> sales = salesService.getSalesByDateRange(from, to);
-        return ResponseEntity.ok(sales);
+        return ResponseEntity.ok(salesService.getSalesByDateRange(from, to));
     }
 }
