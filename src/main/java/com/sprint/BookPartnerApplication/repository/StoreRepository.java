@@ -10,13 +10,6 @@ import java.util.List;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, String> 
 {
-	// ✅ 1. Get stores by city
-    @Query("SELECT s FROM Store s WHERE s.city = :city")
-    List<Store> findByCity(String city);
-
-    // ✅ 2. Get stores by state
-    @Query("SELECT s FROM Store s WHERE s.state = :state")
-    List<Store> findByState(String state);
 	
 	
 }
