@@ -7,7 +7,7 @@ public class JobsResponseDTO {
     private int minLvl;
     private int maxLvl;
 
-    // 🔹 Getters & Setters
+    //Getters & Setters
 
     public Short getJobId() {
         return jobId;

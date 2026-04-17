@@ -28,7 +28,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private PublishersRepository pubRepo;
 
-    // 🔥 CREATE
+    //CREATE
     @Override
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto) {
 
@@ -54,11 +54,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         empRepo.save(emp);
 
-        // Entity → ResponseDTO
+        
         return mapToResponse(emp);
     }
 
-    // 🔥 GET ALL
+    //GET ALL
     @Override
     public List<EmployeeResponseDTO> getAllEmployees() {
         return empRepo.findAll()
@@ -67,7 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    // 🔥 GET BY ID
+    //GET BY ID
     @Override
     public EmployeeResponseDTO getEmployeeById(String empId) {
 
@@ -77,7 +77,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return mapToResponse(emp);
     }
 
-    // 🔥 UPDATE
+    //UPDATE
     @Override
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto) {
 
@@ -99,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return mapToResponse(existing);
     }
 
-    // 🔥 CUSTOM METHOD
+    // CUSTOM METHOD
     @Override
     public List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId) {
 
@@ -109,7 +109,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    // 🔥 COMMON MAPPING METHOD
+    // COMMON MAPPING METHOD
     private EmployeeResponseDTO mapToResponse(Employee emp) {
 
         EmployeeResponseDTO res = new EmployeeResponseDTO();
