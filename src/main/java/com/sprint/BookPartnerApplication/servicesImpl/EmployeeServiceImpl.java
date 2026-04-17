@@ -40,7 +40,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         emp.setJob(job);
-        return empRepo.save(emp);
+
+        // 🔥 USING CUSTOM INSERT
+        empRepo.insertEmployee(
+                emp.getEmpId(),
+                emp.getFname(),
+                emp.getLname(),
+                emp.getJobLvl(),
+                emp.getPubId(),
+                emp.getJob().getJobId()
+        );
+
+        return emp;
     }
 
     @Override
@@ -59,17 +70,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee existing = getEmployeeById(empId);
 
-        existing.setFname(emp.getFname());
-        existing.setLname(emp.getLname());
-        existing.setJobLvl(emp.getJobLvl());
+        // 🔥 USING CUSTOM UPDATE
+        empRepo.updateEmployeeQuery(
+                empId,
+                emp.getFname(),
+                emp.getLname(),
+                emp.getJobLvl()
+        );
 
-        if (emp.getJob() != null) {
-            Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                    .orElseThrow(() -> new EmployeeException("Job not found"));
-            existing.setJob(job);
-        }
-
-        return empRepo.save(existing);
+        return existing;
     }
 
     @Override

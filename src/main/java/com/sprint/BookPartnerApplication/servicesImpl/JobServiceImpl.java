@@ -1,6 +1,5 @@
 package com.sprint.BookPartnerApplication.servicesImpl;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,13 @@ public class JobServiceImpl implements JobsService {
             throw new JobsException("Job level must be between 10 and 250");
         }
 
-        return repo.save(job);
+        //USING CUSTOM INSERT
+        repo.insertJob(job.getJobId(),
+                       job.getJobDesc(),
+                       job.getMinLvl(),
+                       job.getMaxLvl());
+
+        return job;
     }
 
     @Override
@@ -43,10 +48,12 @@ public class JobServiceImpl implements JobsService {
 
         Jobs existing = getJobById(jobId);
 
-        existing.setJobDesc(job.getJobDesc());
-        existing.setMinLvl(job.getMinLvl());
-        existing.setMaxLvl(job.getMaxLvl());
+        //USING CUSTOM UPDATE
+        repo.updateJobQuery(jobId,
+                            job.getJobDesc(),
+                            job.getMinLvl(),
+                            job.getMaxLvl());
 
-        return repo.save(existing);
+        return existing;
     }
 }
