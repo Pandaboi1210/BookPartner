@@ -22,7 +22,11 @@ public class EmployeeRequestDTO {
     @NotBlank
     private String pubId;
 
+<<<<<<< HEAD
     @NotNull
+=======
+    // 🔥 CHANGE HERE — remove @NotNull
+>>>>>>> 4e7b7031e4d06b4436aeceab8a248e21dd8cf887
     private Short jobId;
 
     // Getters & Setters
