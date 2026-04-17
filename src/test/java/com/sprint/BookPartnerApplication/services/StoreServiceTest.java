@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
 import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.StoreServiceImpl;
@@ -25,7 +26,7 @@ public class StoreServiceTest {
     private StoreServiceImpl storeService;
 
     private StoreRequestDTO testStoreRequestDTO;
-    private Store testStore;
+    private Store testStoreEntity;
 
     @BeforeEach
     public void setUp() {
@@ -40,21 +41,21 @@ public class StoreServiceTest {
         testStoreRequestDTO.setState("CA");
         testStoreRequestDTO.setZip("90001");
         
-        // Test data - Entity (for mocking repository)
-        testStore = new Store();
-        testStore.setStorId("7066");
-        testStore.setStorName("Bookbeat");
-        testStore.setStorAddress("679 E. Hastings");
-        testStore.setCity("Los Angeles");
-        testStore.setState("CA");
-        testStore.setZip("90001");
+        // Test data - Entity (what repository returns)
+        testStoreEntity = new Store();
+        testStoreEntity.setStorId("7066");
+        testStoreEntity.setStorName("Bookbeat");
+        testStoreEntity.setStorAddress("679 E. Hastings");
+        testStoreEntity.setCity("Los Angeles");
+        testStoreEntity.setState("CA");
+        testStoreEntity.setZip("90001");
     }
 
     @Test
     public void testCreateStore() {
-        when(storeRepository.save(any(Store.class))).thenReturn(testStore);
+        when(storeRepository.save(any(Store.class))).thenReturn(testStoreEntity);
         
-        Store result = storeService.createStore(testStoreRequestDTO);
+        StoreResponseDTO result = storeService.createStore(testStoreRequestDTO);
         
         assertNotNull(result);
         assertEquals("7066", result.getStorId());
@@ -64,9 +65,9 @@ public class StoreServiceTest {
 
     @Test
     public void testGetStoreById() {
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStore));
+        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
         
-        Store result = storeService.getStoreById("7066");
+        StoreResponseDTO result = storeService.getStoreById("7066");
         
         assertNotNull(result);
         assertEquals("7066", result.getStorId());
@@ -76,11 +77,11 @@ public class StoreServiceTest {
     @Test
     public void testGetAllStores() {
         List<Store> storeList = new ArrayList<>();
-        storeList.add(testStore);
+        storeList.add(testStoreEntity);
         
         when(storeRepository.findAll()).thenReturn(storeList);
         
-        List<Store> result = storeService.getAllStores();
+        List<StoreResponseDTO> result = storeService.getAllStores();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -97,18 +98,18 @@ public class StoreServiceTest {
         updatedStoreDTO.setState("IL");
         updatedStoreDTO.setZip("60601");
         
-        Store updatedStore = new Store();
-        updatedStore.setStorId("7066");
-        updatedStore.setStorName("Bookbeat Central");
-        updatedStore.setStorAddress("456 Central Ave");
-        updatedStore.setCity("Chicago");
-        updatedStore.setState("IL");
-        updatedStore.setZip("60601");
+        Store updatedStoreEntity = new Store();
+        updatedStoreEntity.setStorId("7066");
+        updatedStoreEntity.setStorName("Bookbeat Central");
+        updatedStoreEntity.setStorAddress("456 Central Ave");
+        updatedStoreEntity.setCity("Chicago");
+        updatedStoreEntity.setState("IL");
+        updatedStoreEntity.setZip("60601");
 
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStore));
-        when(storeRepository.save(any(Store.class))).thenReturn(updatedStore);
+        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
+        when(storeRepository.save(any(Store.class))).thenReturn(updatedStoreEntity);
         
-        Store result = storeService.updateStore("7066", updatedStoreDTO);
+        StoreResponseDTO result = storeService.updateStore("7066", updatedStoreDTO);
         
         assertNotNull(result);
         verify(storeRepository, times(1)).findById("7066");

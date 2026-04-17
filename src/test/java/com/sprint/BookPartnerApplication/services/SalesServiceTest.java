@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
 import com.sprint.BookPartnerApplication.dto.request.SalesRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
@@ -35,7 +36,8 @@ public class SalesServiceTest {
     private SalesServiceImpl salesService;
 
     private SalesRequestDTO testSalesRequestDTO;
-    private Sales testSales;
+    private Sales testSalesEntity;
+    private Store testStoreEntity;
 
     @BeforeEach
     public void setUp() {
@@ -50,25 +52,28 @@ public class SalesServiceTest {
         testSalesRequestDTO.setQty((short) 75);
         testSalesRequestDTO.setPayterms("Net 30");
         
-        // Test data - Entity (for mocking repository)
-        testSales = new Sales();
-        testSales.setStorId("7066");
-        testSales.setOrdNum("QA879.1");
-        testSales.setTitleId("TC1025");
-        testSales.setOrdDate(LocalDateTime.now());
-        testSales.setQty((short) 75);
-        testSales.setPayterms("Net 30");
+        // Test data - Entity (what repository returns)
+        testSalesEntity = new Sales();
+        testSalesEntity.setStorId("7066");
+        testSalesEntity.setOrdNum("QA879.1");
+        testSalesEntity.setTitleId("TC1025");
+        testSalesEntity.setOrdDate(LocalDateTime.now());
+        testSalesEntity.setQty((short) 75);
+        testSalesEntity.setPayterms("Net 30");
+        
+        // Test Store entity
+        testStoreEntity = new Store();
+        testStoreEntity.setStorId("7066");
+        testStoreEntity.setStorName("Bookbeat");
     }
 
     @Test
     public void testCreateSale() {
-        Store store = new Store();
-        store.setStorId("7066");
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(store));
+        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
         when(titleRepository.existsById("TC1025")).thenReturn(true);
-        when(salesRepository.save(any(Sales.class))).thenReturn(testSales);
+        when(salesRepository.save(any(Sales.class))).thenReturn(testSalesEntity);
         
-        Sales result = salesService.createSale(testSalesRequestDTO);
+        SalesResponseDTO result = salesService.createSale(testSalesRequestDTO);
         
         assertNotNull(result);
         assertEquals("7066", result.getStorId());
@@ -79,11 +84,11 @@ public class SalesServiceTest {
     @Test
     public void testGetAllSales() {
         List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSales);
+        salesList.add(testSalesEntity);
         
         when(salesRepository.findAll()).thenReturn(salesList);
         
-        List<Sales> result = salesService.getAllSales();
+        List<SalesResponseDTO> result = salesService.getAllSales();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -93,14 +98,12 @@ public class SalesServiceTest {
     @Test
     public void testGetSalesByStore() {
         List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSales);
+        salesList.add(testSalesEntity);
         
-        Store store = new Store();
-        store.setStorId("7066");
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(store));
+        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
         when(salesRepository.findByStorId("7066")).thenReturn(salesList);
         
-        List<Sales> result = salesService.getSalesByStore("7066");
+        List<SalesResponseDTO> result = salesService.getSalesByStore("7066");
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -110,11 +113,11 @@ public class SalesServiceTest {
     @Test
     public void testGetSalesByTitle() {
         List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSales);
+        salesList.add(testSalesEntity);
         
         when(salesRepository.findByTitleId("TC1025")).thenReturn(salesList);
         
-        List<Sales> result = salesService.getSalesByTitle("TC1025");
+        List<SalesResponseDTO> result = salesService.getSalesByTitle("TC1025");
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -126,11 +129,11 @@ public class SalesServiceTest {
         LocalDateTime from = LocalDateTime.now().minusDays(7);
         LocalDateTime to = LocalDateTime.now();
         List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSales);
+        salesList.add(testSalesEntity);
         
         when(salesRepository.findByOrdDateBetween(from, to)).thenReturn(salesList);
         
-        List<Sales> result = salesService.getSalesByDateRange(from, to);
+        List<SalesResponseDTO> result = salesService.getSalesByDateRange(from, to);
         
         assertNotNull(result);
         assertEquals(1, result.size());
