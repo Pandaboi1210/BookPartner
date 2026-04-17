@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
-import com.sprint.BookPartnerApplication.exception.EmployeeException;
+import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
+import com.sprint.BookPartnerApplication.exception.InvalidInputException;
+import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import com.sprint.BookPartnerApplication.repository.PublishersRepository;
@@ -28,15 +30,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(Employee emp) {
 
-        if (empRepo.existsById(emp.getEmpId())) {
-            throw new EmployeeException("Employee already exists with id: " + emp.getEmpId());
+        if (emp.getEmpId() != null && empRepo.existsById(emp.getEmpId())) {
+            throw new DuplicateResourceException("Employee already exists with id: " + emp.getEmpId());
         }
 
         Jobs job = jobRepo.findById(emp.getJob().getJobId())
-                .orElseThrow(() -> new EmployeeException("Job not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
 
         if (!pubRepo.existsById(emp.getPubId())) {
-            throw new EmployeeException("Publisher not found");
+            throw new ResourceNotFoundException("Publisher not found with id: " + emp.getPubId());
+        }
+
+        // ADDED: jobLvl must be within the job's allowed range
+        if (emp.getJobLvl() != null
+                && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
+            throw new InvalidInputException("jobLvl " + emp.getJobLvl()
+                    + " is out of range for job '" + job.getJobDesc()
+                    + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
         }
 
         emp.setJob(job);
@@ -62,7 +72,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeeById(String empId) {
         return empRepo.findById(empId)
-                .orElseThrow(() -> new EmployeeException("Employee not found with id: " + empId));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + empId));
     }
 
     @Override
@@ -70,19 +80,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee existing = getEmployeeById(empId);
 
-        // 🔥 USING CUSTOM UPDATE
-        empRepo.updateEmployeeQuery(
-                empId,
-                emp.getFname(),
-                emp.getLname(),
-                emp.getJobLvl()
-        );
+        existing.setFname(emp.getFname());
+        existing.setLname(emp.getLname());
+        existing.setJobLvl(emp.getJobLvl());
+
+        if (emp.getJob() != null) {
+            Jobs job = jobRepo.findById(emp.getJob().getJobId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + emp.getJob().getJobId()));
+
+            // ADDED: same jobLvl range check on update too
+            if (emp.getJobLvl() != null
+                    && (emp.getJobLvl() < job.getMinLvl() || emp.getJobLvl() > job.getMaxLvl())) {
+                throw new InvalidInputException("jobLvl " + emp.getJobLvl()
+                        + " is out of range for job '" + job.getJobDesc()
+                        + "' (allowed: " + job.getMinLvl() + "–" + job.getMaxLvl() + ")");
+            }
+
+            existing.setJob(job);
+        }
 
         return existing;
     }
 
     @Override
     public List<Employee> getEmployeesByPublisher(String publisherId) {
+        if (!pubRepo.existsById(publisherId)) {
+            throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
+        }
         return empRepo.findByPubId(publisherId);
     }
 }

@@ -8,16 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.sprint.BookPartnerApplication.entity.Jobs;
 
-public interface JobsRepository extends JpaRepository<Jobs, Short> {
-
-    //CUSTOM INSERT
-    @Transactional
-    @Modifying
-    @Query(value = "INSERT INTO jobs (job_id, job_desc, min_lvl, max_lvl) VALUES (:id, :desc, :min, :max)", nativeQuery = true)
-    void insertJob(@Param("id") Short id,
-                   @Param("desc") String desc,
-                   @Param("min") int min,
-                   @Param("max") int max);
+	List<Jobs> findByMinLvlLessThanEqualAndMaxLvlGreaterThanEqual(int level, int level2);
+	boolean existsByJobDesc(String jobDesc);
+	
 
     //CUSTOM UPDATE
     @Transactional
