@@ -31,7 +31,13 @@ public class JobServiceImpl implements JobsService {
             throw new DuplicateResourceException("A job with the description '" + job.getJobDesc() + "' already exists.");
         }
 
-        return repo.save(job);
+        //USING CUSTOM INSERT
+        repo.insertJob(job.getJobId(),
+                       job.getJobDesc(),
+                       job.getMinLvl(),
+                       job.getMaxLvl());
+
+        return job;
     }
     @Override
     public List<Jobs> getAllJobs() {
@@ -60,6 +66,6 @@ public class JobServiceImpl implements JobsService {
         existing.setMinLvl(job.getMinLvl());
         existing.setMaxLvl(job.getMaxLvl());
 
-        return repo.save(existing);
+        return existing;
     }
 }
