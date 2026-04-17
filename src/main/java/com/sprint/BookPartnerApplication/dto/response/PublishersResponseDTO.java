@@ -16,7 +16,6 @@ public class PublishersResponseDTO {
     private List<String> titles;
     private List<String> employees;
 
-    // Getters & Setters
     public String getPubId() { return pubId; }
     public void setPubId(String pubId) { this.pubId = pubId; }
 

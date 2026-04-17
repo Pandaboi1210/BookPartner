@@ -25,7 +25,6 @@ public class PublisherServiceImpl implements PublisherService {
     @Autowired
     private PublishersRepository publisherRepository;
 
-    // ✅ GET ALL
     @Override
     public List<PublishersResponseDTO> getAllPublishers() {
         return publisherRepository.findAll()
@@ -34,7 +33,7 @@ public class PublisherServiceImpl implements PublisherService {
                 .toList();
     }
 
-    // ✅ GET BY ID
+    
     @Override
     public PublishersResponseDTO getPublisherById(String id) {
         Publishers publisher = publisherRepository.findById(id)
@@ -43,7 +42,7 @@ public class PublisherServiceImpl implements PublisherService {
         return mapToDTO(publisher);
     }
 
-    // ✅ CREATE
+ 
     @Override
     public PublishersResponseDTO createPublisher(PublishersRequestDTO dto) {
 
@@ -63,7 +62,6 @@ public class PublisherServiceImpl implements PublisherService {
         return mapToDTO(saved);
     }
 
-    // ✅ UPDATE
     @Override
     public PublishersResponseDTO updatePublisher(String id, PublishersRequestDTO dto) {
 
@@ -80,14 +78,14 @@ public class PublisherServiceImpl implements PublisherService {
         return mapToDTO(updated);
     }
 
-    // ✅ DELETE
+ 
     @Override
     public void deletePublisher(String id) {
 
         Publishers publisher = publisherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
 
-        // check employees
+       
         if (hasEmployees(id)) {
             throw new ResourceInUseException("Cannot delete publisher. It has employees.");
         }
@@ -101,7 +99,7 @@ public class PublisherServiceImpl implements PublisherService {
         publisherRepository.delete(publisher);
     }
 
-    // ✅ GET TITLES (no DTO change)
+   
     @Override
     public List<Title> getTitlesByPublisher(String publisherId) {
         if (!publisherRepository.existsById(publisherId)) {
@@ -110,7 +108,7 @@ public class PublisherServiceImpl implements PublisherService {
         return publisherRepository.getTitlesByPublisherId(publisherId);
     }
 
-    // ✅ GET EMPLOYEES (no DTO change)
+    
     @Override
     public List<Employee> getEmployeesByPublisher(String publisherId) {
         if (!publisherRepository.existsById(publisherId)) {
@@ -119,13 +117,13 @@ public class PublisherServiceImpl implements PublisherService {
         return publisherRepository.getEmployeesByPublisherId(publisherId);
     }
 
-    // ✅ HELPER
+
     public boolean hasEmployees(String publisherId) {
         List<Employee> employees = publisherRepository.getEmployeesByPublisherId(publisherId);
         return employees != null && !employees.isEmpty();
     }
 
-    // 🔥 MAPPING METHOD
+    
     private PublishersResponseDTO mapToDTO(Publishers publisher) {
 
         PublishersResponseDTO dto = new PublishersResponseDTO();

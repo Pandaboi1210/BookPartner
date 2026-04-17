@@ -18,7 +18,7 @@ public class PublishersRequestDTO {
 
     private String country = "USA";
 
-    // Getters & Setters
+  
     public String getPubId() { return pubId; }
     public void setPubId(String pubId) { this.pubId = pubId; }
 
