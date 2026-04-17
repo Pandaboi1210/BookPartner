@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.AuthorsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.AuthorsResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Authors;
 import com.sprint.BookPartnerApplication.repository.AuthorsRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.AuthorsServiceImpl;
@@ -21,15 +23,38 @@ public class AuthorsServiceTest {
     @InjectMocks
     private AuthorsServiceImpl authorsService;
 
+    private AuthorsRequestDTO testAuthorRequestDTO;
+    private AuthorsResponseDTO testAuthorResponseDTO;
     private Authors testAuthor;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        // Test data - CREATE
+        // Test data - CREATE (RequestDTO)
+        testAuthorRequestDTO = new AuthorsRequestDTO();
+        testAuthorRequestDTO.setAuId("001-01-0001");
+        testAuthorRequestDTO.setAuFname("John");
+        testAuthorRequestDTO.setAuLname("Doe");
+        testAuthorRequestDTO.setPhone("5551234567");
+        testAuthorRequestDTO.setAddress("123 Main St");
+        testAuthorRequestDTO.setCity("New York");
+        testAuthorRequestDTO.setState("NY");
+        testAuthorRequestDTO.setZip("10001");
+        testAuthorRequestDTO.setContract(1);
+        
+        // Test data - Response DTO
+        testAuthorResponseDTO = new AuthorsResponseDTO();
+        testAuthorResponseDTO.setAuId("001-01-0001");
+        testAuthorResponseDTO.setAuFname("John");
+        testAuthorResponseDTO.setAuLname("Doe");
+        testAuthorResponseDTO.setPhone("5551234567");
+        testAuthorResponseDTO.setCity("New York");
+        testAuthorResponseDTO.setState("NY");
+        
+        // Test data - Entity (for mocking repository)
         testAuthor = new Authors();
-        testAuthor.setAuId("A001");
+        testAuthor.setAuId("001-01-0001");
         testAuthor.setAuFname("John");
         testAuthor.setAuLname("Doe");
         testAuthor.setPhone("5551234567");
@@ -42,26 +67,26 @@ public class AuthorsServiceTest {
 
     @Test
     public void testCreateAuthor() {
-        when(authorsRepository.save(testAuthor)).thenReturn(testAuthor);
+        when(authorsRepository.save(any(Authors.class))).thenReturn(testAuthor);
         
-        Authors result = authorsService.createAuthor(testAuthor);
+        AuthorsResponseDTO result = authorsService.createAuthor(testAuthorRequestDTO);
         
         assertNotNull(result);
-        assertEquals("A001", result.getAuId());
+        assertEquals("001-01-0001", result.getAuId());
         assertEquals("John", result.getAuFname());
         assertEquals("Doe", result.getAuLname());
-        verify(authorsRepository, times(1)).save(testAuthor);
+        verify(authorsRepository, times(1)).save(any(Authors.class));
     }
 
     @Test
     public void testGetAuthorById() {
-        when(authorsRepository.findById("A001")).thenReturn(java.util.Optional.of(testAuthor));
+        when(authorsRepository.findById("001-01-0001")).thenReturn(java.util.Optional.of(testAuthor));
         
-        Authors result = authorsService.getAuthorById("A001");
+        AuthorsResponseDTO result = authorsService.getAuthorById("001-01-0001");
         
         assertNotNull(result);
-        assertEquals("A001", result.getAuId());
-        verify(authorsRepository, times(1)).findById("A001");
+        assertEquals("001-01-0001", result.getAuId());
+        verify(authorsRepository, times(1)).findById("001-01-0001");
     }
 
     @Test
@@ -71,7 +96,7 @@ public class AuthorsServiceTest {
         
         when(authorsRepository.findAll()).thenReturn(authorsList);
         
-        java.util.List<Authors> result = authorsService.getAllAuthors();
+        java.util.List<AuthorsResponseDTO> result = authorsService.getAllAuthors();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -80,28 +105,43 @@ public class AuthorsServiceTest {
 
     @Test
     public void testUpdateAuthor() {
+        AuthorsRequestDTO updatedAuthorDTO = new AuthorsRequestDTO();
+        updatedAuthorDTO.setAuId("001-01-0001");
+        updatedAuthorDTO.setAuFname("Jane");
+        updatedAuthorDTO.setAuLname("Smith");
+        updatedAuthorDTO.setPhone("5559876543");
+        updatedAuthorDTO.setAddress("123 Main St");
+        updatedAuthorDTO.setCity("New York");
+        updatedAuthorDTO.setState("NY");
+        updatedAuthorDTO.setZip("10001");
+        updatedAuthorDTO.setContract(1);
+        
         Authors updatedAuthor = new Authors();
-        updatedAuthor.setAuId("A001");
+        updatedAuthor.setAuId("001-01-0001");
         updatedAuthor.setAuFname("Jane");
         updatedAuthor.setAuLname("Smith");
         updatedAuthor.setPhone("5559876543");
 
-        when(authorsRepository.findById("A001")).thenReturn(java.util.Optional.of(testAuthor));
+        when(authorsRepository.findById("001-01-0001")).thenReturn(java.util.Optional.of(testAuthor));
         when(authorsRepository.save(any(Authors.class))).thenReturn(updatedAuthor);
         
-        Authors result = authorsService.updateAuthor("A001", updatedAuthor);
+        AuthorsResponseDTO result = authorsService.updateAuthor("001-01-0001", updatedAuthorDTO);
         
         assertNotNull(result);
-        verify(authorsRepository, times(1)).findById("A001");
+        verify(authorsRepository, times(1)).findById("001-01-0001");
         verify(authorsRepository, times(1)).save(any(Authors.class));
     }
 
     @Test
     public void testDeleteAuthor() {
-        doNothing().when(authorsRepository).deleteById("A001");
+        when(authorsRepository.findById("001-01-0001")).thenReturn(java.util.Optional.of(testAuthor));
+        when(authorsRepository.getTitlesByAuthorId("001-01-0001")).thenReturn(new java.util.ArrayList<>());
+        doNothing().when(authorsRepository).delete(testAuthor);
         
-        authorsService.deleteAuthor("A001");
+        authorsService.deleteAuthor("001-01-0001");
         
-        verify(authorsRepository, times(1)).deleteById("A001");
+        verify(authorsRepository, times(1)).findById("001-01-0001");
+        verify(authorsRepository, times(1)).getTitlesByAuthorId("001-01-0001");
+        verify(authorsRepository, times(1)).delete(testAuthor);
     }
 }

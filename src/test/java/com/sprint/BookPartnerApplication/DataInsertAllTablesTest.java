@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.annotation.Rollback;
 
-import com.sprint.BookPartnerApplication.entity.*;
+import com.sprint.BookPartnerApplication.dto.request.*;
 import com.sprint.BookPartnerApplication.services.*;
 
 @SpringBootTest
@@ -46,18 +46,27 @@ public class DataInsertAllTablesTest {
     void insertAllData() {
 
         System.out.println("Starting data insertion...");
+        
+        // Generate unique identifiers using current time to avoid conflicts
+        long timestamp = System.currentTimeMillis();
+        String uniqueNum = String.valueOf(timestamp % 10000); // 4 digit unique number
+        
+        // Pad with zeros to ensure 4 characters for stor_id
+        while (uniqueNum.length() < 4) {
+            uniqueNum = "0" + uniqueNum;
+        }
 
         /*
         ---------- AUTHORS ----------
         */
-        Authors author = new Authors();
-        author.setAuId("123-45-6789");
+        AuthorsRequestDTO author = new AuthorsRequestDTO();
+        author.setAuId("999-" + uniqueNum.substring(0, 2) + "-" + uniqueNum.substring(2));
         author.setAuFname("Raj");
         author.setAuLname("Kumar");
         author.setPhone("1234567890");
         author.setCity("Chennai");
         author.setState("TN");
-        author.setZip("600001");
+        author.setZip("60001");
         author.setContract(1);
 
         authorsService.createAuthor(author);
@@ -65,8 +74,8 @@ public class DataInsertAllTablesTest {
         /*
         ---------- PUBLISHERS ----------
         */
-        Publishers publisher = new Publishers();
-        publisher.setPubId("9952");
+        PublishersRequestDTO publisher = new PublishersRequestDTO();
+        publisher.setPubId("99" + uniqueNum.substring(0, 2));
         publisher.setPubName("TechBooks");
         publisher.setCity("Chennai");
         publisher.setState("TN");
@@ -76,7 +85,8 @@ public class DataInsertAllTablesTest {
         /*
         ---------- JOBS ----------
         */
-        Jobs job = new Jobs();
+        JobsRequestDTO job = new JobsRequestDTO();
+        job.setJobId((short) (100 + Integer.parseInt(uniqueNum) % 100));
         job.setJobDesc("Manager");
         job.setMinLvl(10);
         job.setMaxLvl(100);
@@ -86,8 +96,8 @@ public class DataInsertAllTablesTest {
         /*
         ---------- STORE ----------
         */
-        Store store = new Store();
-        store.setStorId("S001");
+        StoreRequestDTO store = new StoreRequestDTO();
+        store.setStorId(uniqueNum); // Uses 4-digit ID to fit in database field
         store.setStorName("Main Store");
         store.setCity("Chennai");
         store.setState("TN");
@@ -97,11 +107,10 @@ public class DataInsertAllTablesTest {
         /*
         ---------- TITLE ----------
         */
-        Title title = new Title();
-        title.setTitleId("T001");
+        TitleRequestDTO title = new TitleRequestDTO();
+        title.setTitleId("T" + uniqueNum);
         title.setTitle("Spring Boot Guide");
         title.setType("Business");
-        title.setPublisher(publisher);
         title.setPrice(500.0);
         title.setAdvance(1000.0);
         title.setRoyalty(10);
@@ -112,36 +121,36 @@ public class DataInsertAllTablesTest {
         /*
         ---------- EMPLOYEE ----------
         */
-        Employee employee = new Employee();
-        employee.setEmpId("AAA10001M");
+        EmployeeRequestDTO employee = new EmployeeRequestDTO();
+        employee.setEmpId("AAA" + uniqueNum + "M");
         employee.setFname("John");
         employee.setLname("Doe");
-        employee.setJob(job);
-        employee.setPubId("9952");
-        employee.setHireDate(LocalDateTime.now());
+        employee.setJobId((short) (100 + Integer.parseInt(uniqueNum) % 100));
+        employee.setPubId("99" + uniqueNum.substring(0, 2));
+        employee.setJobLvl(5);
 
         employeeService.createEmployee(employee);
 
         /*
         ---------- DISCOUNTS ----------
         */
-        Discounts discount = new Discounts();
+        DiscountRequestDTO discount = new DiscountRequestDTO();
         discount.setDiscounttype("Bulk");
         discount.setLowqty(10);
         discount.setHighqty(50);
         discount.setDiscount(new BigDecimal("0.10"));
-        discount.setStore(store);
+        discount.setStorId(uniqueNum); // Uses same 4-digit ID as store
 
         discountsService.createDiscount(discount);
 
         /*
         ---------- ROYSCHED ----------
         */
-        Roysched roy = new Roysched();
+        RoyschedRequestDTO roy = new RoyschedRequestDTO();
         roy.setLorange(0);
         roy.setHirange(1000);
         roy.setRoyalty(10);
-        roy.setTitle(title);
+        roy.setTitleId("T" + uniqueNum);
 
         royschedService.createRoysched(roy);
 

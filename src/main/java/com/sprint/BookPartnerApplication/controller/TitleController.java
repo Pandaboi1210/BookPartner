@@ -1,16 +1,17 @@
 package com.sprint.BookPartnerApplication.controller;
 
+import com.sprint.BookPartnerApplication.dto.request.TitleRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.TitleResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Authors;
 import com.sprint.BookPartnerApplication.entity.Roysched;
 import com.sprint.BookPartnerApplication.entity.Sales;
-import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.services.TitleService;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/titles")
@@ -20,7 +21,10 @@ public class TitleController
     private TitleService titleService;
 
     @GetMapping
-    public List<Title> getTitles(@RequestParam(required = false) String type, @RequestParam(required = false) String publisher,@RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice) 
+    public List<TitleResponseDTO> getTitles(@RequestParam(required = false) String type, 
+                                            @RequestParam(required = false) String publisher,
+                                            @RequestParam(required = false) Double minPrice, 
+                                            @RequestParam(required = false) Double maxPrice) 
     {
         if (type != null) {
             return titleService.getTitlesByType(type);
@@ -34,21 +38,21 @@ public class TitleController
     }
 
     @GetMapping("/{id}")
-    public Optional<Title> getTitleById(@PathVariable String id) 
+    public TitleResponseDTO getTitleById(@PathVariable String id) 
     {
         return titleService.getTitleById(id);
     }
 
     @PostMapping
-    public Title createTitle(@RequestBody Title title) 
+    public TitleResponseDTO createTitle(@Valid @RequestBody TitleRequestDTO titleDTO) 
     {
-        return titleService.insertTitle(title); 
+        return titleService.insertTitle(titleDTO); 
     }
 
     @PutMapping("/{id}")
-    public Title updateTitle(@PathVariable String id, @RequestBody Title title) 
+    public TitleResponseDTO updateTitle(@PathVariable String id, @Valid @RequestBody TitleRequestDTO titleDTO) 
     { 
-        return titleService.updateTitleById(id, title); 
+        return titleService.updateTitleById(id, titleDTO); 
     }
 
     @GetMapping("/{titleId}/authors")

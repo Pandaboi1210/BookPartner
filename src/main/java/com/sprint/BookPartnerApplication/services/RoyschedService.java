@@ -1,14 +1,15 @@
 package com.sprint.BookPartnerApplication.services;
 
-import com.sprint.BookPartnerApplication.entity.Roysched;
+import com.sprint.BookPartnerApplication.dto.request.RoyschedRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.RoyschedResponseDTO;
 
 import java.util.List;
 
 public interface RoyschedService {
 
-    Roysched createRoysched(Roysched roysched);
+    RoyschedResponseDTO createRoysched(RoyschedRequestDTO requestDTO);
 
-    List<Roysched> getRoyschedByTitle(String titleId);
+    List<RoyschedResponseDTO> getRoyschedByTitle(String titleId);
 
-    Roysched updateRoysched(Integer royaltyId, Roysched roysched);
+    RoyschedResponseDTO updateRoysched(Integer royaltyId, RoyschedRequestDTO requestDTO);
 }

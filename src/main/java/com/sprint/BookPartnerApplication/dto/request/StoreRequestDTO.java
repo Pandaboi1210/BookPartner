@@ -1,39 +1,30 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.request;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "stores")
-public class Store {
+public class StoreRequestDTO {
 
-    @Id
     @NotBlank(message = "Store ID is required")
-    @JsonProperty("storId")
-    @Column(name = "stor_id", length = 4, nullable = false)
+    @Size(max = 4, message = "Store ID must be at most 4 characters")
     private String storId;
 
-    @Column(name = "stor_name", length = 40)
+    @Size(max = 40, message = "Store name must be at most 40 characters")
     private String storName;
 
-    @Column(name = "stor_address", length = 40)
+    @Size(max = 40, message = "Store address must be at most 40 characters")
     private String storAddress;
 
-    @Column(name = "city", length = 20)
+    @Size(max = 20, message = "City must be at most 20 characters")
     private String city;
 
-    @Column(name = "state", length = 2)
+    @Size(max = 2, message = "State must be at most 2 characters")
     private String state;
 
-    @Column(name = "zip", length = 5)
+    @Pattern(regexp = "^[0-9]{5}$", message = "Zip must be exactly 5 digits")
+    @Size(max = 5, message = "Zip must be at most 5 characters")
     private String zip;
-
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Sales> sales;
 
     public String getStorId() { return storId; }
     public void setStorId(String storId) { this.storId = storId; }
@@ -52,7 +43,4 @@ public class Store {
 
     public String getZip() { return zip; }
     public void setZip(String zip) { this.zip = zip; }
-
-    public List<Sales> getSales() { return sales; }
-    public void setSales(List<Sales> sales) { this.sales = sales; }
 }

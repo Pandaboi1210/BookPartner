@@ -2,15 +2,25 @@ package com.sprint.BookPartnerApplication.repository;
 
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-@Repository
 public interface DiscountRepository extends JpaRepository<Discounts, Integer> {
 
-    List<Discounts> findByDiscounttype(String discounttype);
+    // Find by discount type
+    @Query("SELECT d FROM Discounts d WHERE d.discounttype = :type")
+    List<Discounts> findDiscountsByType(
+            @Param("type") String discounttype
+    );
 
-    List<Discounts> findByStore_StorId(String storId);
+    // Find by store ID
+    @Query("SELECT d FROM Discounts d WHERE d.store.storId = :storId")
+    List<Discounts> findDiscountsByStoreId(
+            @Param("storId") String storId
+    );
+
+    
 
 }

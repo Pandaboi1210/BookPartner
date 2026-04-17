@@ -1,48 +1,34 @@
-package com.sprint.BookPartnerApplication.entity;
+package com.sprint.BookPartnerApplication.dto.request;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "sales")
-@IdClass(SalesId.class)
-public class Sales {
+public class SalesRequestDTO {
 
-    @Id
     @NotBlank(message = "Store ID is required")
-    @Column(name = "stor_id", length = 4, nullable = false)
+    @Size(max = 4, message = "Store ID must be at most 4 characters")
     private String storId;
 
-    @Id
     @NotBlank(message = "Order number is required")
-    @Column(name = "ord_num", length = 20, nullable = false)
+    @Size(max = 20, message = "Order number must be at most 20 characters")
     private String ordNum;
 
-    @Id
     @NotBlank(message = "Title ID is required")
-    @Column(name = "title_id", length = 10, nullable = false)
+    @Size(max = 10, message = "Title ID must be at most 10 characters")
     private String titleId;
 
     @NotNull(message = "Order date is required")
-    @Column(name = "ord_date", nullable = false)
     private LocalDateTime ordDate;
 
-    @Column(name = "qty", nullable = false)
+    @Min(value = 1, message = "Quantity must be at least 1")
     private short qty;
 
     @NotBlank(message = "Payment terms are required")
-    @Column(name = "payterms", length = 12, nullable = false)
+    @Size(max = 12, message = "Payment terms must be at most 12 characters")
     private String payterms;
-
-    @ManyToOne
-    @JoinColumn(name = "stor_id", insertable = false, updatable = false)
-    private Store store;
-
-    @ManyToOne
-    @JoinColumn(name = "title_id", insertable = false, updatable = false)
-    private Title title;
 
     public String getStorId() { return storId; }
     public void setStorId(String storId) { this.storId = storId; }
@@ -61,10 +47,4 @@ public class Sales {
 
     public String getPayterms() { return payterms; }
     public void setPayterms(String payterms) { this.payterms = payterms; }
-
-    public Store getStore() { return store; }
-    public void setStore(Store store) { this.store = store; }
-
-    public Title getTitle() { return title; }
-    public void setTitle(Title title) { this.title = title; }
 }

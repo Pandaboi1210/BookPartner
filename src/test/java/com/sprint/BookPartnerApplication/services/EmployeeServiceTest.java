@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Employee;
 import com.sprint.BookPartnerApplication.entity.Jobs;
 import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
@@ -12,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,8 @@ public class EmployeeServiceTest {
     @InjectMocks
     private EmployeeServiceImpl employeeService;
 
+    private EmployeeRequestDTO testEmployeeRequestDTO;
+    private EmployeeResponseDTO testEmployeeResponseDTO;
     private Employee testEmployee;
     private Jobs testJob;
 
@@ -48,13 +51,29 @@ public class EmployeeServiceTest {
         testJob.setMinLvl(5);
         testJob.setMaxLvl(10);
         
-        // Test data - CREATE
+        // Test data - CREATE (RequestDTO)
+        testEmployeeRequestDTO = new EmployeeRequestDTO();
+        testEmployeeRequestDTO.setEmpId("EMP1001M");
+        testEmployeeRequestDTO.setFname("Robert");
+        testEmployeeRequestDTO.setLname("Smith");
+        testEmployeeRequestDTO.setJobLvl(5);
+        testEmployeeRequestDTO.setPubId("0877");
+        testEmployeeRequestDTO.setJobId((short) 1);
+        
+        // Test data - Response DTO
+        testEmployeeResponseDTO = new EmployeeResponseDTO();
+        testEmployeeResponseDTO.setEmpId("EMP1001M");
+        testEmployeeResponseDTO.setFname("Robert");
+        testEmployeeResponseDTO.setLname("Smith");
+        testEmployeeResponseDTO.setJobLvl(5);
+        testEmployeeResponseDTO.setPubId("0877");
+        testEmployeeResponseDTO.setJobDesc("Software Engineer");
+        
+        // Test data - Entity (for mocking repository)
         testEmployee = new Employee();
         testEmployee.setEmpId("EMP1001M");
         testEmployee.setFname("Robert");
         testEmployee.setLname("Smith");
-        testEmployee.setMinit("J");
-        testEmployee.setHireDate(LocalDateTime.now());
         testEmployee.setJobLvl(5);
         testEmployee.setPubId("0877");
         testEmployee.setJob(testJob);
@@ -65,21 +84,21 @@ public class EmployeeServiceTest {
         when(employeeRepository.existsById("EMP1001M")).thenReturn(false);
         when(jobsRepository.findById((short) 1)).thenReturn(Optional.of(testJob));
         when(publishersRepository.existsById("0877")).thenReturn(true);
-        when(employeeRepository.save(testEmployee)).thenReturn(testEmployee);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
         
-        Employee result = employeeService.createEmployee(testEmployee);
+        EmployeeResponseDTO result = employeeService.createEmployee(testEmployeeRequestDTO);
         
         assertNotNull(result);
         assertEquals("EMP1001M", result.getEmpId());
         assertEquals("Robert", result.getFname());
-        verify(employeeRepository, times(1)).save(testEmployee);
+        verify(employeeRepository, times(1)).save(any(Employee.class));
     }
 
     @Test
     public void testGetEmployeeById() {
         when(employeeRepository.findById("EMP1001M")).thenReturn(java.util.Optional.of(testEmployee));
         
-        Employee result = employeeService.getEmployeeById("EMP1001M");
+        EmployeeResponseDTO result = employeeService.getEmployeeById("EMP1001M");
         
         assertNotNull(result);
         assertEquals("EMP1001M", result.getEmpId());
@@ -93,7 +112,7 @@ public class EmployeeServiceTest {
         
         when(employeeRepository.findAll()).thenReturn(employeeList);
         
-        List<Employee> result = employeeService.getAllEmployees();
+        List<EmployeeResponseDTO> result = employeeService.getAllEmployees();
         
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -102,17 +121,27 @@ public class EmployeeServiceTest {
 
     @Test
     public void testUpdateEmployee() {
+        EmployeeRequestDTO updatedEmployeeDTO = new EmployeeRequestDTO();
+        updatedEmployeeDTO.setEmpId("EMP1001M");
+        updatedEmployeeDTO.setFname("Richard");
+        updatedEmployeeDTO.setLname("Johnson");
+        updatedEmployeeDTO.setJobLvl(7);
+        updatedEmployeeDTO.setPubId("0877");
+        updatedEmployeeDTO.setJobId((short) 1);
+
         Employee updatedEmployee = new Employee();
         updatedEmployee.setEmpId("EMP1001M");
         updatedEmployee.setFname("Richard");
         updatedEmployee.setLname("Johnson");
-        updatedEmployee.setMinit("P");
         updatedEmployee.setJobLvl(7);
+        updatedEmployee.setPubId("0877");
+        updatedEmployee.setJob(testJob);
 
         when(employeeRepository.findById("EMP1001M")).thenReturn(java.util.Optional.of(testEmployee));
+        when(jobsRepository.findById((short) 1)).thenReturn(java.util.Optional.of(testJob));
         when(employeeRepository.save(any(Employee.class))).thenReturn(updatedEmployee);
         
-        Employee result = employeeService.updateEmployee("EMP1001M", updatedEmployee);
+        EmployeeResponseDTO result = employeeService.updateEmployee("EMP1001M", updatedEmployeeDTO);
         
         assertNotNull(result);
         verify(employeeRepository, times(1)).findById("EMP1001M");
@@ -126,7 +155,7 @@ public class EmployeeServiceTest {
         
         when(employeeRepository.findByPubId("0877")).thenReturn(employeeList);
         
-        List<Employee> result = employeeService.getEmployeesByPublisher("0877");
+        List<EmployeeResponseDTO> result = employeeService.getEmployeesByPublisher("0877");
         
         assertNotNull(result);
         assertEquals(1, result.size());

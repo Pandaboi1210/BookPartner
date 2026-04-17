@@ -1,8 +1,10 @@
 package com.sprint.BookPartnerApplication.controller;
 
-import com.sprint.BookPartnerApplication.entity.Roysched;
+import com.sprint.BookPartnerApplication.dto.request.RoyschedRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.RoyschedResponseDTO;
 import com.sprint.BookPartnerApplication.services.RoyschedService;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,19 +21,20 @@ public class RoyschedController {
 
     // POST /api/v1/royalties - Create royalty slab
     @PostMapping
-    public Roysched createRoysched(@RequestBody Roysched roysched) {
-        return royschedService.createRoysched(roysched);
+    public RoyschedResponseDTO createRoysched(@Valid @RequestBody RoyschedRequestDTO requestDTO) {
+        return royschedService.createRoysched(requestDTO);
     }
 
     // GET /api/v1/royalties/title/{titleId} - Get royalty slabs for a title
     @GetMapping("/title/{titleId}")
-    public List<Roysched> getRoyschedByTitle(@PathVariable String titleId) {
+    public List<RoyschedResponseDTO> getRoyschedByTitle(@PathVariable String titleId) {
         return royschedService.getRoyschedByTitle(titleId);
     }
 
     // PUT /api/v1/royalties/{royaltyId} - Update royalty percentage
     @PutMapping("/{royaltyId}")
-    public Roysched updateRoysched(@PathVariable Integer royaltyId, @RequestBody Roysched roysched) {
-        return royschedService.updateRoysched(royaltyId, roysched);
+    public RoyschedResponseDTO updateRoysched(@PathVariable Integer royaltyId,
+                                              @Valid @RequestBody RoyschedRequestDTO requestDTO) {
+        return royschedService.updateRoysched(royaltyId, requestDTO);
     }
 }

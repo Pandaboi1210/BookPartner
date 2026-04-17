@@ -1,5 +1,7 @@
 package com.sprint.BookPartnerApplication.services;
 
+import com.sprint.BookPartnerApplication.dto.request.JobsRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.JobsResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Jobs;
 import com.sprint.BookPartnerApplication.repository.JobsRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.JobServiceImpl;
@@ -23,6 +25,8 @@ public class JobsServiceTest {
     @InjectMocks
     private JobServiceImpl jobsService;
 
+    private JobsRequestDTO testJobRequestDTO;
+    private JobsResponseDTO testJobResponseDTO;
     private Jobs testJob;
 
     @BeforeEach
@@ -30,30 +34,43 @@ public class JobsServiceTest {
         MockitoAnnotations.openMocks(this);
         
         // Test data - CREATE
+        testJobRequestDTO = new JobsRequestDTO();
+        testJobRequestDTO.setJobId((short) 1);
+        testJobRequestDTO.setJobDesc("Software Engineer");
+        testJobRequestDTO.setMinLvl(10);
+        testJobRequestDTO.setMaxLvl(50);
+        
+        testJobResponseDTO = new JobsResponseDTO();
+        testJobResponseDTO.setJobId((short) 1);
+        testJobResponseDTO.setJobDesc("Software Engineer");
+        testJobResponseDTO.setMinLvl(10);
+        testJobResponseDTO.setMaxLvl(50);
+        
         testJob = new Jobs();
         testJob.setJobId((short) 1);
         testJob.setJobDesc("Software Engineer");
-        testJob.setMinLvl(5);
-        testJob.setMaxLvl(10);
+        testJob.setMinLvl(10);
+        testJob.setMaxLvl(50);
     }
 
     @Test
     public void testCreateJob() {
-        when(jobsRepository.save(testJob)).thenReturn(testJob);
+        when(jobsRepository.save(any(Jobs.class))).thenReturn(testJob);
         
-        Jobs result = jobsService.createJob(testJob);
+        JobsResponseDTO result = jobsService.createJob(testJobRequestDTO);
         
         assertNotNull(result);
         assertEquals("Software Engineer", result.getJobDesc());
-        assertEquals(5, result.getMinLvl());
-        verify(jobsRepository, times(1)).save(testJob);
+        assertEquals(10, result.getMinLvl());
+        assertEquals(50, result.getMaxLvl());
+        verify(jobsRepository, times(1)).save(any(Jobs.class));
     }
 
     @Test
     public void testGetJobById() {
         when(jobsRepository.findById((short) 1)).thenReturn(java.util.Optional.of(testJob));
         
-        Jobs result = jobsService.getJobById((short) 1);
+        JobsResponseDTO result = jobsService.getJobById((short) 1);
         
         assertNotNull(result);
         assertEquals("Software Engineer", result.getJobDesc());
@@ -67,7 +84,7 @@ public class JobsServiceTest {
         
         when(jobsRepository.findAll()).thenReturn(jobsList);
         
-        List<Jobs> result = jobsService.getAllJobs();
+        List<JobsResponseDTO> result = jobsService.getAllJobs();
         
         assertNotNull(result);
         assertEquals(1, result.size());
