@@ -25,10 +25,8 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public Discounts createDiscount(Discounts discount) {
-        // FIXED: only block duplicate type for the SAME store.
-        // The same discount type (e.g. "Volume Discount") is valid across different stores.
         if (discount.getDiscounttype() != null && discount.getStore() != null) {
-            List<Discounts> existing = discountsRepository.findByDiscounttype(discount.getDiscounttype());
+            List<Discounts> existing = discountsRepository.findDiscountsByType(discount.getDiscounttype());
             boolean sameStoreExists = existing.stream()
                     .anyMatch(d -> d.getStore() != null
                             && d.getStore().getStorId().equals(discount.getStore().getStorId()));
@@ -42,12 +40,14 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<Discounts> getDiscountsByStore(String storeId) {
-        return discountsRepository.findByStore_StorId(storeId);
+        
+        return discountsRepository.findDiscountsByStoreId(storeId);
     }
 
     @Override
     public Discounts updateDiscountByType(String discountType, Discounts discountDetails) {
-        Discounts discount = discountsRepository.findByDiscounttype(discountType)
+        
+        Discounts discount = discountsRepository.findDiscountsByType(discountType)
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Discount not found for type: " + discountType));

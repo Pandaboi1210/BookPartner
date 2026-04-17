@@ -107,7 +107,8 @@ public class StoreServiceImpl implements StoreService {
         storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + storeId));
-        List<Discounts> discounts = discountsRepository.findByStore_StorId(storeId);
+        List<Discounts> discounts = discountsRepository.findDiscountsByStoreId(storeId);
+        
         if (discounts.isEmpty()) {
             throw new ResourceNotFoundException(
                 "No discounts found for store ID: " + storeId);
