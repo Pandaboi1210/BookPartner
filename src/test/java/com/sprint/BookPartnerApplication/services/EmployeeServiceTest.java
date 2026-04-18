@@ -161,4 +161,120 @@ public class EmployeeServiceTest {
         assertEquals(1, result.size());
         verify(employeeRepository, times(1)).findByPubId("0877");
     }
+    
+    @Test
+    public void testCreateEmployee_Success() {
+
+        when(employeeRepository.existsById("EMP1001M")).thenReturn(false);
+        when(jobsRepository.findById((short) 1)).thenReturn(Optional.of(testJob));
+        when(publishersRepository.existsById("0877")).thenReturn(true);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
+
+        EmployeeResponseDTO result = employeeService.createEmployee(testEmployeeRequestDTO);
+
+        assertNotNull(result);
+        assertEquals("EMP1001M", result.getEmpId());
+    }
+    
+    @Test
+    public void testGetEmployeeById_Success() {
+
+        when(employeeRepository.findById("EMP1001M")).thenReturn(Optional.of(testEmployee));
+
+        EmployeeResponseDTO result = employeeService.getEmployeeById("EMP1001M");
+
+        assertNotNull(result);
+        assertEquals("EMP1001M", result.getEmpId());
+    }
+    
+    @Test
+    public void testGetAllEmployees_Success() {
+
+        List<Employee> list = new ArrayList<>();
+        list.add(testEmployee);
+
+        when(employeeRepository.findAll()).thenReturn(list);
+
+        List<EmployeeResponseDTO> result = employeeService.getAllEmployees();
+
+        assertEquals(1, result.size());
+    }
+    
+    @Test
+    public void testUpdateEmployee_Success() {
+
+        when(employeeRepository.findById("EMP1001M")).thenReturn(Optional.of(testEmployee));
+        when(jobsRepository.findById((short) 1)).thenReturn(Optional.of(testJob));
+        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
+
+        EmployeeResponseDTO result = employeeService.updateEmployee("EMP1001M", testEmployeeRequestDTO);
+
+        assertNotNull(result);
+    }
+    
+    @Test
+    public void testGetEmployeesByPublisher_Success() {
+
+        List<Employee> list = new ArrayList<>();
+        list.add(testEmployee);
+
+        when(employeeRepository.findByPubId("0877")).thenReturn(list);
+
+        List<EmployeeResponseDTO> result = employeeService.getEmployeesByPublisher("0877");
+
+        assertEquals(1, result.size());
+    }
+    
+    @Test
+    public void testCreateEmployee_AlreadyExists() {
+
+        when(employeeRepository.existsById("EMP1001M")).thenReturn(true);
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeService.createEmployee(testEmployeeRequestDTO);
+        });
+    }
+    
+    @Test
+    public void testCreateEmployee_JobNotFound() {
+
+        when(employeeRepository.existsById("EMP1001M")).thenReturn(false);
+        when(jobsRepository.findById((short) 1)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeService.createEmployee(testEmployeeRequestDTO);
+        });
+    }
+    
+    @Test
+    public void testCreateEmployee_PublisherNotFound() {
+
+        when(employeeRepository.existsById("EMP1001M")).thenReturn(false);
+        when(jobsRepository.findById((short) 1)).thenReturn(Optional.of(testJob));
+        when(publishersRepository.existsById("0877")).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeService.createEmployee(testEmployeeRequestDTO);
+        });
+    }
+    
+    @Test
+    public void testGetEmployeeById_NotFound() {
+
+        when(employeeRepository.findById("EMP1001M")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeService.getEmployeeById("EMP1001M");
+        });
+    }
+    
+    @Test
+    public void testUpdateEmployee_NotFound() {
+
+        when(employeeRepository.findById("EMP1001M")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> {
+            employeeService.updateEmployee("EMP1001M", testEmployeeRequestDTO);
+        });
+    }
 }
