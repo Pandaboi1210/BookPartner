@@ -50,6 +50,17 @@ public class PublisherServiceImpl implements PublisherService {
             throw new DuplicateResourceException("Publisher already exists with ID: " + dto.getPubId());
         }
 
+        // pub_id must match the DB CHECK constraint: known IDs or 99XX pattern
+        String pid = dto.getPubId();
+        boolean validId = pid != null && (
+            java.util.Set.of("1389","0736","0877","1622","1756").contains(pid)
+            || pid.matches("^99[0-9]{2}$")
+        );
+        if (!validId) {
+            throw new com.sprint.BookPartnerApplication.exception.InvalidInputException(
+                "Publisher ID must be one of the known IDs (1389, 0736, 0877, 1622, 1756) or match the 99XX pattern.");
+        }
+
         Publishers publisher = new Publishers();
         publisher.setPubId(dto.getPubId());
         publisher.setPubName(dto.getPubName());

@@ -27,6 +27,10 @@ public class JobServiceImpl implements JobsService {
             throw new JobsException("Job level must be between 10 and 250");
         }
 
+        if (dto.getMinLvl() > dto.getMaxLvl()) {
+            throw new JobsException("Minimum level cannot be greater than maximum level");
+        }
+
         Jobs job = new Jobs();
         job.setJobId(dto.getJobId());
         job.setJobDesc(dto.getJobDesc());
@@ -65,6 +69,14 @@ public class JobServiceImpl implements JobsService {
                 .orElseThrow(() -> new JobsException("Job not found"));
 
         existing.setJobDesc(dto.getJobDesc());
+
+        if (dto.getMinLvl() < 10 || dto.getMaxLvl() > 250) {
+            throw new JobsException("Job level must be between 10 and 250");
+        }
+        if (dto.getMinLvl() > dto.getMaxLvl()) {
+            throw new JobsException("Minimum level cannot be greater than maximum level");
+        }
+
         existing.setMinLvl(dto.getMinLvl());
         existing.setMaxLvl(dto.getMaxLvl());
 
