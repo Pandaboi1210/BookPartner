@@ -42,105 +42,102 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeException("Publisher not found");
         }
 
-
-        // Job level must fall within the job's allowed range
-        if (dto.getJobLvl() < job.getMinLvl() || dto.getJobLvl() > job.getMaxLvl()) {
-            throw new EmployeeException("Job level " + dto.getJobLvl()
-                    + " is out of range for this job. Allowed: "
-                    + job.getMinLvl() + " – " + job.getMaxLvl());
-        }
-
-        // DTO → Entity
-
         Employee emp = new Employee();
+
         emp.setEmpId(dto.getEmpId());
         emp.setFname(dto.getFname());
-        emp.setMinit(dto.getMinit());
+
+        // ✅ FIX: no NULL minit
+        if (dto.getMinit() == null || dto.getMinit().isEmpty()) {
+            emp.setMinit("");
+        } else {
+            emp.setMinit(dto.getMinit());
+        }
+
         emp.setLname(dto.getLname());
         emp.setJobLvl(dto.getJobLvl());
         emp.setPubId(dto.getPubId());
         emp.setJob(job);
 
-        empRepo.save(emp);
+        // ✅ hire date (date only)
+        emp.setHireDate(dto.getHireDate());
 
-        return mapToResponse(emp);
+        Employee saved = empRepo.save(emp);
+
+        return mapToDTO(saved);
     }
 
     @Override
     public List<EmployeeResponseDTO> getAllEmployees() {
         return empRepo.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public EmployeeResponseDTO getEmployeeById(String empId) {
-
         Employee emp = empRepo.findById(empId)
                 .orElseThrow(() -> new EmployeeException("Employee not found"));
 
-        return mapToResponse(emp);
+        return mapToDTO(emp);
     }
 
     @Override
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto) {
 
-        Employee emp = empRepo.findById(empId)
+        Employee existing = empRepo.findById(empId)
                 .orElseThrow(() -> new EmployeeException("Employee not found"));
 
-        emp.setFname(dto.getFname());
-        emp.setMinit(dto.getMinit());
-        emp.setLname(dto.getLname());
-        emp.setJobLvl(dto.getJobLvl());
+        existing.setFname(dto.getFname());
+
+        // ✅ FIX: no NULL minit
+        if (dto.getMinit() == null || dto.getMinit().isEmpty()) {
+            existing.setMinit("");
+        } else {
+            existing.setMinit(dto.getMinit());
+        }
+
+        existing.setLname(dto.getLname());
+        existing.setJobLvl(dto.getJobLvl());
 
         if (dto.getJobId() != null) {
             Jobs job = jobRepo.findById(dto.getJobId())
                     .orElseThrow(() -> new EmployeeException("Job not found"));
-
-            emp.setJob(job);
-
-
-            // Validate job level against the new job's range
-            if (dto.getJobLvl() < job.getMinLvl() || dto.getJobLvl() > job.getMaxLvl()) {
-                throw new EmployeeException("Job level " + dto.getJobLvl()
-                        + " is out of range for this job. Allowed: "
-                        + job.getMinLvl() + " – " + job.getMaxLvl());
-            }
-
+            existing.setJob(job);
         }
 
-        empRepo.save(emp);
+        existing.setHireDate(dto.getHireDate());
 
-        return mapToResponse(emp);
+        Employee updated = empRepo.save(existing);
+
+        return mapToDTO(updated);
     }
 
     @Override
-    public List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId) {
-
-        return empRepo.findByPubId(publisherId)
+    public List<EmployeeResponseDTO> getEmployeesByPublisher(String pubId) {
+        return empRepo.findByPubId(pubId)
                 .stream()
-                .map(this::mapToResponse)
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    private EmployeeResponseDTO mapToResponse(Employee emp) {
+    // ✅ Mapper method
+    private EmployeeResponseDTO mapToDTO(Employee emp) {
+        EmployeeResponseDTO dto = new EmployeeResponseDTO();
 
-        EmployeeResponseDTO res = new EmployeeResponseDTO();
-
-        res.setEmpId(emp.getEmpId());
-        res.setFname(emp.getFname());
-        res.setMinit(emp.getMinit());
-        res.setLname(emp.getLname());
-        res.setJobLvl(emp.getJobLvl());
-        res.setPubId(emp.getPubId());
+        dto.setEmpId(emp.getEmpId());
+        dto.setFname(emp.getFname());
+        dto.setMinit(emp.getMinit());
+        dto.setLname(emp.getLname());
+        dto.setJobLvl(emp.getJobLvl());
+        dto.setPubId(emp.getPubId());
+        dto.setHireDate(emp.getHireDate());
 
         if (emp.getJob() != null) {
-            res.setJobDesc(emp.getJob().getJobDesc());
+            dto.setJobDesc(emp.getJob().getJobDesc());
         }
 
-        res.setHireDate(emp.getHireDate());
-
-        return res;
+        return dto;
     }
 }

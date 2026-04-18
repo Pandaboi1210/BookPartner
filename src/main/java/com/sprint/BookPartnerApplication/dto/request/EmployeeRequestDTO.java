@@ -1,50 +1,65 @@
 package com.sprint.BookPartnerApplication.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class EmployeeRequestDTO {
 
-    @NotBlank
     private String empId;
-
-    @NotBlank
     private String fname;
-
-    private String minit;   // optional
-
-    @NotBlank
+    private String minit;
     private String lname;
-
-    @NotNull
-    private Integer jobLvl;
-
-    @NotBlank
+    private int jobLvl;
     private String pubId;
-    
-    @NotNull
     private Short jobId;
+    private LocalDate hireDate;
+	public String getEmpId() {
+		return empId;
+	}
+	public void setEmpId(String empId) {
+		this.empId = empId;
+	}
+	public String getFname() {
+		return fname;
+	}
+	public void setFname(String fname) {
+		this.fname = fname;
+	}
+	public String getMinit() {
+		return minit;
+	}
+	public void setMinit(String minit) {
+		this.minit = minit;
+	}
+	public String getLname() {
+		return lname;
+	}
+	public void setLname(String lname) {
+		this.lname = lname;
+	}
+	public int getJobLvl() {
+		return jobLvl;
+	}
+	public void setJobLvl(int jobLvl) {
+		this.jobLvl = jobLvl;
+	}
+	public String getPubId() {
+		return pubId;
+	}
+	public void setPubId(String pubId) {
+		this.pubId = pubId;
+	}
+	public Short getJobId() {
+		return jobId;
+	}
+	public void setJobId(Short jobId) {
+		this.jobId = jobId;
+	}
+	public LocalDate getHireDate() {
+		return hireDate;
+	}
+	public void setHireDate(LocalDate hireDate) {
+		this.hireDate = hireDate;
+	}
 
-    // Getters & Setters
-
-    public String getEmpId() { return empId; }
-    public void setEmpId(String empId) { this.empId = empId; }
-
-    public String getFname() { return fname; }
-    public void setFname(String fname) { this.fname = fname; }
-
-    public String getMinit() { return minit; }
-    public void setMinit(String minit) { this.minit = minit; }
-
-    public String getLname() { return lname; }
-    public void setLname(String lname) { this.lname = lname; }
-
-    public Integer getJobLvl() { return jobLvl; }
-    public void setJobLvl(Integer jobLvl) { this.jobLvl = jobLvl; }
-
-    public String getPubId() { return pubId; }
-    public void setPubId(String pubId) { this.pubId = pubId; }
-
-    public Short getJobId() { return jobId; }
-    public void setJobId(Short jobId) { this.jobId = jobId; }
+   
 }
