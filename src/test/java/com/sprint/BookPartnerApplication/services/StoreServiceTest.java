@@ -1,8 +1,6 @@
 package com.sprint.BookPartnerApplication.services;
 
 import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
-import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
-import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
 import com.sprint.BookPartnerApplication.entity.*;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.*;
