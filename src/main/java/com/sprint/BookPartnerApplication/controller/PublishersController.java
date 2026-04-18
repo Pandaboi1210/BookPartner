@@ -81,7 +81,8 @@ public class PublishersController {
     }
 
     @GetMapping("/{id}/titles")
-    public ResponseEntity<Map<String, Object>> getTitlesByPublisher(@PathVariable String id) {
+    public ResponseEntity<Map<String, Object>> getTitlesByPublisher(@PathVariable String id) 
+    {
         List<Title> titles = publishersService.getTitlesByPublisher(id);
 
         Map<String, Object> result = new HashMap<>();

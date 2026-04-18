@@ -14,7 +14,8 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/authors")
-public class AuthorsController {
+public class AuthorsController 
+{
 
     @Autowired
     private AuthorsServiceImpl authorsService;
