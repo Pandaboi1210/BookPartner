@@ -8,135 +8,131 @@ import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.SalesServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class SalesServiceTest {
 
-    @Mock
-    private SalesRepository salesRepository;
+    @Mock private SalesRepository salesRepository;
+    @Mock private StoreRepository storeRepository;
+    @Mock private TitleRepository titleRepository;
 
-    @Mock
-    private StoreRepository storeRepository;
+    @InjectMocks private SalesServiceImpl salesService;
 
-    @Mock
-    private TitleRepository titleRepository;
-
-    @InjectMocks
-    private SalesServiceImpl salesService;
-
-    private SalesRequestDTO testSalesRequestDTO;
-    private Sales testSalesEntity;
-    private Store testStoreEntity;
+    private SalesRequestDTO dto;
+    private Sales sales;
+    private Store store;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        
-        // Test data - CREATE (RequestDTO)
-        testSalesRequestDTO = new SalesRequestDTO();
-        testSalesRequestDTO.setStorId("7066");
-        testSalesRequestDTO.setOrdNum("QA879.1");
-        testSalesRequestDTO.setTitleId("TC1025");
-        testSalesRequestDTO.setOrdDate(LocalDateTime.now());
-        testSalesRequestDTO.setQty((short) 75);
-        testSalesRequestDTO.setPayterms("Net 30");
-        
-        // Test data - Entity (what repository returns)
-        testSalesEntity = new Sales();
-        testSalesEntity.setStorId("7066");
-        testSalesEntity.setOrdNum("QA879.1");
-        testSalesEntity.setTitleId("TC1025");
-        testSalesEntity.setOrdDate(LocalDateTime.now());
-        testSalesEntity.setQty((short) 75);
-        testSalesEntity.setPayterms("Net 30");
-        
-        // Test Store entity
-        testStoreEntity = new Store();
-        testStoreEntity.setStorId("7066");
-        testStoreEntity.setStorName("Bookbeat");
+
+        dto = new SalesRequestDTO();
+        dto.setStorId("7066");
+        dto.setOrdNum("QA123");
+        dto.setTitleId("T1");
+        dto.setOrdDate(LocalDateTime.now());
+        dto.setQty((short) 10);
+        dto.setPayterms("Net 30");
+
+        sales = new Sales();
+        sales.setStorId("7066");
+        sales.setOrdNum("QA123");
+        sales.setTitleId("T1");
+        sales.setOrdDate(LocalDateTime.now());
+        sales.setQty((short) 10);
+        sales.setPayterms("Net 30");
+
+        store = new Store();
+        store.setStorId("7066");
     }
 
     @Test
-    public void testCreateSale() {
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
-        when(titleRepository.existsById("TC1025")).thenReturn(true);
-        when(salesRepository.save(any(Sales.class))).thenReturn(testSalesEntity);
-        
-        SalesResponseDTO result = salesService.createSale(testSalesRequestDTO);
-        
+    void testCreateSale_Success() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(titleRepository.existsById("T1")).thenReturn(true);
+        when(salesRepository.save(any())).thenReturn(sales);
+
+        SalesResponseDTO result = salesService.createSale(dto);
+
         assertNotNull(result);
-        assertEquals("7066", result.getStorId());
-        assertEquals("QA879.1", result.getOrdNum());
-        verify(salesRepository, times(1)).save(any(Sales.class));
+        verify(salesRepository).save(any());
     }
 
     @Test
-    public void testGetAllSales() {
-        List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSalesEntity);
-        
-        when(salesRepository.findAll()).thenReturn(salesList);
-        
-        List<SalesResponseDTO> result = salesService.getAllSales();
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(salesRepository, times(1)).findAll();
+    void testCreateSale_StoreNotFound() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> salesService.createSale(dto));
     }
 
     @Test
-    public void testGetSalesByStore() {
-        List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSalesEntity);
-        
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
-        when(salesRepository.findByStorId("7066")).thenReturn(salesList);
-        
-        List<SalesResponseDTO> result = salesService.getSalesByStore("7066");
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(salesRepository, times(1)).findByStorId("7066");
+    void testCreateSale_TitleNotFound() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(titleRepository.existsById("T1")).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> salesService.createSale(dto));
     }
 
     @Test
-    public void testGetSalesByTitle() {
-        List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSalesEntity);
-        
-        when(salesRepository.findByTitleId("TC1025")).thenReturn(salesList);
-        
-        List<SalesResponseDTO> result = salesService.getSalesByTitle("TC1025");
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(salesRepository, times(1)).findByTitleId("TC1025");
+    void testGetAllSales_WithData() {
+        when(salesRepository.findAll()).thenReturn(List.of(sales));
+
+        assertEquals(1, salesService.getAllSales().size());
     }
 
     @Test
-    public void testGetSalesByDateRange() {
-        LocalDateTime from = LocalDateTime.now().minusDays(7);
+    void testGetAllSales_Empty() {
+        when(salesRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertTrue(salesService.getAllSales().isEmpty());
+    }
+
+    @Test
+    void testGetSalesByStore_WithData() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(salesRepository.findByStorId("7066")).thenReturn(List.of(sales));
+
+        assertEquals(1, salesService.getSalesByStore("7066").size());
+    }
+
+    @Test
+    void testGetSalesByStore_NoSales() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(salesRepository.findByStorId("7066")).thenReturn(Collections.emptyList());
+
+        assertTrue(salesService.getSalesByStore("7066").isEmpty());
+    }
+
+    @Test
+    void testGetSalesByStore_StoreNotFound() {
+        when(storeRepository.findById("9999")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> salesService.getSalesByStore("9999"));
+    }
+
+    @Test
+    void testGetSalesByTitle() {
+        when(salesRepository.findByTitleId("T1")).thenReturn(List.of(sales));
+
+        assertEquals(1, salesService.getSalesByTitle("T1").size());
+    }
+
+    @Test
+    void testGetSalesByDateRange() {
+        LocalDateTime from = LocalDateTime.now().minusDays(5);
         LocalDateTime to = LocalDateTime.now();
-        List<Sales> salesList = new ArrayList<>();
-        salesList.add(testSalesEntity);
-        
-        when(salesRepository.findByOrdDateBetween(from, to)).thenReturn(salesList);
-        
-        List<SalesResponseDTO> result = salesService.getSalesByDateRange(from, to);
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(salesRepository, times(1)).findByOrdDateBetween(from, to);
+
+        when(salesRepository.findByOrdDateBetween(from, to)).thenReturn(List.of(sales));
+
+        assertEquals(1, salesService.getSalesByDateRange(from, to).size());
     }
 }

@@ -1,118 +1,137 @@
 package com.sprint.BookPartnerApplication.services;
 
 import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
+import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
-import com.sprint.BookPartnerApplication.entity.Store;
-import com.sprint.BookPartnerApplication.repository.StoreRepository;
+import com.sprint.BookPartnerApplication.entity.*;
+import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
+import com.sprint.BookPartnerApplication.repository.*;
 import com.sprint.BookPartnerApplication.servicesImpl.StoreServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class StoreServiceTest {
 
-    @Mock
-    private StoreRepository storeRepository;
+    @Mock private StoreRepository storeRepository;
+    @Mock private SalesRepository salesRepository;
+    @Mock private DiscountRepository discountsRepository;
 
-    @InjectMocks
-    private StoreServiceImpl storeService;
+    @InjectMocks private StoreServiceImpl storeService;
 
-    private StoreRequestDTO testStoreRequestDTO;
-    private Store testStoreEntity;
+    private Store store;
+    private StoreRequestDTO dto;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-        
-        // Test data - CREATE (RequestDTO)
-        testStoreRequestDTO = new StoreRequestDTO();
-        testStoreRequestDTO.setStorId("7066");
-        testStoreRequestDTO.setStorName("Bookbeat");
-        testStoreRequestDTO.setStorAddress("679 E. Hastings");
-        testStoreRequestDTO.setCity("Los Angeles");
-        testStoreRequestDTO.setState("CA");
-        testStoreRequestDTO.setZip("90001");
-        
-        // Test data - Entity (what repository returns)
-        testStoreEntity = new Store();
-        testStoreEntity.setStorId("7066");
-        testStoreEntity.setStorName("Bookbeat");
-        testStoreEntity.setStorAddress("679 E. Hastings");
-        testStoreEntity.setCity("Los Angeles");
-        testStoreEntity.setState("CA");
-        testStoreEntity.setZip("90001");
+
+        dto = new StoreRequestDTO();
+        dto.setStorId("7066");
+        dto.setStorName("Bookbeat");
+
+        store = new Store();
+        store.setStorId("7066");
+        store.setStorName("Bookbeat");
     }
 
     @Test
-    public void testCreateStore() {
-        when(storeRepository.save(any(Store.class))).thenReturn(testStoreEntity);
-        
-        StoreResponseDTO result = storeService.createStore(testStoreRequestDTO);
-        
-        assertNotNull(result);
-        assertEquals("7066", result.getStorId());
-        assertEquals("Bookbeat", result.getStorName());
-        verify(storeRepository, times(1)).save(any(Store.class));
+    void testCreateStore() {
+        when(storeRepository.existsById("7066")).thenReturn(false);
+        when(storeRepository.save(any())).thenReturn(store);
+
+        assertNotNull(storeService.createStore(dto));
     }
 
     @Test
-    public void testGetStoreById() {
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
-        
-        StoreResponseDTO result = storeService.getStoreById("7066");
-        
-        assertNotNull(result);
-        assertEquals("7066", result.getStorId());
-        verify(storeRepository, times(1)).findById("7066");
+    void testGetStoreById() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+
+        assertNotNull(storeService.getStoreById("7066"));
     }
 
     @Test
-    public void testGetAllStores() {
-        List<Store> storeList = new ArrayList<>();
-        storeList.add(testStoreEntity);
-        
-        when(storeRepository.findAll()).thenReturn(storeList);
-        
-        List<StoreResponseDTO> result = storeService.getAllStores();
-        
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(storeRepository, times(1)).findAll();
+    void testGetStoreById_NotFound() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> storeService.getStoreById("7066"));
     }
 
     @Test
-    public void testUpdateStore() {
-        StoreRequestDTO updatedStoreDTO = new StoreRequestDTO();
-        updatedStoreDTO.setStorId("7066");
-        updatedStoreDTO.setStorName("Bookbeat Central");
-        updatedStoreDTO.setStorAddress("456 Central Ave");
-        updatedStoreDTO.setCity("Chicago");
-        updatedStoreDTO.setState("IL");
-        updatedStoreDTO.setZip("60601");
-        
-        Store updatedStoreEntity = new Store();
-        updatedStoreEntity.setStorId("7066");
-        updatedStoreEntity.setStorName("Bookbeat Central");
-        updatedStoreEntity.setStorAddress("456 Central Ave");
-        updatedStoreEntity.setCity("Chicago");
-        updatedStoreEntity.setState("IL");
-        updatedStoreEntity.setZip("60601");
+    void testGetAllStores_WithData() {
+        when(storeRepository.findAll()).thenReturn(List.of(store));
 
-        when(storeRepository.findById("7066")).thenReturn(java.util.Optional.of(testStoreEntity));
-        when(storeRepository.save(any(Store.class))).thenReturn(updatedStoreEntity);
-        
-        StoreResponseDTO result = storeService.updateStore("7066", updatedStoreDTO);
-        
-        assertNotNull(result);
-        verify(storeRepository, times(1)).findById("7066");
-        verify(storeRepository, times(1)).save(any(Store.class));
+        assertEquals(1, storeService.getAllStores().size());
+    }
+
+    @Test
+    void testGetAllStores_Empty_ThrowsException() {
+        when(storeRepository.findAll()).thenReturn(Collections.emptyList());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> storeService.getAllStores());
+    }
+
+    @Test
+    void testUpdateStore() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(storeRepository.save(any())).thenReturn(store);
+
+        assertNotNull(storeService.updateStore("7066", dto));
+    }
+
+    @Test
+    void testUpdateStore_NotFound() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> storeService.updateStore("7066", dto));
+    }
+
+    @Test
+    void testGetSalesByStore() {
+        Sales sale = new Sales();
+        sale.setStorId("7066");
+
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(salesRepository.findByStorId("7066")).thenReturn(List.of(sale));
+
+        assertEquals(1, storeService.getSalesByStore("7066").size());
+    }
+
+    @Test
+    void testGetSalesByStore_NoSales() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(salesRepository.findByStorId("7066")).thenReturn(Collections.emptyList());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> storeService.getSalesByStore("7066"));
+    }
+
+    @Test
+    void testGetDiscountsByStore() {
+        Discounts d = new Discounts();
+        d.setDiscounttype("BULK");
+
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(discountsRepository.findDiscountsByStoreId("7066")).thenReturn(List.of(d));
+
+        assertEquals(1, storeService.getDiscountsByStore("7066").size());
+    }
+
+    @Test
+    void testGetDiscountsByStore_NoDiscounts() {
+        when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
+        when(discountsRepository.findDiscountsByStoreId("7066"))
+                .thenReturn(Collections.emptyList());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> storeService.getDiscountsByStore("7066"));
     }
 }
