@@ -21,10 +21,6 @@ public class EmployeeRequestDTO {
 
     @NotBlank
     private String pubId;
-
-
-  
-
     
     @NotNull
     private Short jobId;

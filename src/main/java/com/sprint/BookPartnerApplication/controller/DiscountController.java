@@ -5,6 +5,8 @@ import com.sprint.BookPartnerApplication.dto.response.DiscountResponseDTO;
 import com.sprint.BookPartnerApplication.services.DiscountService;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,28 +21,59 @@ public class DiscountController {
         this.discountService = discountService;
     }
 
-    // POST /api/v1/discounts - Create discount
+    // CREATE
     @PostMapping
-    public DiscountResponseDTO createDiscount(@Valid @RequestBody DiscountRequestDTO requestDTO) {
-        return discountService.createDiscount(requestDTO);
+    public ResponseEntity<DiscountResponseDTO> createDiscount(
+            @Valid @RequestBody DiscountRequestDTO requestDTO) {
+
+        DiscountResponseDTO data =
+                discountService.createDiscount(requestDTO);
+
+        return created(data);
     }
 
-    // GET /api/v1/discounts - Get all discounts
+    // GET ALL
     @GetMapping
-    public List<DiscountResponseDTO> getAllDiscounts() {
-        return discountService.getAllDiscounts();
+    public ResponseEntity<List<DiscountResponseDTO>> getAllDiscounts() {
+
+        List<DiscountResponseDTO> data =
+                discountService.getAllDiscounts();
+
+        return ok(data);
     }
 
-    // GET /api/v1/discounts/store/{storeId} - Get discounts for a store
+    // GET BY STORE
     @GetMapping("/store/{storeId}")
-    public List<DiscountResponseDTO> getDiscountsByStore(@PathVariable String storeId) {
-        return discountService.getDiscountsByStore(storeId);
+    public ResponseEntity<List<DiscountResponseDTO>> getDiscountsByStore(
+            @PathVariable String storeId) {
+
+        List<DiscountResponseDTO> data =
+                discountService.getDiscountsByStore(storeId);
+
+        return ok(data);
     }
 
-    // PUT /api/v1/discounts/{discountType} - Update discount
+    // UPDATE
     @PutMapping("/{discountType}")
-    public DiscountResponseDTO updateDiscountByType(@PathVariable String discountType,
-                                                    @Valid @RequestBody DiscountRequestDTO requestDTO) {
-        return discountService.updateDiscountByType(discountType, requestDTO);
+    public ResponseEntity<DiscountResponseDTO> updateDiscountByType(
+            @PathVariable String discountType,
+            @Valid @RequestBody DiscountRequestDTO requestDTO) {
+
+        DiscountResponseDTO data =
+                discountService.updateDiscountByType(
+                        discountType,
+                        requestDTO);
+
+        return ok(data);
+    }
+
+    private <T> ResponseEntity<T> ok(T data) {
+        return ResponseEntity.ok(data);
+    }
+
+    private <T> ResponseEntity<T> created(T data) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(data);
     }
 }
