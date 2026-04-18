@@ -89,10 +89,10 @@ public class SalesServiceTest {
     }
 
     @Test
-    void testGetAllSales_Empty() {
+    void testGetAllSales_Empty_ThrowsException() {
         when(salesRepository.findAll()).thenReturn(Collections.emptyList());
 
-        assertTrue(salesService.getAllSales().isEmpty());
+        assertThrows(RuntimeException.class, () -> salesService.getAllSales());
     }
 
     @Test
@@ -104,13 +104,13 @@ public class SalesServiceTest {
     }
 
     @Test
-    void testGetSalesByStore_NoSales() {
+    void testGetSalesByStore_NoSales_ThrowsException() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
         when(salesRepository.findByStorId("7066")).thenReturn(Collections.emptyList());
 
-        assertTrue(salesService.getSalesByStore("7066").isEmpty());
+        assertThrows(RuntimeException.class,
+                () -> salesService.getSalesByStore("7066"));
     }
-
     @Test
     void testGetSalesByStore_StoreNotFound() {
         when(storeRepository.findById("9999")).thenReturn(Optional.empty());
