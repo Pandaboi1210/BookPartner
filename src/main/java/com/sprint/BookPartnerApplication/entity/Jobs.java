@@ -19,7 +19,7 @@ public class Jobs {
     @Column(name = "max_lvl")
     private int maxLvl;
 
-    // 🔹 Getters & Setters
+    //Getters & Setters
 
     public Short getJobId() {
         return jobId;

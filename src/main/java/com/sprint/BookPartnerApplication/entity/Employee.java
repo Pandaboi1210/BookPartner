@@ -1,5 +1,6 @@
 package com.sprint.BookPartnerApplication.entity;
 
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,10 @@ public class Employee {
     private String empId;
 
     private String fname;
+
+    @Column(name = "minit")
+    private String minit;
+
     private String lname;
 
     @Column(name = "job_lvl")
@@ -23,53 +28,31 @@ public class Employee {
     @JoinColumn(name = "job_id")
     private Jobs job;
 
-    // 🔹 Getters & Setters
+    @Column(name = "hire_date", insertable = false, updatable = false)
+    private LocalDateTime hireDate;
 
-    public String getEmpId() {
-        return empId;
-    }
+    // Getters & Setters
 
-    public void setEmpId(String empId) {
-        this.empId = empId;
-    }
+    public String getEmpId() { return empId; }
+    public void setEmpId(String empId) { this.empId = empId; }
 
-    public String getFname() {
-        return fname;
-    }
+    public String getFname() { return fname; }
+    public void setFname(String fname) { this.fname = fname; }
 
-    public void setFname(String fname) {
-        this.fname = fname;
-    }
+    public String getMinit() { return minit; }
+    public void setMinit(String minit) { this.minit = minit; }
 
-    public String getLname() {
-        return lname;
-    }
+    public String getLname() { return lname; }
+    public void setLname(String lname) { this.lname = lname; }
 
-    public void setLname(String lname) {
-        this.lname = lname;
-    }
+    public int getJobLvl() { return jobLvl; }
+    public void setJobLvl(int jobLvl) { this.jobLvl = jobLvl; }
 
-    public int getJobLvl() {
-        return jobLvl;
-    }
+    public String getPubId() { return pubId; }
+    public void setPubId(String pubId) { this.pubId = pubId; }
 
-    public void setJobLvl(int jobLvl) {
-        this.jobLvl = jobLvl;
-    }
+    public Jobs getJob() { return job; }
+    public void setJob(Jobs job) { this.job = job; }
 
-    public String getPubId() {
-        return pubId;
-    }
-
-    public void setPubId(String pubId) {
-        this.pubId = pubId;
-    }
-
-    public Jobs getJob() {
-        return job;
-    }
-
-    public void setJob(Jobs job) {
-        this.job = job;
-    }
+    public LocalDateTime getHireDate() { return hireDate; }
 }

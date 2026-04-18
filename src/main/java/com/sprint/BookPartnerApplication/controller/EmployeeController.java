@@ -18,42 +18,29 @@ public class EmployeeController {
     @Autowired
     private EmployeeService service;
 
-    // CREATE
     @PostMapping
-    public EmployeeResponseDTO create(
-            @Valid @RequestBody EmployeeRequestDTO dto) {
-
+    public EmployeeResponseDTO create(@Valid @RequestBody EmployeeRequestDTO dto) {
         return service.createEmployee(dto);
     }
 
-    // GET ALL
     @GetMapping
     public List<EmployeeResponseDTO> getAll() {
         return service.getAllEmployees();
     }
 
-    // GET BY ID
-    @GetMapping("/{employeeId}")
-    public EmployeeResponseDTO getById(
-            @PathVariable String employeeId) {
-
-        return service.getEmployeeById(employeeId);
+    @GetMapping("/{id}")
+    public EmployeeResponseDTO getById(@PathVariable String id) {
+        return service.getEmployeeById(id);
     }
 
-    //UPDATE
-    @PutMapping("/{employeeId}")
-    public EmployeeResponseDTO update(
-            @PathVariable String employeeId,
-            @Valid @RequestBody EmployeeRequestDTO dto) {
-
-        return service.updateEmployee(employeeId, dto);
+    @PutMapping("/{id}")
+    public EmployeeResponseDTO update(@PathVariable String id,
+                                      @Valid @RequestBody EmployeeRequestDTO dto) {
+        return service.updateEmployee(id, dto);
     }
 
-    // CUSTOM QUERY
-    @GetMapping("/publisher/{publisherId}")
-    public List<EmployeeResponseDTO> getByPublisher(
-            @PathVariable String publisherId) {
-
-        return service.getEmployeesByPublisher(publisherId);
+    @GetMapping("/publisher/{pubId}")
+    public List<EmployeeResponseDTO> getByPublisher(@PathVariable String pubId) {
+        return service.getEmployeesByPublisher(pubId);
     }
 }
