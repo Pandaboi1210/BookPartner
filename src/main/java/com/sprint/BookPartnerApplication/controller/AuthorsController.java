@@ -7,53 +7,92 @@ import com.sprint.BookPartnerApplication.servicesImpl.AuthorsServiceImpl;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/authors")
-public class AuthorsController {
+public class AuthorsController 
+{
 
     @Autowired
     private AuthorsServiceImpl authorsService;
 
-    
     @PostMapping
-    public AuthorsResponseDTO createAuthor(@Valid @RequestBody AuthorsRequestDTO dto) {
-        return authorsService.createAuthor(dto);
+    public ResponseEntity<Map<String, Object>> createAuthor(@Valid @RequestBody AuthorsRequestDTO dto) {
+        AuthorsResponseDTO response = authorsService.createAuthor(dto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Author created successfully");
+        result.put("data", response);
+
+        return ResponseEntity.ok(result);
     }
 
-  
     @GetMapping
-    public List<AuthorsResponseDTO> getAllAuthors(
+    public ResponseEntity<Map<String, Object>> getAllAuthors(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) Integer contract) {
-        return authorsService.getAuthorsByFilter(city, state, contract);
+
+        List<AuthorsResponseDTO> list = authorsService.getAuthorsByFilter(city, state, contract);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Authors fetched successfully");
+        result.put("data", list);
+
+        return ResponseEntity.ok(result);
     }
 
-  
     @GetMapping("/{id}")
-    public AuthorsResponseDTO getAuthorById(@PathVariable String id) {
-        return authorsService.getAuthorById(id);
+    public ResponseEntity<Map<String, Object>> getAuthorById(@PathVariable String id) {
+        AuthorsResponseDTO response = authorsService.getAuthorById(id);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Author fetched successfully");
+        result.put("data", response);
+
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
-    public AuthorsResponseDTO updateAuthor(@PathVariable String id,
-                                           @Valid @RequestBody AuthorsRequestDTO dto) {
-        return authorsService.updateAuthor(id, dto);
+    public ResponseEntity<Map<String, Object>> updateAuthor(@PathVariable String id,
+                                                            @Valid @RequestBody AuthorsRequestDTO dto) {
+        AuthorsResponseDTO response = authorsService.updateAuthor(id, dto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Author updated successfully");
+        result.put("data", response);
+
+        return ResponseEntity.ok(result);
     }
 
-    
     @DeleteMapping("/{id}")
-    public String deleteAuthor(@PathVariable String id) {
+    public ResponseEntity<Map<String, Object>> deleteAuthor(@PathVariable String id) {
         authorsService.deleteAuthor(id);
-        return "Author deleted successfully!";
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Author deleted successfully");
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/titles")
-    public List<Title> getTitlesByAuthor(@PathVariable String id) {
-        return authorsService.getTitlesByAuthor(id);
+    public ResponseEntity<Map<String, Object>> getTitlesByAuthor(@PathVariable String id) {
+        List<Title> titles = authorsService.getTitlesByAuthor(id);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "Titles fetched successfully");
+        result.put("data", titles);
+
+        return ResponseEntity.ok(result);
     }
 }
