@@ -42,8 +42,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeException("Publisher not found");
         }
 
-<<<<<<< HEAD
-=======
+
         // Job level must fall within the job's allowed range
         if (dto.getJobLvl() < job.getMinLvl() || dto.getJobLvl() > job.getMaxLvl()) {
             throw new EmployeeException("Job level " + dto.getJobLvl()
@@ -52,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // DTO → Entity
->>>>>>> 9f204af6d4b2b39589f8fab730eaaf0ad36a22de
+
         Employee emp = new Employee();
         emp.setEmpId(dto.getEmpId());
         emp.setFname(dto.getFname());
@@ -98,10 +97,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (dto.getJobId() != null) {
             Jobs job = jobRepo.findById(dto.getJobId())
                     .orElseThrow(() -> new EmployeeException("Job not found"));
-<<<<<<< HEAD
+
             emp.setJob(job);
-=======
-            existing.setJob(job);
+
 
             // Validate job level against the new job's range
             if (dto.getJobLvl() < job.getMinLvl() || dto.getJobLvl() > job.getMaxLvl()) {
@@ -109,7 +107,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                         + " is out of range for this job. Allowed: "
                         + job.getMinLvl() + " – " + job.getMaxLvl());
             }
->>>>>>> 9f204af6d4b2b39589f8fab730eaaf0ad36a22de
+
         }
 
         empRepo.save(emp);
