@@ -1,6 +1,6 @@
 package com.sprint.BookPartnerApplication.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,11 +11,14 @@ public class Employee {
     @Column(name = "emp_id")
     private String empId;
 
+    @Column(name = "fname", nullable = false)
     private String fname;
 
-    @Column(name = "minit")
-    private String minit;
+    // ✅ NO NULL → default empty string
+    @Column(name = "minit", nullable = false)
+    private String minit = "";
 
+    @Column(name = "lname", nullable = false)
     private String lname;
 
     @Column(name = "job_lvl")
@@ -28,8 +31,9 @@ public class Employee {
     @JoinColumn(name = "job_id")
     private Jobs job;
 
-    @Column(name = "hire_date", insertable = false, updatable = false)
-    private LocalDateTime hireDate;
+    // ✅ Only DATE (no time)
+    @Column(name = "hire_date")
+    private LocalDate hireDate;
 
     // Getters & Setters
 
@@ -54,5 +58,6 @@ public class Employee {
     public Jobs getJob() { return job; }
     public void setJob(Jobs job) { this.job = job; }
 
-    public LocalDateTime getHireDate() { return hireDate; }
+    public LocalDate getHireDate() { return hireDate; }
+    public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
 }
