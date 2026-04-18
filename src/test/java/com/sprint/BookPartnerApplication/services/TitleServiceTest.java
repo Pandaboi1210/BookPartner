@@ -3,6 +3,8 @@ package com.sprint.BookPartnerApplication.services;
 import com.sprint.BookPartnerApplication.dto.request.TitleRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.TitleResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Title;
+import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
+import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.servicesImpl.TitleServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +74,9 @@ public class TitleServiceTest {
         testTitle.setNotes("An essential reference");
     }
 
+    // --- POSITIVE TEST CASES ---
+
+    // TC 1
     @Test
     public void testInsertTitle() {
         when(titleRepository.save(any(Title.class))).thenReturn(testTitle);
@@ -84,6 +89,7 @@ public class TitleServiceTest {
         verify(titleRepository, times(1)).save(any(Title.class));
     }
 
+    // TC 2
     @Test
     public void testGetTitleById() {
         when(titleRepository.findById("TC1025")).thenReturn(Optional.of(testTitle));
@@ -95,6 +101,7 @@ public class TitleServiceTest {
         verify(titleRepository, times(1)).findById("TC1025");
     }
 
+    // TC 3
     @Test
     public void testGetAllTitles() {
         List<Title> titleList = new ArrayList<>();
@@ -109,6 +116,7 @@ public class TitleServiceTest {
         verify(titleRepository, times(1)).findAll();
     }
 
+    // TC 4
     @Test
     public void testUpdateTitleById() {
         TitleRequestDTO updatedTitleDTO = new TitleRequestDTO();
@@ -137,6 +145,7 @@ public class TitleServiceTest {
         verify(titleRepository, times(1)).save(any(Title.class));
     }
 
+    // TC 5
     @Test
     public void testGetTitlesByType() {
         List<Title> titleList = new ArrayList<>();
@@ -149,5 +158,45 @@ public class TitleServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         verify(titleRepository, times(1)).findByType("Business");
+    }
+
+    // --- NEGATIVE TEST CASES ---
+
+    // TC 6: Fetching a book ID that doesn't exist
+    @Test
+    public void testGetTitleById_NotFound() {
+        when(titleRepository.findById("INVALID_ID")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            titleService.getTitleById("INVALID_ID");
+        });
+
+        verify(titleRepository, times(1)).findById("INVALID_ID");
+    }
+
+    // TC 7: Attempting to insert a book with an ID that is already in use
+    @Test
+    public void testInsertTitle_DuplicateResource() {
+        when(titleRepository.existsById(testTitleRequestDTO.getTitleId())).thenReturn(true);
+
+        assertThrows(DuplicateResourceException.class, () -> {
+            titleService.insertTitle(testTitleRequestDTO);
+        });
+
+        // Proves that the service aborted before calling the database save method
+        verify(titleRepository, never()).save(any(Title.class));
+    }
+
+    // TC 8: Attempting to delete a book ID that doesn't exist
+    @Test
+    public void testDeleteTitleById_NotFound() {
+        when(titleRepository.existsById("INVALID_ID")).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            titleService.deleteTitleById("INVALID_ID");
+        });
+
+        // Proves that the service aborted before calling the database delete method
+        verify(titleRepository, never()).deleteById(anyString());
     }
 }
