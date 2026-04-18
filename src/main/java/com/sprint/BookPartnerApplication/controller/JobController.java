@@ -1,49 +1,75 @@
 package com.sprint.BookPartnerApplication.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-
 import com.sprint.BookPartnerApplication.dto.request.JobsRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.JobsResponseDTO;
 import com.sprint.BookPartnerApplication.services.JobsService;
+
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/jobs")
 public class JobController {
 
-    @Autowired
-    private JobsService service;
+    private final JobsService service;
 
-    //CREATE
+    public JobController(JobsService service) {
+        this.service = service;
+    }
+
+    // CREATE
     @PostMapping
-    public JobsResponseDTO create(
-            @Valid @RequestBody JobsRequestDTO dto) {
+    public ResponseEntity<JobsResponseDTO> createJob(
+            @Valid @RequestBody JobsRequestDTO requestDTO) {
 
-        return service.createJob(dto);
+        JobsResponseDTO data = service.createJob(requestDTO);
+
+        return created(data);
     }
 
     // GET ALL
     @GetMapping
-    public List<JobsResponseDTO> getAll() {
-        return service.getAllJobs();
+    public ResponseEntity<List<JobsResponseDTO>> getAllJobs() {
+
+        List<JobsResponseDTO> data = service.getAllJobs();
+
+        return ok(data);
     }
 
     // GET BY ID
     @GetMapping("/{jobId}")
-    public JobsResponseDTO getById(@PathVariable Short jobId) {
-        return service.getJobById(jobId);
+    public ResponseEntity<JobsResponseDTO> getJobById(
+            @PathVariable Short jobId) {
+
+        JobsResponseDTO data = service.getJobById(jobId);
+
+        return ok(data);
     }
 
     // UPDATE
     @PutMapping("/{jobId}")
-    public JobsResponseDTO update(
+    public ResponseEntity<JobsResponseDTO> updateJob(
             @PathVariable Short jobId,
-            @Valid @RequestBody JobsRequestDTO dto) {
+            @Valid @RequestBody JobsRequestDTO requestDTO) {
 
-        return service.updateJob(jobId, dto);
+        JobsResponseDTO data =
+                service.updateJob(jobId, requestDTO);
+
+        return ok(data);
+    }
+
+    //Helper methods
+    private <T> ResponseEntity<T> ok(T data) {
+        return ResponseEntity.ok(data);
+    }
+
+    private <T> ResponseEntity<T> created(T data) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(data);
     }
 }
