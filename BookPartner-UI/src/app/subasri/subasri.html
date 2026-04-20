@@ -1,0 +1,166 @@
+<div class="min-h-screen bg-gray-100 p-6">
+
+  <h1 class="text-2xl font-bold text-center mb-6">
+    Subasri API Dashboard 🚀
+  </h1>
+
+  <!-- ================= JOBS ================= -->
+  <div class="bg-white p-4 rounded shadow mb-6">
+    <h2 class="text-lg font-semibold mb-3">Jobs API</h2>
+
+    <div class="flex gap-2 flex-wrap">
+      <button (click)="handleClick('jobs','GET')" class="bg-green-500 text-white px-3 py-1 rounded">GET</button>
+      <button (click)="handleClick('jobs','GET_BY_ID')" class="bg-blue-500 text-white px-3 py-1 rounded">GET BY ID</button>
+      <button (click)="handleClick('jobs','POST')" class="bg-yellow-500 text-white px-3 py-1 rounded">POST</button>
+    </div>
+  </div>
+
+  <!-- ================= EMPLOYEES ================= -->
+  <div class="bg-white p-4 rounded shadow mb-6">
+    <h2 class="text-lg font-semibold mb-3">Employees API</h2>
+
+    <div class="flex gap-2 flex-wrap">
+      <button (click)="handleClick('employee','GET')" class="bg-green-500 text-white px-3 py-1 rounded">GET</button>
+      <button (click)="handleClick('employee','GET_BY_ID')" class="bg-blue-500 text-white px-3 py-1 rounded">GET BY ID</button>
+      <button (click)="handleClick('employee','POST')" class="bg-yellow-500 text-white px-3 py-1 rounded">POST</button>
+      <button (click)="handleClick('employee','PUT')" class="bg-purple-500 text-white px-3 py-1 rounded">PUT</button>
+      <button (click)="handleClick('employee','DELETE')" class="bg-red-500 text-white px-3 py-1 rounded">DELETE</button>
+    </div>
+  </div>
+
+  <!-- ================= OUTPUT ================= -->
+  <div class="bg-white p-4 rounded shadow">
+
+   
+    <!-- ================= GET ================= -->
+    <div *ngIf="selectedAction === 'GET'">
+
+      <!-- EMPLOYEE TABLE -->
+      <div *ngIf="selectedEntity === 'employee'">
+        <h3 class="font-semibold mb-2">Employees</h3>
+
+        <table class="w-full border border-gray-300">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border p-2">ID</th>
+              <th class="border p-2">Name</th>
+              <th class="border p-2">Job</th>
+              <th class="border p-2">Publisher</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let e of employees">
+              <td class="border p-2">{{e.id}}</td>
+              <td class="border p-2">{{e.name}}</td>
+              <td class="border p-2">{{e.job}}</td>
+              <td class="border p-2">{{e.pubId}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- JOB TABLE -->
+      <div *ngIf="selectedEntity === 'jobs'">
+        <h3 class="font-semibold mb-2">Jobs</h3>
+
+        <table class="w-full border border-gray-300">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="border p-2">ID</th>
+              <th class="border p-2">Description</th>
+              <th class="border p-2">Min</th>
+              <th class="border p-2">Max</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let j of jobs">
+              <td class="border p-2">{{j.id}}</td>
+              <td class="border p-2">{{j.desc}}</td>
+              <td class="border p-2">{{j.min}}</td>
+              <td class="border p-2">{{j.max}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ================= GET BY ID ================= -->
+    <div *ngIf="selectedAction === 'GET_BY_ID'">
+
+      <input [(ngModel)]="searchId"
+             placeholder="Enter ID"
+             class="border p-2 mr-2">
+
+      <button (click)="search()"
+              class="bg-blue-500 text-white px-3 py-1 rounded">
+        Search
+      </button>
+
+      <!-- RESULT -->
+      <div *ngIf="searchResult" class="mt-3 p-3 border bg-gray-50">
+        <pre>{{ searchResult | json }}</pre>
+      </div>
+
+      <div *ngIf="searchResult === null && searchId" class="mt-3 text-red-500">
+        No result found
+      </div>
+
+    </div>
+
+    <!-- ================= POST / PUT ================= -->
+    <div *ngIf="selectedAction === 'POST' || selectedAction === 'PUT'">
+
+      <!-- EMPLOYEE FORM -->
+      <div *ngIf="selectedEntity === 'employee'">
+
+        <h3 class="font-semibold mb-2">Employee Form</h3>
+
+        <input [(ngModel)]="employeeForm.id" placeholder="ID" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="employeeForm.name" placeholder="Name" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="employeeForm.job" placeholder="Job" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="employeeForm.pubId" placeholder="Publisher ID" class="border p-2 mb-2 w-full">
+
+        <button (click)="submitEmployee()"
+                class="bg-green-500 text-white px-3 py-1 rounded">
+          Submit
+        </button>
+
+      </div>
+
+      <!-- JOB FORM -->
+      <div *ngIf="selectedEntity === 'jobs'">
+
+        <h3 class="font-semibold mb-2">Job Form</h3>
+
+        <input [(ngModel)]="jobForm.id" type="number" placeholder="ID" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="jobForm.desc" placeholder="Description" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="jobForm.min" type="number" placeholder="Min Level" class="border p-2 mb-2 w-full">
+        <input [(ngModel)]="jobForm.max" type="number" placeholder="Max Level" class="border p-2 mb-2 w-full">
+
+        <button (click)="submitJob()"
+                class="bg-green-500 text-white px-3 py-1 rounded">
+          Submit
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ================= DELETE ================= -->
+    <div *ngIf="selectedAction === 'DELETE'">
+
+      <input placeholder="Enter ID"
+             class="border p-2 mr-2">
+
+      <button class="bg-red-500 text-white px-3 py-1 rounded">
+        Delete
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

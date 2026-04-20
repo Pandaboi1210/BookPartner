@@ -1,3 +1,8 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { Subasri } from './subasri/subasri';
+
+export const routes: Routes = [
+  
+  { path: 'subasri', component: Subasri }
+];
