@@ -4,7 +4,6 @@ import com.sprint.BookPartnerApplication.dto.request.AuthorsRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.AuthorsResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.servicesImpl.AuthorsServiceImpl;
-
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
