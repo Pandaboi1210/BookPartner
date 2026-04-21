@@ -1,10 +1,10 @@
 <div class="min-h-screen bg-gray-100 p-6">
 
   <h1 class="text-2xl font-bold text-center mb-6">
-    Subasri API Dashboard 🚀
+    Subasri API Dashboard 
   </h1>
 
-  <!-- ================= JOBS ================= -->
+  <!--JOBS-->
   <div class="bg-white p-4 rounded shadow mb-6">
     <h2 class="text-lg font-semibold mb-3">Jobs API</h2>
 
@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <!-- ================= EMPLOYEES ================= -->
+  <!--EMPLOYEES-->
   <div class="bg-white p-4 rounded shadow mb-6">
     <h2 class="text-lg font-semibold mb-3">Employees API</h2>
 
@@ -28,14 +28,14 @@
     </div>
   </div>
 
-  <!-- ================= OUTPUT ================= -->
+  <!--OUTPUT-->
   <div class="bg-white p-4 rounded shadow">
 
    
-    <!-- ================= GET ================= -->
+    <!--GET-->
     <div *ngIf="selectedAction === 'GET'">
 
-      <!-- EMPLOYEE TABLE -->
+      <!-- EMPLOYEE TABLE-->
       <div *ngIf="selectedEntity === 'employee'">
         <h3 class="font-semibold mb-2">Employees</h3>
 
@@ -87,7 +87,7 @@
 
     </div>
 
-    <!-- ================= GET BY ID ================= -->
+    <!--GET BY ID-->
     <div *ngIf="selectedAction === 'GET_BY_ID'">
 
       <input [(ngModel)]="searchId"
@@ -110,7 +110,7 @@
 
     </div>
 
-    <!-- ================= POST / PUT ================= -->
+    <!--POST / PUT-->
     <div *ngIf="selectedAction === 'POST' || selectedAction === 'PUT'">
 
       <!-- EMPLOYEE FORM -->
@@ -149,7 +149,7 @@
 
     </div>
 
-    <!-- ================= DELETE ================= -->
+    <!--DELETE-->
     <div *ngIf="selectedAction === 'DELETE'">
 
       <input placeholder="Enter ID"
@@ -158,9 +158,6 @@
       <button class="bg-red-500 text-white px-3 py-1 rounded">
         Delete
       </button>
-
     </div>
-
   </div>
-
 </div>
