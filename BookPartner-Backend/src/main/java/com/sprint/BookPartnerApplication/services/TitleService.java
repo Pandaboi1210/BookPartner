@@ -11,6 +11,7 @@ import java.util.List;
 public interface TitleService 
 {
     List<TitleResponseDTO> getAllTitles();
+    List<TitleResponseDTO> getTitlesFiltered(String type, String publisher, Double minPrice, Double maxPrice);
     TitleResponseDTO getTitleById(String titleId);
     TitleResponseDTO insertTitle(TitleRequestDTO titleDTO);
     TitleResponseDTO updateTitleById(String titleId, TitleRequestDTO updatedTitleDTO);

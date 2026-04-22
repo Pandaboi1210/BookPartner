@@ -5,12 +5,14 @@ import com.sprint.BookPartnerApplication.dto.response.DiscountResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
+import com.sprint.BookPartnerApplication.exception.InvalidInputException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
 import com.sprint.BookPartnerApplication.services.DiscountService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,57 @@ public class DiscountServiceImpl implements DiscountService {
     public List<DiscountResponseDTO> getAllDiscounts() {
         return discountsRepository.findAll()
                 .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DiscountResponseDTO> getDiscountsFiltered(
+            String storeId,
+            String type,
+            Integer minLowQty,
+            Integer maxHighQty,
+            BigDecimal minDiscount,
+            BigDecimal maxDiscount
+    ) {
+        if (minDiscount != null && maxDiscount != null && minDiscount.compareTo(maxDiscount) > 0) {
+            throw new InvalidInputException("Minimum discount cannot be greater than maximum discount.");
+        }
+
+        String normalizedStoreId = storeId == null ? null : storeId.trim();
+        String normalizedType = type == null ? null : type.trim();
+
+        if (normalizedStoreId != null && !normalizedStoreId.isBlank()) {
+            resolveStore(normalizedStoreId);
+        }
+
+        return discountsRepository.findAll()
+                .stream()
+                .filter(d -> {
+                    if (normalizedStoreId == null || normalizedStoreId.isBlank()) return true;
+                    return d.getStore() != null && normalizedStoreId.equalsIgnoreCase(d.getStore().getStorId());
+                })
+                .filter(d -> {
+                    if (normalizedType == null || normalizedType.isBlank()) return true;
+                    String dt = d.getDiscounttype() == null ? "" : d.getDiscounttype();
+                    return dt.toLowerCase().contains(normalizedType.toLowerCase());
+                })
+                .filter(d -> {
+                    if (minLowQty == null) return true;
+                    return d.getLowqty() != null && d.getLowqty() >= minLowQty;
+                })
+                .filter(d -> {
+                    if (maxHighQty == null) return true;
+                    return d.getHighqty() != null && d.getHighqty() <= maxHighQty;
+                })
+                .filter(d -> {
+                    if (minDiscount == null) return true;
+                    return d.getDiscount() != null && d.getDiscount().compareTo(minDiscount) >= 0;
+                })
+                .filter(d -> {
+                    if (maxDiscount == null) return true;
+                    return d.getDiscount() != null && d.getDiscount().compareTo(maxDiscount) <= 0;
+                })
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }

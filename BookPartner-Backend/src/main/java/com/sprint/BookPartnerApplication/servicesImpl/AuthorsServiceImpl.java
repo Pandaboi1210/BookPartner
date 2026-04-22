@@ -123,8 +123,11 @@ public class AuthorsServiceImpl implements AuthorsService {
         dto.setAuFname(author.getAuFname());
         dto.setAuLname(author.getAuLname());
         dto.setPhone(author.getPhone());
+        dto.setAddress(author.getAddress());
         dto.setCity(author.getCity());
         dto.setState(author.getState());
+        dto.setZip(author.getZip());
+        dto.setContract(author.getContract());
 
         return dto;
     }

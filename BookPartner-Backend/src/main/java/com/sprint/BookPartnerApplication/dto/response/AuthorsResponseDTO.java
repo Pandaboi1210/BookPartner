@@ -10,8 +10,11 @@ public class AuthorsResponseDTO {
     private String auLname;
     private String auFname;
     private String phone;
+    private String address;
     private String city;
     private String state;
+    private String zip;
+    private Integer contract;
 
     private List<String> titles;  
 
@@ -33,6 +36,15 @@ public class AuthorsResponseDTO {
 
     public String getState() { return state; }
     public void setState(String state) { this.state = state; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getZip() { return zip; }
+    public void setZip(String zip) { this.zip = zip; }
+
+    public Integer getContract() { return contract; }
+    public void setContract(Integer contract) { this.contract = contract; }
 
     public List<String> getTitles() { return titles; }
     public void setTitles(List<String> titles) { this.titles = titles; }

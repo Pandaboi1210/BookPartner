@@ -1,0 +1,81 @@
+<div class="page-shell">
+  <aside class="sidebar">
+    <nav class="nav-links">
+      <p class="nav-label">Navigation</p>
+      <a routerLink="/" class="nav-item nav-item--active">
+        <span class="nav-dot nav-dot--active"></span>
+        Home
+      </a>
+      <a routerLink="/login" class="nav-item">
+        <span class="nav-dot"></span>
+        Login
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <p class="stack-label">Tech Stack</p>
+      <div class="stack-badges">
+        <span class="stack-badge stack-badge--spring">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M21.8 9.5c-.4-1.4-1.1-2.7-2-3.8L21 4.5l-1.5-1.5-1.2 1.2C17.1 3 15.1 2 13 2 7.5 2 3 6.5 3 12s4.5 10 10 10 10-4.5 10-10c0-.9-.1-1.7-.2-2.5zM13 20c-4.4 0-8-3.6-8-8s3.6-8 8-8c1.8 0 3.4.6 4.7 1.6L8.6 14.7c-.4.4-.4 1 0 1.4.2.2.5.3.7.3s.5-.1.7-.3l9.1-9.1c1 1.3 1.6 2.9 1.6 4.7-.1 4.4-3.7 8-8.4 8z"/></svg>
+          Spring Boot
+        </span>
+        <span class="stack-badge stack-badge--angular">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 6.5l1.5 13L12 22l8.5-2.5L22 6.5 12 2zm0 2.2l7 4.1-1.3 11.2L12 21.2l-5.7-1.7L5 8.3l7-4.1zm0 3.3L7.5 17h1.8l.9-2.3h3.6l.9 2.3h1.8L12 7.5zm0 2.3l1.4 3.4h-2.8L12 9.8z"/></svg>
+          Angular
+        </span>
+        <span class="stack-badge stack-badge--tailwind">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6C9.3 6 7.5 7.4 6.6 10.1c1.3-1.7 2.8-2.3 4.4-1.9.96.24 1.64.94 2.4 1.71C14.64 11.16 16.07 12.6 19.2 12.6c2.7 0 4.5-1.4 5.4-4.1-1.3 1.7-2.8 2.3-4.4 1.9-.96-.24-1.64-.94-2.4-1.71C16.56 7.44 15.13 6 12 6zm-7.2 6.6C2.1 12.6.3 14 .6 16.7c1.3-1.7 2.8-2.3 4.4-1.9.96.24 1.64.94 2.4 1.71C8.64 17.76 10.07 19.2 13.2 19.2c2.7 0 4.5-1.4 5.4-4.1-1.3 1.7-2.8 2.3-4.4 1.9-.96-.24-1.64-.94-2.4-1.71-1.2-1.24-2.63-2.68-5.76-2.68z"/></svg>
+          Tailwind
+        </span>
+        <span class="stack-badge stack-badge--api">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+          REST API
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Select Your Account</h1>
+      <p class="page-desc">Choose a user profile to continue to the login portal</p>
+    </header>
+
+    @if (errorMessage) {
+      <div style="margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(239,68,68,0.45); background: rgba(239,68,68,0.12); color: #fecaca;">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <div class="cards-grid">
+      @for (user of users; track user.username) {
+        <button
+          type="button"
+          (click)="goToLogin(user.username)"
+          class="user-card"
+        >
+          <div class="card-top">
+            <div class="avatar" [style.background]="user.avatarColor">
+              {{ user.initials }}
+            </div>
+            <div class="user-info">
+              <p class="user-name">{{ user.displayName }}</p>
+              <p class="user-role">{{ user.role }}</p>
+            </div>
+            <svg class="card-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="card-footer">
+            <span
+              class="card-tag"
+              [style.color]="user.tagColor"
+              [style.background]="user.tagBg"
+            >{{ user.tag }}</span>
+          </div>
+        </button>
+      }
+    </div>
+  </main>
+</div>

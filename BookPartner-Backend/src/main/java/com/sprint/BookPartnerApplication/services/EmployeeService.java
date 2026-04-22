@@ -16,4 +16,6 @@ public interface EmployeeService {
     EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto);
 
     List<EmployeeResponseDTO> getEmployeesByPublisher(String publisherId);
+    
+    void deleteEmployee(String empId);
 }

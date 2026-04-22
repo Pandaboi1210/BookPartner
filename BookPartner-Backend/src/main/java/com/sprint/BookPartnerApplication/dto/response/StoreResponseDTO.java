@@ -1,7 +1,6 @@
 package com.sprint.BookPartnerApplication.dto.response;
 
 
-import java.util.List;
 
 public class StoreResponseDTO {
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class TitleServiceImpl implements TitleService 
 {
@@ -39,6 +40,43 @@ public class TitleServiceImpl implements TitleService
                 .stream()
                 .map(this::mapToResponseDTO)
                 .toList(); 
+    }
+
+    @Override
+    public List<TitleResponseDTO> getTitlesFiltered(String type, String publisher, Double minPrice, Double maxPrice) {
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            throw new InvalidInputException("Minimum price cannot be greater than maximum price.");
+        }
+
+        String normalizedType = type == null ? null : type.trim();
+        String normalizedPublisher = publisher == null ? null : publisher.trim();
+
+        if (normalizedPublisher != null && !normalizedPublisher.isBlank() && !publishersRepository.existsById(normalizedPublisher)) {
+            throw new ResourceNotFoundException("Publisher not found with ID: " + normalizedPublisher);
+        }
+
+        return titleRepository.findAll()
+                .stream()
+                .filter(t -> {
+                    if (normalizedType == null || normalizedType.isBlank()) return true;
+                    String tt = t.getType() == null ? "" : t.getType();
+                    return tt.equalsIgnoreCase(normalizedType);
+                })
+                .filter(t -> {
+                    if (normalizedPublisher == null || normalizedPublisher.isBlank()) return true;
+                    return t.getPublisher() != null
+                            && normalizedPublisher.equalsIgnoreCase(t.getPublisher().getPubId());
+                })
+                .filter(t -> {
+                    if (minPrice == null) return true;
+                    return t.getPrice() != null && t.getPrice() >= minPrice;
+                })
+                .filter(t -> {
+                    if (maxPrice == null) return true;
+                    return t.getPrice() != null && t.getPrice() <= maxPrice;
+                })
+                .map(this::mapToResponseDTO)
+                .toList();
     }
 
     @Override
