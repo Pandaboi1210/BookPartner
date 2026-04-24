@@ -1,17 +1,15 @@
 package com.sprint.BookPartnerApplication.testinsert;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.TitleAuthorRequestDTO;
 import com.sprint.BookPartnerApplication.services.TitleAuthorService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(10)
 public class TitleAuthorDataInsertTest {
 
     @Autowired private TitleAuthorService titleAuthorService;
@@ -20,7 +18,15 @@ public class TitleAuthorDataInsertTest {
     interface InsertAction { void execute(); }
 
     private void safeInsert(InsertAction action) {
-        try { action.execute(); } catch (Exception e) { /* Already exists, skip */ }
+        try {
+            action.execute();
+        } catch (Exception e) {
+            String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+            if (message.contains("already exists") || message.contains("duplicate")) {
+                return;
+            }
+            throw new RuntimeException("TitleAuthor insert failed: " + e.getMessage(), e);
+        }
     }
 
     private void insertTitleAuthor(String auId, String titleId, int auOrd, int royaltyper) {

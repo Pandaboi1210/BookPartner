@@ -3,17 +3,15 @@ package com.sprint.BookPartnerApplication.testinsert;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.SalesRequestDTO;
 import com.sprint.BookPartnerApplication.services.SalesService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(9)
 public class SalesDataInsertTest {
 
     @Autowired private SalesService salesService;
@@ -22,7 +20,15 @@ public class SalesDataInsertTest {
     interface InsertAction { void execute(); }
 
     private void safeInsert(InsertAction action) {
-        try { action.execute(); } catch (Exception e) { /* Already exists, skip */ }
+        try {
+            action.execute();
+        } catch (Exception e) {
+            String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+            if (message.contains("already exists") || message.contains("duplicate")) {
+                return;
+            }
+            throw new RuntimeException("Sales insert failed: " + e.getMessage(), e);
+        }
     }
 
     private void insertSale(String storId, String ordNum, String ordDate,

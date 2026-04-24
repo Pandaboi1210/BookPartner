@@ -1,6 +1,7 @@
 package com.sprint.BookPartnerApplication.testinsert;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -10,6 +11,7 @@ import com.sprint.BookPartnerApplication.dto.request.StoreRequestDTO;
 import com.sprint.BookPartnerApplication.services.StoreService;
 
 @SpringBootTest
+@Order(3)
 @Transactional
 @Rollback(false)
 public class StoreDataInsertTest {

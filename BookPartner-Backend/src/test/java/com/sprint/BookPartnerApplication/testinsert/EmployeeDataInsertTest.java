@@ -3,17 +3,15 @@ package com.sprint.BookPartnerApplication.testinsert;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
 import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(7)
 public class EmployeeDataInsertTest {
 
     @Autowired
@@ -28,7 +26,11 @@ public class EmployeeDataInsertTest {
         try {
             action.execute();
         } catch (Exception e) {
-            // Already exists, skip
+            String message = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+            if (message.contains("already exists") || message.contains("duplicate")) {
+                return;
+            }
+            throw new RuntimeException("Employee insert failed: " + e.getMessage(), e);
         }
     }
 
