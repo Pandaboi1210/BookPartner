@@ -111,6 +111,13 @@ export class HemaHamsaveniComponent {
 
     // --- HANDLE: GET ALL TITLES ---
     if (this.currentModalType === 'GET_ALL') {
+      
+      // Prevent invalid price ranges
+      if (this.filterMinPrice !== null && this.filterMaxPrice !== null && this.filterMinPrice > this.filterMaxPrice) {
+        this.errorMessage = 'Minimum price cannot be greater than maximum price.';
+        this.isLoading = false; return;
+      }
+
       this.titleService.getAllTitles(this.filterType, this.filterPublisher, this.filterMinPrice, this.filterMaxPrice).subscribe({
         next: (data) => { 
           let finalArray = data;
@@ -176,10 +183,26 @@ export class HemaHamsaveniComponent {
 
     // --- HANDLE: POST (LINK AUTHOR) ---
     else if (this.currentModalType === 'POST' && this.currentEntity === 'TITLE_AUTHOR') {
-      if (!this.newLink.auId || !this.newLink.titleId) {
-        this.errorMessage = 'Both Author ID and Title ID are required.';
+      
+      // New Frontend Validations matching Backend DTO
+      const auIdRegex = /^[0-9]{3}-[0-9]{2}-[0-9]{4}$/;
+      if (!this.newLink.auId || !auIdRegex.test(this.newLink.auId)) {
+        this.errorMessage = 'Author ID is required and must be in XXX-XX-XXXX format.';
         this.isLoading = false; return;
       }
+      if (!this.newLink.titleId || this.newLink.titleId.length > 10) {
+        this.errorMessage = 'Title ID is required and cannot exceed 10 characters.';
+        this.isLoading = false; return;
+      }
+      if (this.newLink.auOrd !== null && this.newLink.auOrd < 1) {
+        this.errorMessage = 'Author order must be at least 1.';
+        this.isLoading = false; return;
+      }
+      if (this.newLink.royaltyper !== null && (this.newLink.royaltyper < 0 || this.newLink.royaltyper > 100)) {
+        this.errorMessage = 'Royalty percentage must be between 0 and 100.';
+        this.isLoading = false; return;
+      }
+
       this.titleAuthorService.createTitleAuthor(this.newLink).subscribe({
         next: (data) => { this.apiResult = data; this.isLoading = false; this.cdr.detectChanges(); },
         error: (err) => { this.errorMessage = err.error?.message || 'Link failed.'; this.isLoading = false; this.cdr.detectChanges(); }
