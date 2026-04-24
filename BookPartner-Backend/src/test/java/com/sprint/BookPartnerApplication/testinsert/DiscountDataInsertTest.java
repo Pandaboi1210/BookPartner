@@ -3,6 +3,7 @@ package com.sprint.BookPartnerApplication.testinsert;
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -12,6 +13,7 @@ import com.sprint.BookPartnerApplication.dto.request.DiscountRequestDTO;
 import com.sprint.BookPartnerApplication.services.DiscountService;
 
 @SpringBootTest
+@Order(6)
 @Transactional
 @Rollback(false)
 public class DiscountDataInsertTest {
