@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -34,10 +35,33 @@ public class DiscountController {
 
     // GET ALL
     @GetMapping
-    public ResponseEntity<List<DiscountResponseDTO>> getAllDiscounts() {
+    public ResponseEntity<List<DiscountResponseDTO>> getAllDiscounts(
+            @RequestParam(required = false) String storeId,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Integer minLowQty,
+            @RequestParam(required = false) Integer maxHighQty,
+            @RequestParam(required = false) BigDecimal minDiscount,
+            @RequestParam(required = false) BigDecimal maxDiscount
+    ) {
 
-        List<DiscountResponseDTO> data =
-                discountService.getAllDiscounts();
+        boolean anyFilter =
+                (storeId != null && !storeId.isBlank()) ||
+                (type != null && !type.isBlank()) ||
+                (minLowQty != null) ||
+                (maxHighQty != null) ||
+                (minDiscount != null) ||
+                (maxDiscount != null);
+
+        List<DiscountResponseDTO> data = anyFilter
+                ? discountService.getDiscountsFiltered(
+                        storeId,
+                        type,
+                        minLowQty,
+                        maxHighQty,
+                        minDiscount,
+                        maxDiscount
+                )
+                : discountService.getAllDiscounts();
 
         return ok(data);
     }

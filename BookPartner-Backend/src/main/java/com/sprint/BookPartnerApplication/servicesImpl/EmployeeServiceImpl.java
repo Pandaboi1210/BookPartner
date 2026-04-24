@@ -108,6 +108,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         existing.setHireDate(dto.getHireDate());
+        existing.setPubId(dto.getPubId());
 
         Employee updated = empRepo.save(existing);
 
@@ -135,9 +136,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setHireDate(emp.getHireDate());
 
         if (emp.getJob() != null) {
+            dto.setJobId(Integer.valueOf(emp.getJob().getJobId()));
             dto.setJobDesc(emp.getJob().getJobDesc());
         }
 
         return dto;
+    }
+    @Override
+    public void deleteEmployee(String empId) {
+        if (!empRepo.existsById(empId)) {
+            throw new EmployeeException("Employee not found with ID: " + empId);
+        }
+        empRepo.deleteById(empId);
     }
 }

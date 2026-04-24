@@ -10,6 +10,7 @@ public class EmployeeResponseDTO {
     private String lname;
     private int jobLvl;
     private String pubId;
+    private Integer jobId;
     private String jobDesc;
     private LocalDate hireDate;
 	public String getEmpId() {
@@ -47,6 +48,12 @@ public class EmployeeResponseDTO {
 	}
 	public void setPubId(String pubId) {
 		this.pubId = pubId;
+	}
+	public Integer getJobId() {
+		return jobId;
+	}
+	public void setJobId(Integer jobId) {
+		this.jobId = jobId;
 	}
 	public String getJobDesc() {
 		return jobDesc;

@@ -29,17 +29,15 @@ public class TitleController {
             @RequestParam(required = false) Double minPrice, 
             @RequestParam(required = false) Double maxPrice) {
         
-        List<TitleResponseDTO> data;
+        boolean anyFilter =
+                (type != null && !type.isBlank()) ||
+                (publisher != null && !publisher.isBlank()) ||
+                (minPrice != null) ||
+                (maxPrice != null);
 
-        if (type != null) {
-            data = titleService.getTitlesByType(type);
-        } else if (publisher != null) {
-            data = titleService.getTitlesByPublisher(publisher);
-        } else if (minPrice != null && maxPrice != null) {
-            data = titleService.getTitlesByPriceRange(minPrice, maxPrice);
-        } else {
-            data = titleService.getAllTitles();
-        }
+        List<TitleResponseDTO> data = anyFilter
+                ? titleService.getTitlesFiltered(type, publisher, minPrice, maxPrice)
+                : titleService.getAllTitles();
 
         return ok(data);
     }

@@ -5,8 +5,6 @@ import com.sprint.BookPartnerApplication.dto.response.SalesResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.SalesId;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
-import com.sprint.BookPartnerApplication.exception.InvalidInputException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SalesServiceImpl implements SalesService {

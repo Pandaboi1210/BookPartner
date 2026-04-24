@@ -72,6 +72,13 @@ public class EmployeeController {
 
         return ok(data);
     }
+    
+    // DELETE
+    @DeleteMapping("/{empId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable String empId) {
+        service.deleteEmployee(empId);
+        return ResponseEntity.noContent().build();
+    }
 
     // 🔹 Helper methods
     private <T> ResponseEntity<T> ok(T data) {

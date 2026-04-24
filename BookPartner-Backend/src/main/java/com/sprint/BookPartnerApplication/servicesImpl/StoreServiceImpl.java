@@ -7,7 +7,6 @@ import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StoreServiceImpl implements StoreService {
