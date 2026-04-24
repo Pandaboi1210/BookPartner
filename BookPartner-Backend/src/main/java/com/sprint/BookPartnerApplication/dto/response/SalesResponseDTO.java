@@ -1,7 +1,5 @@
 package com.sprint.BookPartnerApplication.dto.response;
 
-
-
 import java.time.LocalDateTime;
 
 public class SalesResponseDTO {
@@ -12,12 +10,9 @@ public class SalesResponseDTO {
     private LocalDateTime ordDate;
     private short qty;
     private String payterms;
+    private String storeName;
+    private String titleName;
 
-    // Optional enriched fields from related entities
-    private String storeName;   // from Store
-    private String titleName;   // from Title
-
-    // Getters & Setters
     public String getStorId() { return storId; }
     public void setStorId(String storId) { this.storId = storId; }
 

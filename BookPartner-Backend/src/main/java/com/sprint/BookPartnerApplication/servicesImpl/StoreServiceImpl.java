@@ -6,18 +6,18 @@ import com.sprint.BookPartnerApplication.dto.response.StoreResponseDTO;
 import com.sprint.BookPartnerApplication.entity.Discounts;
 import com.sprint.BookPartnerApplication.entity.Sales;
 import com.sprint.BookPartnerApplication.entity.Store;
+import com.sprint.BookPartnerApplication.entity.Title;
 import com.sprint.BookPartnerApplication.exception.BadRequestException;
-import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException;
 import com.sprint.BookPartnerApplication.repository.DiscountRepository;
 import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.repository.StoreRepository;
+import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.services.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StoreServiceImpl implements StoreService {
@@ -30,6 +30,9 @@ public class StoreServiceImpl implements StoreService {
 
     @Autowired
     private DiscountRepository discountsRepository;
+
+    @Autowired
+    private TitleRepository titleRepository;
 
     private Store mapToEntity(StoreRequestDTO dto) {
         Store store = new Store();
@@ -53,6 +56,39 @@ public class StoreServiceImpl implements StoreService {
 
         if (store.getSales() != null) {
             dto.setTotalSales(store.getSales().size());
+        }
+
+        return dto;
+    }
+
+    // ✅ Reusable method to map Sales entity → SalesResponseDTO with storeName + titleName
+    private SalesResponseDTO mapSaleToResponseDTO(Sales s) {
+        SalesResponseDTO dto = new SalesResponseDTO();
+        dto.setStorId(s.getStorId());
+        dto.setOrdNum(s.getOrdNum());
+        dto.setTitleId(s.getTitleId());
+        dto.setOrdDate(s.getOrdDate());
+        dto.setQty(s.getQty());
+        dto.setPayterms(s.getPayterms());
+
+        // ✅ Get storeName from the JOIN FETCHed store relationship
+        if (s.getStore() != null) {
+            dto.setStoreName(s.getStore().getStorName());
+        } else {
+            // fallback: query directly
+            storeRepository.findById(s.getStorId()).ifPresent(store ->
+                dto.setStoreName(store.getStorName())
+            );
+        }
+
+        // ✅ Get titleName from the JOIN FETCHed title relationship
+        if (s.getTitle() != null) {
+            dto.setTitleName(s.getTitle().getTitle());
+        } else {
+            // fallback: query directly
+            titleRepository.findById(s.getTitleId()).ifPresent(title ->
+                dto.setTitleName(title.getTitle())
+            );
         }
 
         return dto;
@@ -132,23 +168,18 @@ public class StoreServiceImpl implements StoreService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + storeId));
 
-        List<Sales> sales = salesRepository.findByStorId(storeId);
+        // ✅ Uses JOIN FETCH query so store and title are already loaded
+        List<Sales> sales = salesRepository.findByStorIdWithDetails(storeId);
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
                     "No sales found for store ID: " + storeId);
         }
 
-        return sales.stream().map(s -> {
-            SalesResponseDTO dto = new SalesResponseDTO();
-            dto.setStorId(s.getStorId());
-            dto.setOrdNum(s.getOrdNum());
-            dto.setTitleId(s.getTitleId());
-            dto.setOrdDate(s.getOrdDate());
-            dto.setQty(s.getQty());
-            dto.setPayterms(s.getPayterms());
-            return dto;
-        }).toList();
+        // ✅ Now uses mapSaleToResponseDTO which correctly sets storeName and titleName
+        return sales.stream()
+                .map(this::mapSaleToResponseDTO)
+                .toList();
     }
 
     @Override

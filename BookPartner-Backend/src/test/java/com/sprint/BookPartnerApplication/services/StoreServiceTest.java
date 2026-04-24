@@ -98,7 +98,7 @@ public class StoreServiceTest {
         sale.setStorId("7066");
 
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
-        when(salesRepository.findByStorId("7066")).thenReturn(List.of(sale));
+        when(salesRepository.findByStorIdWithDetails("7066")).thenReturn(List.of(sale));
 
         assertEquals(1, storeService.getSalesByStore("7066").size());
     }
@@ -106,7 +106,7 @@ public class StoreServiceTest {
     @Test
     void testGetSalesByStore_NoSales() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
-        when(salesRepository.findByStorId("7066")).thenReturn(Collections.emptyList());
+        when(salesRepository.findByStorIdWithDetails("7066")).thenReturn(Collections.emptyList());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> storeService.getSalesByStore("7066"));

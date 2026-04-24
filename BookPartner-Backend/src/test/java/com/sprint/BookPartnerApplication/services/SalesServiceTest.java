@@ -98,7 +98,7 @@ public class SalesServiceTest {
     @Test
     void testGetSalesByStore_WithData() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
-        when(salesRepository.findByStorId("7066")).thenReturn(List.of(sales));
+        when(salesRepository.findByStorIdWithDetails("7066")).thenReturn(List.of(sales));
 
         assertEquals(1, salesService.getSalesByStore("7066").size());
     }
@@ -106,7 +106,7 @@ public class SalesServiceTest {
     @Test
     void testGetSalesByStore_NoSales_ThrowsException() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
-        when(salesRepository.findByStorId("7066")).thenReturn(Collections.emptyList());
+        when(salesRepository.findByStorIdWithDetails("7066")).thenReturn(Collections.emptyList());
 
         assertThrows(RuntimeException.class,
                 () -> salesService.getSalesByStore("7066"));

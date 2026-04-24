@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/stores")
 public class StoreController {
@@ -58,6 +58,8 @@ public class StoreController {
     public ResponseEntity<StoreResponseDTO> updateStore(
             @PathVariable String storeId,
             @Valid @RequestBody StoreRequestDTO dto) {
+
+        System.out.println("Controller storeId = " + storeId);
 
         StoreResponseDTO data =
                 storeService.updateStore(storeId, dto);

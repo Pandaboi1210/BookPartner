@@ -36,11 +36,14 @@ public class Sales {
     @Column(name = "payterms", length = 12, nullable = false)
     private String payterms;
 
-    @ManyToOne
+    // ✅ KEY FIX: insertable=false, updatable=false because stor_id is already
+    // mapped as @Id @Column above — without this Hibernate throws duplicate column error
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stor_id", insertable = false, updatable = false)
     private Store store;
 
-    @ManyToOne
+    // ✅ KEY FIX: same fix for title_id
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "title_id", insertable = false, updatable = false)
     private Title title;
 
