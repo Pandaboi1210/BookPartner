@@ -2,22 +2,24 @@ package com.sprint.BookPartnerApplication.testinsert;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
+import com.sprint.BookPartnerApplication.repository.EmployeeRepository;
 import com.sprint.BookPartnerApplication.services.EmployeeService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(6)
 public class EmployeeDataInsertTest {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @FunctionalInterface
     interface InsertAction {
@@ -42,6 +44,7 @@ public class EmployeeDataInsertTest {
             String pubId,
             LocalDate hireDate) {
 
+        if (employeeRepository.existsById(empId)) return;
         safeInsert(() -> {
 
             EmployeeRequestDTO dto = new EmployeeRequestDTO();
@@ -61,6 +64,10 @@ public class EmployeeDataInsertTest {
 
     @Test
     public void insertEmployees() {
+        if (employeeRepository.count() >= 10) {
+            System.out.println("Already have " + employeeRepository.count() + " employees. Skipping insertion.");
+            return;
+        }
 
         insertEmployee("PTC11962M", "Philip", "T", "Cramer",
                 (short) 2, 215, "9952",
@@ -138,6 +145,6 @@ public class EmployeeDataInsertTest {
                 (short) 14, 35, "0877",
                 LocalDate.of(1990, 7, 24));
 
-        System.out.println("Employees inserted successfully.");
+        System.out.println("Employees insertion completed. Total count: " + employeeRepository.count());
     }
 }

@@ -2,21 +2,21 @@ package com.sprint.BookPartnerApplication.testinsert;
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.TitleRequestDTO;
+import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.services.TitleService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(5)
 public class TitleDataInsertTest {
 
     @Autowired private TitleService titleService;
+    @Autowired private TitleRepository titleRepository;
 
     @FunctionalInterface
     interface InsertAction { void execute(); }
@@ -28,6 +28,7 @@ public class TitleDataInsertTest {
     private void insertTitle(String id, String title, String type,
                              String pubId, double price, double advance,
                              int royalty, int ytdSales, String notes, String pubdate) {
+        if (titleRepository.existsById(id)) return;
         safeInsert(() -> {
             TitleRequestDTO dto = new TitleRequestDTO();
             dto.setTitleId(id);
@@ -45,8 +46,12 @@ public class TitleDataInsertTest {
     }
 
     @Test
-	public
-    void insertTitles() {
+    public void insertTitles() {
+        if (titleRepository.count() >= 10) {
+            System.out.println("Already have " + titleRepository.count() + " titles. Skipping insertion.");
+            return;
+        }
+
         insertTitle("PC8888", "Secrets of Silicon Valley",                                       "popular_comp", "1389", 20.00,  8000.00, 10, 4095,  "Muckraking reporting on the worlds largest computer hardware and software manufacturers.",                                                                                           "1994-06-12");
         insertTitle("BU1032", "The Busy Executive's Database Guide",                             "business",     "1389", 19.99,  5000.00, 10, 4095,  "An overview of available database systems with emphasis on common business applications. Illustrated.",                                                                                "1991-06-12");
         insertTitle("PS7777", "Emotional Security: A New Algorithm",                             "psychology",   "0736",  7.99,  4000.00, 10, 3336,  "Protecting yourself and your loved ones from undue emotional stress in the modern world. Use of computer and nutritional aids emphasized.",                                           "1991-06-12");
@@ -63,6 +68,6 @@ public class TitleDataInsertTest {
         insertTitle("TC3218", "Onions, Leeks, and Garlic: Cooking Secrets of the Mediterranean", "trad_cook",    "0877", 20.95,  7000.00, 10, 375,   "Profusely illustrated in color, this makes a wonderful gift book for a cuisine-oriented friend.",                                                                                     "1991-10-21");
         insertTitle("BU7832", "Straight Talk About Computers",                                   "business",     "1389", 19.99,  5000.00, 10, 4095,  "Annotated analysis of what computers can do for you: a no-hype guide for the critical user.",                                                                                        "1991-06-22");
         insertTitle("PS1372", "Computer Phobic AND Non-Phobic Individuals: Behavior Variations", "psychology",   "0877", 21.59,  7000.00, 10, 375,   "A must for the specialist, this book examines the difference between those who hate and fear computers and those who don't.",                                                          "1991-10-21");
-        System.out.println("Titles inserted.");
+        System.out.println("Titles insertion completed. Total count: " + titleRepository.count());
     }
 }

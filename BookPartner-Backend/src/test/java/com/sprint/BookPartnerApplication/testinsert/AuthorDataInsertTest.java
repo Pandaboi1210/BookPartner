@@ -1,20 +1,20 @@
 package com.sprint.BookPartnerApplication.testinsert;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.AuthorsRequestDTO;
+import com.sprint.BookPartnerApplication.repository.AuthorsRepository;
 import com.sprint.BookPartnerApplication.services.AuthorsService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(4)
 public class AuthorDataInsertTest {
 
     @Autowired private AuthorsService authorsService;
+    @Autowired private AuthorsRepository authorsRepository;
 
     @FunctionalInterface
     interface InsertAction { void execute(); }
@@ -26,6 +26,7 @@ public class AuthorDataInsertTest {
     private void insertAuthor(String id, String lname, String fname,
                               String phone, String address, String city,
                               String state, String zip, int contract) {
+        if (authorsRepository.existsById(id)) return;
         safeInsert(() -> {
             AuthorsRequestDTO dto = new AuthorsRequestDTO();
             dto.setAuId(id);
@@ -42,8 +43,12 @@ public class AuthorDataInsertTest {
     }
 
     @Test
-	public
-    void insertAuthors() {
+    public void insertAuthors() {
+        if (authorsRepository.count() >= 10) {
+            System.out.println("Already have " + authorsRepository.count() + " authors. Skipping insertion.");
+            return;
+        }
+
         insertAuthor("409-56-7008", "Bennet",         "Abraham",     "415 658-9932", "6223 Bateman St.",      "Berkeley",       "CA", "94705", 1);
         insertAuthor("213-46-8915", "Green",          "Marjorie",    "415 986-7020", "309 63rd St. #411",     "Oakland",        "CA", "94618", 1);
         insertAuthor("238-95-7766", "Carson",         "Cheryl",      "415 548-7723", "589 Darwin Ln.",        "Berkeley",       "CA", "94705", 1);
@@ -67,6 +72,6 @@ public class AuthorDataInsertTest {
         insertAuthor("486-29-1786", "Locksley",       "Charlene",    "415 585-4620", "18 Broadway Av.",       "San Francisco",  "CA", "94130", 1);
         insertAuthor("648-92-1872", "Blotchet-Halls", "Reginald",    "503 745-6402", "55 Hillsdale Bl.",      "Corvallis",      "OR", "97330", 1);
         insertAuthor("341-22-1782", "Smith",          "Meander",     "913 843-0462", "10 Mississippi Dr.",    "Lawrence",       "KS", "66044", 0);
-        System.out.println("Authors inserted.");
+        System.out.println("Authors insertion completed. Total count: " + authorsRepository.count());
     }
 }

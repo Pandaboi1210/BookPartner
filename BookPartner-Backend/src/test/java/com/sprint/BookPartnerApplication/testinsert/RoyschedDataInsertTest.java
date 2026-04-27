@@ -1,20 +1,20 @@
 package com.sprint.BookPartnerApplication.testinsert;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.RoyschedRequestDTO;
+import com.sprint.BookPartnerApplication.repository.RoyschedRepository;
 import com.sprint.BookPartnerApplication.services.RoyschedService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(9)
 public class RoyschedDataInsertTest {
 
     @Autowired private RoyschedService royschedService;
+    @Autowired private RoyschedRepository royschedRepository;
 
     @FunctionalInterface
     interface InsertAction { void execute(); }
@@ -24,6 +24,9 @@ public class RoyschedDataInsertTest {
     }
 
     private void insertRoysched(String titleId, int lorange, int hirange, int royalty) {
+        try {
+            if (royschedRepository.existsRoyschedRange(titleId, lorange, hirange)) return;
+        } catch (Exception e) { return; }
         safeInsert(() -> {
             RoyschedRequestDTO dto = new RoyschedRequestDTO();
             dto.setTitleId(titleId);
@@ -35,8 +38,12 @@ public class RoyschedDataInsertTest {
     }
 
     @Test
-	public
-    void insertRoysched() {
+    public void insertRoysched() {
+        if (royschedRepository.count() >= 10) {
+            System.out.println("Already have " + royschedRepository.count() + " roysched entries. Skipping insertion.");
+            return;
+        }
+
         insertRoysched("BU1032",     0,   5000, 10); insertRoysched("BU1032",  5001,  50000, 12);
         insertRoysched("PC1035",     0,   2000, 10); insertRoysched("PC1035",  2001,   3000, 12);
         insertRoysched("PC1035",  3001,   4000, 14); insertRoysched("PC1035",  4001,  10000, 16);
@@ -82,6 +89,6 @@ public class RoyschedDataInsertTest {
         insertRoysched("PS1372",     0,  10000, 10); insertRoysched("PS1372", 10001,  20000, 12);
         insertRoysched("PS1372", 20001,  30000, 14); insertRoysched("PS1372", 30001,  40000, 16);
         insertRoysched("PS1372", 40001,  50000, 18);
-        System.out.println("Roysched inserted.");
+        System.out.println("Roysched insertion completed. Total count: " + royschedRepository.count());
     }
 }

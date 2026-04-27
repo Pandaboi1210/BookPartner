@@ -2,21 +2,22 @@ package com.sprint.BookPartnerApplication.testinsert;
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.SalesRequestDTO;
+import com.sprint.BookPartnerApplication.entity.SalesId;
+import com.sprint.BookPartnerApplication.repository.SalesRepository;
 import com.sprint.BookPartnerApplication.services.SalesService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(10)
 public class SalesDataInsertTest {
 
     @Autowired private SalesService salesService;
+    @Autowired private SalesRepository salesRepository;
 
     @FunctionalInterface
     interface InsertAction { void execute(); }
@@ -27,6 +28,10 @@ public class SalesDataInsertTest {
 
     private void insertSale(String storId, String ordNum, String ordDate,
                             int qty, String payterms, String titleId) {
+        try {
+            SalesId salesId = new SalesId(storId, ordNum, titleId);
+            if (salesRepository.existsById(salesId)) return;
+        } catch (Exception e) { return; }
         safeInsert(() -> {
             SalesRequestDTO dto = new SalesRequestDTO();
             dto.setStorId(storId);
@@ -40,8 +45,12 @@ public class SalesDataInsertTest {
     }
 
     @Test
-	public
-    void insertSales() {
+    public void insertSales() {
+        if (salesRepository.count() >= 10) {
+            System.out.println("Already have " + salesRepository.count() + " sales. Skipping insertion.");
+            return;
+        }
+
         insertSale("7066", "QA7442.3", "1994-09-13", 75, "ON invoice", "PS2091");
         insertSale("7067", "D4482",    "1994-09-14", 10, "Net 60",     "PS2091");
         insertSale("7131", "N914008",  "1994-09-14", 20, "Net 30",     "PS2091");
@@ -63,6 +72,6 @@ public class SalesDataInsertTest {
         insertSale("7067", "P2121",    "1992-06-15", 40, "Net 30",     "TC3218");
         insertSale("7067", "P2121",    "1992-06-15", 20, "Net 30",     "TC4203");
         insertSale("7067", "P2121",    "1992-06-15", 20, "Net 30",     "TC7777");
-        System.out.println("Sales inserted.");
+        System.out.println("Sales insertion completed. Total count: " + salesRepository.count());
     }
 }

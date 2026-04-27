@@ -1,20 +1,21 @@
 package com.sprint.BookPartnerApplication.testinsert;
 
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sprint.BookPartnerApplication.dto.request.TitleAuthorRequestDTO;
+import com.sprint.BookPartnerApplication.entity.TitleAuthorId;
+import com.sprint.BookPartnerApplication.repository.TitleAuthorRepository;
 import com.sprint.BookPartnerApplication.services.TitleAuthorService;
 
 @SpringBootTest
-@Transactional
-@Rollback(false)
+@Order(8)
 public class TitleAuthorDataInsertTest {
 
     @Autowired private TitleAuthorService titleAuthorService;
+    @Autowired private TitleAuthorRepository titleAuthorRepository;
 
     @FunctionalInterface
     interface InsertAction { void execute(); }
@@ -24,6 +25,10 @@ public class TitleAuthorDataInsertTest {
     }
 
     private void insertTitleAuthor(String auId, String titleId, int auOrd, int royaltyper) {
+        try {
+            TitleAuthorId id = new TitleAuthorId(auId, titleId);
+            if (titleAuthorRepository.existsById(id)) return;
+        } catch (Exception e) { return; }
         safeInsert(() -> {
             TitleAuthorRequestDTO dto = new TitleAuthorRequestDTO();
             dto.setAuId(auId);
@@ -35,8 +40,12 @@ public class TitleAuthorDataInsertTest {
     }
 
     @Test
-	public
-    void insertTitleAuthors() {
+    public void insertTitleAuthors() {
+        if (titleAuthorRepository.count() >= 10) {
+            System.out.println("Already have " + titleAuthorRepository.count() + " title-authors. Skipping insertion.");
+            return;
+        }
+
         insertTitleAuthor("409-56-7008", "BU1032", 1, 60);
         insertTitleAuthor("486-29-1786", "PS7777", 1, 100);
         insertTitleAuthor("712-45-1867", "MC2222", 1, 100);
@@ -61,6 +70,6 @@ public class TitleAuthorDataInsertTest {
         insertTitleAuthor("267-41-2394", "TC7777", 2, 30);
         insertTitleAuthor("472-27-2349", "TC7777", 3, 30);
         insertTitleAuthor("648-92-1872", "TC4203", 1, 100);
-        System.out.println("TitleAuthors inserted.");
+        System.out.println("TitleAuthors insertion completed. Total count: " + titleAuthorRepository.count());
     }
 }
