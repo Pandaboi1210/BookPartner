@@ -3,7 +3,6 @@ package com.sprint.BookPartnerApplication.controller;
 import com.sprint.BookPartnerApplication.dto.request.RoyschedRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.RoyschedResponseDTO;
 import com.sprint.BookPartnerApplication.services.RoyschedService;
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,47 +20,31 @@ public class RoyschedController {
         this.royschedService = royschedService;
     }
 
-    // CREATE
+    // POST /api/v1/royalties
     @PostMapping
-    public ResponseEntity<RoyschedResponseDTO> createRoysched(
-            @Valid @RequestBody RoyschedRequestDTO requestDTO) {
-
-        RoyschedResponseDTO data =
-                royschedService.createRoysched(requestDTO);
-
-        return created(data);
+    public ResponseEntity<RoyschedResponseDTO> createRoysched(@Valid @RequestBody RoyschedRequestDTO requestDTO) {
+        return created(royschedService.createRoysched(requestDTO));
     }
 
-    // GET BY TITLE
+    // GET /api/v1/royalties/title/{titleId}
     @GetMapping("/title/{titleId}")
-    public ResponseEntity<List<RoyschedResponseDTO>> getRoyschedByTitle(
-            @PathVariable String titleId) {
-
-        List<RoyschedResponseDTO> data =
-                royschedService.getRoyschedByTitle(titleId);
-
-        return ok(data);
+    public ResponseEntity<List<RoyschedResponseDTO>> getRoyschedByTitle(@PathVariable String titleId) {
+        return ok(royschedService.getRoyschedByTitle(titleId));
     }
 
-    // UPDATE
+    // PUT /api/v1/royalties/{royaltyId}
     @PutMapping("/{royaltyId}")
     public ResponseEntity<RoyschedResponseDTO> updateRoysched(
             @PathVariable Integer royaltyId,
             @Valid @RequestBody RoyschedRequestDTO requestDTO) {
-
-        RoyschedResponseDTO data =
-                royschedService.updateRoysched(
-                        royaltyId,
-                        requestDTO);
-
-        return ok(data);
+        return ok(royschedService.updateRoysched(royaltyId, requestDTO));
     }
+
     private <T> ResponseEntity<T> ok(T data) {
         return ResponseEntity.ok(data);
     }
+
     private <T> ResponseEntity<T> created(T data) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 }

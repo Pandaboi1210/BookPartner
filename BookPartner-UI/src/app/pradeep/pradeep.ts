@@ -14,14 +14,16 @@ import { AuthService } from '../auth/auth.service';
 })
 export class PradeepComponent {
 
-  showModal     = false;
-  modalTitle    = '';
-  method        = '';
-  paramType     = '';
-  endpointKey   = '';
+  // controls if the modal is open or not
+  showModal = false;
+  modalTitle = '';
+  method = '';
+  paramType = '';
+  endpointKey = '';
 
-  titleInput    = '';
-  storeIdInput  = '';
+  // filter inputs inside the modal form
+  titleInput = '';
+  storeIdInput = '';
   discountStoreFilter = '';
   discountTypeFilter = '';
   discountMinValue: number | null = null;
@@ -29,53 +31,45 @@ export class PradeepComponent {
   discountMinLowQty: number | null = null;
   discountMaxHighQty: number | null = null;
 
-  tableData: any[]   = [];
-  errorMessage       = '';
-  successMessage     = '';
-  isLoading          = false;
+  // table data and status flags
+  tableData: any[] = [];
+  errorMessage = '';
+  successMessage = '';
+  isLoading = false;
   isDiscountEditMode = false;
-  isRoyaltyEditMode  = false;
+  isRoyaltyEditMode = false;
 
-  /* Discount form */
+  // form for creating or updating a discount
   updateDiscountForm = {
     discountType: '',
-    storId:       '',
-    lowqty:       null as number | null,
-    highqty:      null as number | null,
-    discount:     null as number | null
+    storId: '',
+    lowqty: null as number | null,
+    highqty: null as number | null,
+    discount: null as number | null
   };
 
-  /* Royalty form */
+  // form for creating or updating a royalty
   updateRoyaltyForm = {
     royaltyId: null as number | null,
-    titleId:   '',
-    lorange:   null as number | null,
-    hirange:   null as number | null,
-    royalty:   null as number | null
+    titleId: '',
+    lorange: null as number | null,
+    hirange: null as number | null,
+    royalty: null as number | null
   };
 
+  // keeps key order stable in *ngFor, angular sorts them alphabetically otherwise
   originalOrder = (): number => 0;
 
+  // returns tailwind classes per cell based on what type of data the column holds
   getCellClass(key: unknown, value: any): Record<string, boolean> {
     const k = String(key ?? '').toLowerCase();
     const isEmpty = value === null || value === undefined || value === '';
 
-    const isId =
-      k.endsWith('id') ||
-      k.includes('id') ||
-      k.includes('type') ||
-      k.includes('title');
-
-    const isMoney =
-      k.includes('price') ||
-      k.includes('revenue') ||
-      k.includes('advance') ||
-      k.includes('discount');
-
+    const isId = k.endsWith('id') || k.includes('id') || k.includes('type') || k.includes('title');
+    const isMoney = k.includes('price') || k.includes('revenue') || k.includes('advance') || k.includes('discount');
     const isPercent = k.includes('royalty') || k.includes('percent') || k.includes('%');
     const isQty = k.includes('qty') || k.includes('quantity') || k.includes('low') || k.includes('high') || k.includes('range');
     const isDate = k.includes('date');
-
     const isNumber = typeof value === 'number' || (!isEmpty && !Number.isNaN(Number(value)));
 
     return {
@@ -100,14 +94,13 @@ export class PradeepComponent {
     this.router.navigate(['/']);
   }
 
-  /* ─── OPEN MODAL ─── */
+  // resets everything and opens the modal for the given endpoint
   openModal(method: string, title: string, paramType: string, endpoint: string) {
-    this.method       = method;
-    this.modalTitle   = title;
-    this.paramType    = paramType;
-    this.endpointKey  = endpoint;
-
-    this.titleInput   = '';
+    this.method = method;
+    this.modalTitle = title;
+    this.paramType = paramType;
+    this.endpointKey = endpoint;
+    this.titleInput = '';
     this.storeIdInput = '';
     this.discountStoreFilter = '';
     this.discountTypeFilter = '';
@@ -115,30 +108,36 @@ export class PradeepComponent {
     this.discountMaxValue = null;
     this.discountMinLowQty = null;
     this.discountMaxHighQty = null;
-    this.tableData    = [];
+    this.tableData = [];
     this.errorMessage = '';
     this.successMessage = '';
-    this.isLoading    = false;
+    this.isLoading = false;
     this.isDiscountEditMode = false;
     this.isRoyaltyEditMode = false;
-
     this.updateDiscountForm = {
-      discountType: '', storId: '', lowqty: null, highqty: null, discount: null
+      discountType: '',
+      storId: '',
+      lowqty: null,
+      highqty: null,
+      discount: null
     };
     this.updateRoyaltyForm = {
-      royaltyId: null, titleId: '', lorange: null, hirange: null, royalty: null
+      royaltyId: null,
+      titleId: '',
+      lorange: null,
+      hirange: null,
+      royalty: null
     };
-
     this.showModal = true;
   }
 
-  /* ─── CLOSE MODAL ─── */
   closeModal() {
     this.showModal = false;
     this.isDiscountEditMode = false;
     this.isRoyaltyEditMode = false;
   }
 
+  // maps raw api data into the discount form, handles both camelCase and lowercase field names
   private loadDiscountIntoForm(discountData: any) {
     this.updateDiscountForm = {
       discountType: discountData?.discounttype ?? discountData?.discountType ?? '',
@@ -149,52 +148,53 @@ export class PradeepComponent {
     };
   }
 
-  /* ─── HANDLE SUCCESS RESPONSE ─── */
-    handleResponse(res: any) {
+  // normalises the api response into a flat array so the table always has consistent data
+  handleResponse(res: any) {
     this.zone.run(() => {
-      console.log('HANDLE RESPONSE →', res);
- 
+      console.log('api response', res);
+
+      // unwrap envelope shapes like { content: [] } or { data: [] }, otherwise wrap single object
       let finalArray = res;
       if (res && !Array.isArray(res)) {
-        if      (res.content) finalArray = res.content;
-        else if (res.data)    finalArray = res.data;
-        else                  finalArray = [res];
+        if (res.content) finalArray = res.content;
+        else if (res.data) finalArray = res.data;
+        else finalArray = [res];
       }
- 
-      this.tableData      = Array.isArray(finalArray) ? finalArray : [];
-      this.isLoading      = false;
-      this.errorMessage   = '';
+
+      this.tableData = Array.isArray(finalArray) ? finalArray : [];
+      this.isLoading = false;
+      this.errorMessage = '';
+      // only show success banner if there are no rows to display
       this.successMessage = this.tableData.length === 0 ? 'Operation completed successfully.' : '';
- 
       this.cdr.detectChanges();
     });
   }
-  /* ─── HANDLE ERROR ─── */
+
   handleError(err: any) {
     this.zone.run(() => {
-      console.error('ERROR →', err);
+      console.error('api error', err);
       this.errorMessage = err?.error?.message || err?.message || 'Request failed.';
-      this.tableData    = [];
-      this.isLoading    = false;
+      this.tableData = [];
+      this.isLoading = false;
       this.cdr.detectChanges();
     });
   }
 
-  /* ─── EXECUTE (GET endpoints + createDiscount via form) ─── */
+  // main dispatcher, figures out which service call to make based on endpointKey
   execute() {
-    console.log('EXECUTE →', this.endpointKey);
+    console.log('executing', this.endpointKey);
 
-    this.tableData      = [];
-    this.errorMessage   = '';
+    this.tableData = [];
+    this.errorMessage = '';
     this.successMessage = '';
-    this.isLoading      = true;
+    this.isLoading = true;
 
     let request$;
 
     switch (this.endpointKey) {
 
-      /* ── GET ALL DISCOUNTS ── */
       case 'getAllDiscounts':
+        // all filters are optional here
         request$ = this.service.getAllDiscounts({
           storeId: this.discountStoreFilter || undefined,
           type: this.discountTypeFilter || undefined,
@@ -205,8 +205,8 @@ export class PradeepComponent {
         });
         break;
 
-      /* ── CREATE DISCOUNT (form-based) ── */
       case 'createDiscount': {
+        // discountType is the only required field
         if (!this.updateDiscountForm.discountType) {
           this.errorMessage = 'Discount Type is required';
           this.isLoading = false;
@@ -214,16 +214,15 @@ export class PradeepComponent {
         }
         const body = {
           discounttype: this.updateDiscountForm.discountType,
-          storId:       this.updateDiscountForm.storId,
-          lowqty:       this.updateDiscountForm.lowqty,
-          highqty:      this.updateDiscountForm.highqty,
-          discount:     this.updateDiscountForm.discount
+          storId: this.updateDiscountForm.storId,
+          lowqty: this.updateDiscountForm.lowqty,
+          highqty: this.updateDiscountForm.highqty,
+          discount: this.updateDiscountForm.discount
         };
         request$ = this.service.createDiscount(body);
         break;
       }
 
-      /* ── GET DISCOUNTS BY STORE ── */
       case 'getDiscountsByStore':
         if (!this.storeIdInput) {
           this.errorMessage = 'Store ID is required';
@@ -233,7 +232,6 @@ export class PradeepComponent {
         request$ = this.service.getDiscountsByStore(this.storeIdInput);
         break;
 
-      /* ── GET ROYALTY BY TITLE ── */
       case 'getRoyaltyByTitle':
         if (!this.titleInput) {
           this.errorMessage = 'Title is required';
@@ -243,8 +241,8 @@ export class PradeepComponent {
         request$ = this.service.getRoyaltyByTitle(this.titleInput);
         break;
 
-      /* ── GET AUTHOR ROYALTIES REPORT ── */
       case 'getAuthorRoyalties':
+        // no params needed for the full report
         request$ = this.service.getAuthorRoyalties();
         break;
 
@@ -255,86 +253,87 @@ export class PradeepComponent {
     }
 
     request$.subscribe({
-      next:  (res: any) => this.handleResponse(res),
+      next: (res: any) => this.handleResponse(res),
       error: (err: any) => this.handleError(err)
     });
   }
 
-  /* ─── UPDATE DISCOUNT ─── */
+  // two-phase update: first call fetches and pre-fills the form, second call saves it
   executeUpdateDiscount() {
-    console.log('EXECUTE UPDATE DISCOUNT');
+    console.log('update discount, edit mode:', this.isDiscountEditMode);
 
     if (!this.updateDiscountForm.discountType) {
       this.errorMessage = 'Discount Type is required';
       return;
     }
 
+    // phase 1: fetch the existing discount and load it into the form
     if (!this.isDiscountEditMode) {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';
       this.tableData = [];
 
-      this.service.getAllDiscounts({ type: this.updateDiscountForm.discountType })
-        .subscribe({
-          next: (res: any) => {
-            const rows = Array.isArray(res) ? res : (res?.content || res?.data || []);
-            const normalizedInputType = this.updateDiscountForm.discountType.trim().toLowerCase();
-            const matchedDiscount = rows.find((item: any) =>
-              String(item?.discounttype ?? item?.discountType ?? '').trim().toLowerCase() === normalizedInputType
-            ) || rows[0];
+      this.service.getAllDiscounts({ type: this.updateDiscountForm.discountType }).subscribe({
+        next: (res: any) => {
+          const rows = Array.isArray(res) ? res : (res?.content || res?.data || []);
+          const normalizedInput = this.updateDiscountForm.discountType.trim().toLowerCase();
+          // try exact match on type name, fall back to first row if nothing matches
+          const matchedDiscount = rows.find((item: any) =>
+            String(item?.discounttype ?? item?.discountType ?? '').trim().toLowerCase() === normalizedInput
+          ) || rows[0];
 
-            if (!matchedDiscount) {
-              this.errorMessage = `No discount found for type: ${this.updateDiscountForm.discountType}`;
-              this.isLoading = false;
-              this.cdr.detectChanges();
-              return;
-            }
-
-            this.loadDiscountIntoForm(matchedDiscount);
-            this.isDiscountEditMode = true;
-            this.successMessage = 'Discount fetched. You can edit the fields now.';
+          if (!matchedDiscount) {
+            this.errorMessage = `No discount found for type: ${this.updateDiscountForm.discountType}`;
             this.isLoading = false;
             this.cdr.detectChanges();
-          },
-          error: (err: any) => this.handleError(err)
-        });
+            return;
+          }
+
+          this.loadDiscountIntoForm(matchedDiscount);
+          this.isDiscountEditMode = true;
+          this.successMessage = 'Discount fetched. You can edit the fields now.';
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => this.handleError(err)
+      });
       return;
     }
 
-    this.isLoading      = true;
-    this.errorMessage   = '';
+    // phase 2: send the edited form as a PUT
+    this.isLoading = true;
+    this.errorMessage = '';
     this.successMessage = '';
 
     const body = {
       discounttype: this.updateDiscountForm.discountType,
-      storId:       this.updateDiscountForm.storId,
-      lowqty:       this.updateDiscountForm.lowqty,
-      highqty:      this.updateDiscountForm.highqty,
-      discount:     this.updateDiscountForm.discount
+      storId: this.updateDiscountForm.storId,
+      lowqty: this.updateDiscountForm.lowqty,
+      highqty: this.updateDiscountForm.highqty,
+      discount: this.updateDiscountForm.discount
     };
 
-    this.service.updateDiscount(this.updateDiscountForm.discountType, body)
-      .subscribe({
-        next:  (res: any) => {
-          this.isDiscountEditMode = false;
-          this.handleResponse(res);
-        },
-        error: (err: any) => this.handleError(err)
-      });
+    this.service.updateDiscount(this.updateDiscountForm.discountType, body).subscribe({
+      next: (res: any) => {
+        this.isDiscountEditMode = false; // reset so button goes back to its default label
+        this.handleResponse(res);
+      },
+      error: (err: any) => this.handleError(err)
+    });
   }
 
-  /* ─── CREATE ROYALTY ─── */
+  // straightforward POST, titleId is the only required field
   executeCreateRoyalty() {
-    console.log('EXECUTE CREATE ROYALTY');
+    console.log('creating royalty for:', this.updateRoyaltyForm.titleId);
 
     if (!this.updateRoyaltyForm.titleId) {
       this.errorMessage = 'Title ID is required';
       return;
     }
 
-    this.isLoading      = true;
-    this.errorMessage   = '';
+    this.isLoading = true;
+    this.errorMessage = '';
     this.successMessage = '';
 
     const body = {
@@ -344,66 +343,67 @@ export class PradeepComponent {
       royalty: this.updateRoyaltyForm.royalty
     };
 
-    this.service.createRoyalty(body)
-      .subscribe({
-        next:  (res: any) => this.handleResponse(res),
-        error: (err: any) => this.handleError(err)
-      });
+    this.service.createRoyalty(body).subscribe({
+      next: (res: any) => this.handleResponse(res),
+      error: (err: any) => this.handleError(err)
+    });
   }
 
-  /* ─── UPDATE ROYALTY ─── */
+  // same two-phase pattern as discount update: fetch first, then PUT on second submit
   executeUpdateRoyalty() {
-    console.log('EXECUTE UPDATE ROYALTY');
+    console.log('update royalty, edit mode:', this.isRoyaltyEditMode);
 
     if (!this.isRoyaltyEditMode && !this.updateRoyaltyForm.titleId) {
       this.errorMessage = 'Title ID is required to fetch royalty details';
       return;
     }
 
+    // phase 1: load the royalty slab for this title
     if (!this.isRoyaltyEditMode) {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';
       this.tableData = [];
 
-      this.service.getRoyaltyByTitle(this.updateRoyaltyForm.titleId)
-        .subscribe({
-          next: (res: any) => {
-            const rows = Array.isArray(res) ? res : (res?.content || res?.data || []);
-            const matchedRoyalty = rows[0];
+      this.service.getRoyaltyByTitle(this.updateRoyaltyForm.titleId).subscribe({
+        next: (res: any) => {
+          const rows = Array.isArray(res) ? res : (res?.content || res?.data || []);
+          const matchedRoyalty = rows[0]; // only editing the first slab returned
 
-            if (!matchedRoyalty) {
-              this.errorMessage = `No royalty slab found for title: ${this.updateRoyaltyForm.titleId}`;
-              this.isLoading = false;
-              this.cdr.detectChanges();
-              return;
-            }
-
-            this.updateRoyaltyForm = {
-              royaltyId: matchedRoyalty?.royschedId ?? matchedRoyalty?.royaltyId ?? null,
-              titleId: matchedRoyalty?.titleId ?? this.updateRoyaltyForm.titleId,
-              lorange: matchedRoyalty?.lorange ?? null,
-              hirange: matchedRoyalty?.hirange ?? null,
-              royalty: matchedRoyalty?.royalty ?? null
-            };
-
-            this.isRoyaltyEditMode = true;
-            this.successMessage = 'Royalty fetched. You can edit the fields now.';
+          if (!matchedRoyalty) {
+            this.errorMessage = `No royalty slab found for title: ${this.updateRoyaltyForm.titleId}`;
             this.isLoading = false;
             this.cdr.detectChanges();
-          },
-          error: (err: any) => this.handleError(err)
-        });
+            return;
+          }
+
+          // save royaltyId now, we need it for the PUT in phase 2
+          this.updateRoyaltyForm = {
+            royaltyId: matchedRoyalty?.royschedId ?? matchedRoyalty?.royaltyId ?? null,
+            titleId: matchedRoyalty?.titleId ?? this.updateRoyaltyForm.titleId,
+            lorange: matchedRoyalty?.lorange ?? null,
+            hirange: matchedRoyalty?.hirange ?? null,
+            royalty: matchedRoyalty?.royalty ?? null
+          };
+
+          this.isRoyaltyEditMode = true;
+          this.successMessage = 'Royalty fetched. You can edit the fields now.';
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => this.handleError(err)
+      });
       return;
     }
 
+    // phase 2: royaltyId should have been set in phase 1
     if (!this.updateRoyaltyForm.royaltyId) {
       this.errorMessage = 'Royalty ID is required';
       return;
     }
 
-    this.isLoading      = true;
-    this.errorMessage   = '';
+    this.isLoading = true;
+    this.errorMessage = '';
     this.successMessage = '';
 
     const body = {
@@ -413,13 +413,12 @@ export class PradeepComponent {
       royalty: this.updateRoyaltyForm.royalty
     };
 
-    this.service.updateRoyalty(this.updateRoyaltyForm.royaltyId, body)
-      .subscribe({
-        next:  (res: any) => {
-          this.isRoyaltyEditMode = false;
-          this.handleResponse(res);
-        },
-        error: (err: any) => this.handleError(err)
-      });
+    this.service.updateRoyalty(this.updateRoyaltyForm.royaltyId, body).subscribe({
+      next: (res: any) => {
+        this.isRoyaltyEditMode = false; // reset back to default state
+        this.handleResponse(res);
+      },
+      error: (err: any) => this.handleError(err)
+    });
   }
 }

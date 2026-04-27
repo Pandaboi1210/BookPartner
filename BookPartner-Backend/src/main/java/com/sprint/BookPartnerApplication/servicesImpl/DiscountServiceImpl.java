@@ -22,14 +22,12 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountsRepository;
     private final StoreRepository storeRepository;
 
-    public DiscountServiceImpl(DiscountRepository discountsRepository,
-                               StoreRepository storeRepository) {
+    public DiscountServiceImpl(DiscountRepository discountsRepository, StoreRepository storeRepository) {
         this.discountsRepository = discountsRepository;
         this.storeRepository = storeRepository;
     }
 
-    // ── mapping helpers ──────────────────────────────────────────────────────
-
+    // maps a discounts entity to its response DTO
     private DiscountResponseDTO toResponse(Discounts d) {
         DiscountResponseDTO dto = new DiscountResponseDTO();
         dto.setDiscountId(d.getDiscountId());
@@ -44,13 +42,12 @@ public class DiscountServiceImpl implements DiscountService {
         return dto;
     }
 
+    // looks up a store by id, returns null if no id was provided
     private Store resolveStore(String storId) {
         if (storId == null || storId.isBlank()) return null;
         return storeRepository.findById(storId)
                 .orElseThrow(() -> new ResourceNotFoundException("Store not found with ID: " + storId));
     }
-
-    // ── service methods ───────────────────────────────────────────────────────
 
     @Override
     public List<DiscountResponseDTO> getAllDiscounts() {
@@ -62,13 +59,10 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<DiscountResponseDTO> getDiscountsFiltered(
-            String storeId,
-            String type,
-            Integer minLowQty,
-            Integer maxHighQty,
-            BigDecimal minDiscount,
-            BigDecimal maxDiscount
-    ) {
+            String storeId, String type,
+            Integer minLowQty, Integer maxHighQty,
+            BigDecimal minDiscount, BigDecimal maxDiscount) {
+
         if (minDiscount != null && maxDiscount != null && minDiscount.compareTo(maxDiscount) > 0) {
             throw new InvalidInputException("Minimum discount cannot be greater than maximum discount.");
         }
@@ -76,53 +70,34 @@ public class DiscountServiceImpl implements DiscountService {
         String normalizedStoreId = storeId == null ? null : storeId.trim();
         String normalizedType = type == null ? null : type.trim();
 
+        // validate the store exists before filtering by it
         if (normalizedStoreId != null && !normalizedStoreId.isBlank()) {
             resolveStore(normalizedStoreId);
         }
 
         return discountsRepository.findAll()
                 .stream()
-                .filter(d -> {
-                    if (normalizedStoreId == null || normalizedStoreId.isBlank()) return true;
-                    return d.getStore() != null && normalizedStoreId.equalsIgnoreCase(d.getStore().getStorId());
-                })
-                .filter(d -> {
-                    if (normalizedType == null || normalizedType.isBlank()) return true;
-                    String dt = d.getDiscounttype() == null ? "" : d.getDiscounttype();
-                    return dt.toLowerCase().contains(normalizedType.toLowerCase());
-                })
-                .filter(d -> {
-                    if (minLowQty == null) return true;
-                    return d.getLowqty() != null && d.getLowqty() >= minLowQty;
-                })
-                .filter(d -> {
-                    if (maxHighQty == null) return true;
-                    return d.getHighqty() != null && d.getHighqty() <= maxHighQty;
-                })
-                .filter(d -> {
-                    if (minDiscount == null) return true;
-                    return d.getDiscount() != null && d.getDiscount().compareTo(minDiscount) >= 0;
-                })
-                .filter(d -> {
-                    if (maxDiscount == null) return true;
-                    return d.getDiscount() != null && d.getDiscount().compareTo(maxDiscount) <= 0;
-                })
+                .filter(d -> normalizedStoreId == null || normalizedStoreId.isBlank()
+                        || (d.getStore() != null && normalizedStoreId.equalsIgnoreCase(d.getStore().getStorId())))
+                .filter(d -> normalizedType == null || normalizedType.isBlank()
+                        || (d.getDiscounttype() != null && d.getDiscounttype().toLowerCase().contains(normalizedType.toLowerCase())))
+                .filter(d -> minLowQty == null || (d.getLowqty() != null && d.getLowqty() >= minLowQty))
+                .filter(d -> maxHighQty == null || (d.getHighqty() != null && d.getHighqty() <= maxHighQty))
+                .filter(d -> minDiscount == null || (d.getDiscount() != null && d.getDiscount().compareTo(minDiscount) >= 0))
+                .filter(d -> maxDiscount == null || (d.getDiscount() != null && d.getDiscount().compareTo(maxDiscount) <= 0))
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public DiscountResponseDTO createDiscount(DiscountRequestDTO requestDTO) {
-
-        // Block duplicate type for the SAME store
+        // block duplicate discount type for the same store
         if (requestDTO.getDiscounttype() != null && requestDTO.getStorId() != null) {
-            List<Discounts> existing = discountsRepository.findDiscountsByType(requestDTO.getDiscounttype());
-            boolean sameStoreExists = existing.stream()
-                    .anyMatch(d -> d.getStore() != null
-                            && d.getStore().getStorId().equals(requestDTO.getStorId()));
+            boolean sameStoreExists = discountsRepository.findDiscountsByType(requestDTO.getDiscounttype())
+                    .stream()
+                    .anyMatch(d -> d.getStore() != null && d.getStore().getStorId().equals(requestDTO.getStorId()));
             if (sameStoreExists) {
-                throw new DuplicateResourceException("Discount type '" + requestDTO.getDiscounttype()
-                        + "' already exists for this store.");
+                throw new DuplicateResourceException("Discount type '" + requestDTO.getDiscounttype() + "' already exists for this store.");
             }
         }
 
@@ -146,12 +121,11 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public DiscountResponseDTO updateDiscountByType(String discountType, DiscountRequestDTO requestDTO) {
-
+        // find the first discount matching this type or throw
         Discounts discount = discountsRepository.findDiscountsByType(discountType)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Discount not found for type: " + discountType));
+                .orElseThrow(() -> new ResourceNotFoundException("Discount not found for type: " + discountType));
 
         discount.setDiscounttype(requestDTO.getDiscounttype());
         discount.setLowqty(requestDTO.getLowqty());

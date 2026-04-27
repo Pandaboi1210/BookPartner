@@ -26,8 +26,7 @@ public class RoyschedServiceImpl implements RoyschedService {
     @Autowired
     private TitleRepository titleRepository;
 
-    // ── mapping helpers ──────────────────────────────────────────────────────
-
+    // maps a roysched entity to its response DTO
     private RoyschedResponseDTO toResponse(Roysched r) {
         RoyschedResponseDTO dto = new RoyschedResponseDTO();
         dto.setRoyschedId(r.getRoyschedId());
@@ -41,32 +40,26 @@ public class RoyschedServiceImpl implements RoyschedService {
         return dto;
     }
 
-    // ── service methods ───────────────────────────────────────────────────────
-
     @Override
     public RoyschedResponseDTO createRoysched(RoyschedRequestDTO requestDTO) {
-
+        // titleId is required before we do anything else
         if (requestDTO.getTitleId() == null || requestDTO.getTitleId().isBlank()) {
             throw new BadRequestException("A valid Title ID is required to create a royalty schedule.");
         }
 
         Title title = titleRepository.findById(requestDTO.getTitleId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Title not found with ID: " + requestDTO.getTitleId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Title not found with ID: " + requestDTO.getTitleId()));
 
+        // lorange must not exceed hirange
         if (requestDTO.getLorange() != null && requestDTO.getHirange() != null) {
             if (requestDTO.getLorange() > requestDTO.getHirange()) {
                 throw new InvalidInputException("Low range (lorange) cannot be greater than high range (hirange).");
             }
         }
 
-        if (royschedRepository.existsRoyschedRange(
-                title.getTitleId(),
-                requestDTO.getLorange(),
-                requestDTO.getHirange())) {
-
-            throw new DuplicateResourceException(
-                    "A royalty schedule with this exact low and high range already exists for this title.");
+        // prevent duplicate slabs with the same range for the same title
+        if (royschedRepository.existsRoyschedRange(title.getTitleId(), requestDTO.getLorange(), requestDTO.getHirange())) {
+            throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for this title.");
         }
 
         Roysched roysched = new Roysched();
@@ -93,11 +86,10 @@ public class RoyschedServiceImpl implements RoyschedService {
 
     @Override
     public RoyschedResponseDTO updateRoysched(Integer royaltyId, RoyschedRequestDTO requestDTO) {
-
         Roysched roysched = royschedRepository.findById(royaltyId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Royalty slab not found with id: " + royaltyId));
+                .orElseThrow(() -> new ResourceNotFoundException("Royalty slab not found with id: " + royaltyId));
 
+        // validate range before updating
         if (requestDTO.getLorange() != null && requestDTO.getHirange() != null) {
             if (requestDTO.getLorange() > requestDTO.getHirange()) {
                 throw new InvalidInputException("Low range (lorange) cannot be greater than high range (hirange).");
@@ -108,10 +100,10 @@ public class RoyschedServiceImpl implements RoyschedService {
         roysched.setHirange(requestDTO.getHirange());
         roysched.setRoyalty(requestDTO.getRoyalty());
 
+        // only update title if a new one was provided
         if (requestDTO.getTitleId() != null && !requestDTO.getTitleId().isBlank()) {
             Title title = titleRepository.findById(requestDTO.getTitleId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Title not found with ID: " + requestDTO.getTitleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Title not found with ID: " + requestDTO.getTitleId()));
             roysched.setTitle(title);
         }
 

@@ -11,10 +11,9 @@ import java.util.List;
 @Repository
 public interface RoyschedRepository extends JpaRepository<Roysched, Integer> {
 
-    // Derived query
     List<Roysched> findByTitle_TitleId(String titleId);
 
-    // @Query example
+
     @Query("SELECT r FROM Roysched r WHERE r.title.titleId = :titleId")
     List<Roysched> findByTitleId(@Param("titleId") String titleId);
 

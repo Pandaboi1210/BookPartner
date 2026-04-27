@@ -3,7 +3,6 @@ package com.sprint.BookPartnerApplication.controller;
 import com.sprint.BookPartnerApplication.dto.request.EmployeeRequestDTO;
 import com.sprint.BookPartnerApplication.dto.response.EmployeeResponseDTO;
 import com.sprint.BookPartnerApplication.services.EmployeeService;
-
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,73 +20,50 @@ public class EmployeeController {
         this.service = service;
     }
 
-    // CREATE
+    // POST /api/v1/employees
     @PostMapping
-    public ResponseEntity<EmployeeResponseDTO> createEmployee(
-            @Valid @RequestBody EmployeeRequestDTO requestDTO) {
-
-        EmployeeResponseDTO data = service.createEmployee(requestDTO);
-
-        return created(data);
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
+        return created(service.createEmployee(requestDTO));
     }
 
-    // GET ALL
+    // GET /api/v1/employees
     @GetMapping
     public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
-
-        List<EmployeeResponseDTO> data = service.getAllEmployees();
-
-        return ok(data);
+        return ok(service.getAllEmployees());
     }
 
-    // GET BY ID
+    // GET /api/v1/employees/{empId}
     @GetMapping("/{empId}")
-    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(
-            @PathVariable String empId) {
-
-        EmployeeResponseDTO data = service.getEmployeeById(empId);
-
-        return ok(data);
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable String empId) {
+        return ok(service.getEmployeeById(empId));
     }
 
-    // UPDATE
+    // PUT /api/v1/employees/{empId}
     @PutMapping("/{empId}")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @PathVariable String empId,
             @Valid @RequestBody EmployeeRequestDTO requestDTO) {
-
-        EmployeeResponseDTO data =
-                service.updateEmployee(empId, requestDTO);
-
-        return ok(data);
+        return ok(service.updateEmployee(empId, requestDTO));
     }
 
-    // GET BY PUBLISHER (custom)
+    // GET /api/v1/employees/publisher/{pubId}
     @GetMapping("/publisher/{pubId}")
-    public ResponseEntity<List<EmployeeResponseDTO>> getByPublisher(
-            @PathVariable String pubId) {
-
-        List<EmployeeResponseDTO> data =
-                service.getEmployeesByPublisher(pubId);
-
-        return ok(data);
+    public ResponseEntity<List<EmployeeResponseDTO>> getByPublisher(@PathVariable String pubId) {
+        return ok(service.getEmployeesByPublisher(pubId));
     }
-    
-    // DELETE
+
+    // DELETE /api/v1/employees/{empId}
     @DeleteMapping("/{empId}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable String empId) {
         service.deleteEmployee(empId);
         return ResponseEntity.noContent().build();
     }
 
-    // 🔹 Helper methods
     private <T> ResponseEntity<T> ok(T data) {
         return ResponseEntity.ok(data);
     }
 
     private <T> ResponseEntity<T> created(T data) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 }
