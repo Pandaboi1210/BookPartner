@@ -6,6 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO for the join table. 
+ * Allows the client to link an Author to a Title while simultaneously 
+ * passing the extra payload data (order and royalty split).
+ */
+
 public class TitleAuthorRequestDTO 
 {
     @NotBlank(message = "Author ID is required")

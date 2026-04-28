@@ -2,6 +2,11 @@ package com.sprint.BookPartnerApplication.dto.response;
 
 import java.time.LocalDateTime;
 
+/**
+ * Data Transfer Object for outgoing Title data.
+ * This class dictates exactly what JSON structure is returned to the Angular frontend.
+ */
+
 public class TitleResponseDTO {
 
     private String titleId;

@@ -23,9 +23,7 @@ public class TitleAuthorController {
         TitleAuthorResponseDTO data = titleAuthorService.createTitleAuthor(titleAuthorDTO);
         
         // Returns a 201 CREATED status
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
     // DELETE
@@ -33,7 +31,7 @@ public class TitleAuthorController {
     public ResponseEntity<Void> deleteTitleAuthor(@PathVariable String auId, @PathVariable String titleId) {    
         titleAuthorService.deleteByAuthorAndTitle(auId, titleId);
         
-        // Returns a 204 NO CONTENT status (Standard for Delete requests)
+        // Returns a 204 NO CONTENT status
         return ResponseEntity.noContent().build(); 
     }
 }

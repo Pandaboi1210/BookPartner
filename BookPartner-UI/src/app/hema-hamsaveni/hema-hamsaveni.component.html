@@ -10,35 +10,43 @@
   </header>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    
+    <!-- ===================== TITLES ENTITY ===================== -->
     <div class="bg-slate-800 p-6 rounded-lg shadow-lg border border-slate-700">
       <h2 class="text-xl font-semibold text-blue-400 mb-4 border-b border-slate-700 pb-2">Titles Entity</h2>
       <div class="space-y-3">
+        <!-- GET ALL TITLES -->
         <button (click)="openModal('TITLE', 'GET_ALL', 'Get All Titles')" class="w-full bg-blue-900/20 py-3 px-4 rounded hover:bg-blue-900/40 transition text-left flex flex-col gap-1 border border-blue-800/50">
           <span class="font-bold text-sm text-blue-300 uppercase tracking-wide">GET All Titles</span>
           <span class="text-xs text-blue-400/80">Retrieve a list of all books, with optional filters.</span>
         </button>
+        <!-- GET TITLE BY ID -->
         <button (click)="openModal('TITLE', 'GET_ID', 'Find Title by ID')" class="w-full bg-blue-900/20 py-3 px-4 rounded hover:bg-blue-900/40 transition text-left flex flex-col gap-1 border border-blue-800/50">
           <span class="font-bold text-sm text-blue-300 uppercase tracking-wide">GET Title by ID</span>
           <span class="text-xs text-blue-400/80">Fetch detailed information for a specific book.</span>
         </button>
+        <!-- CREATE NEW TITLE -->
         <button (click)="openModal('TITLE', 'POST', 'Create New Title')" class="w-full bg-green-900/20 py-3 px-4 rounded hover:bg-green-900/40 transition text-left flex flex-col gap-1 border border-green-800/50">
           <span class="font-bold text-sm text-green-300 uppercase tracking-wide">POST New Title</span>
           <span class="text-xs text-green-400/80">Add a new book record to the database.</span>
         </button>
+         <!-- UPDATE TITLE -->
         <button (click)="openModal('TITLE', 'PUT', 'Update Existing Title')" class="w-full bg-yellow-900/20 py-3 px-4 rounded hover:bg-yellow-900/40 transition text-left flex flex-col gap-1 border border-yellow-800/50">
           <span class="font-bold text-sm text-yellow-300 uppercase tracking-wide">PUT Update Title</span>
           <span class="text-xs text-yellow-400/80">Modify an existing book's details.</span>
         </button>
+
         <div class="pt-4 mt-4 border-t border-slate-700 space-y-3">
+          <!-- GET AUTHORS -->
             <button (click)="openModal('TITLE', 'GET_AUTHORS', 'Get Authors by Title ID')" class="w-full bg-indigo-900/20 py-3 px-4 rounded hover:bg-indigo-900/40 transition text-left flex flex-col gap-1 border border-indigo-800/50">
               <span class="font-bold text-sm text-indigo-300 uppercase tracking-wide">GET Authors by Title</span>
               <span class="text-xs text-indigo-400/80">Retrieve all authors for a specific book.</span>
             </button>
+            <!-- GET SALES -->
             <button (click)="openModal('TITLE', 'GET_SALES', 'Get Sales by Title ID')" class="w-full bg-indigo-900/20 py-3 px-4 rounded hover:bg-indigo-900/40 transition text-left flex flex-col gap-1 border border-indigo-800/50">
               <span class="font-bold text-sm text-indigo-300 uppercase tracking-wide">GET Sales by Title</span>
               <span class="text-xs text-indigo-400/80">Retrieve the sales history for a specific book.</span>
             </button>
+            <!-- GET ROYALTIES -->
             <button (click)="openModal('TITLE', 'GET_ROYALTIES', 'Get Royalties by Title ID')" class="w-full bg-indigo-900/20 py-3 px-4 rounded hover:bg-indigo-900/40 transition text-left flex flex-col gap-1 border border-indigo-800/50">
               <span class="font-bold text-sm text-indigo-300 uppercase tracking-wide">GET Royalties by Title</span>
               <span class="text-xs text-indigo-400/80">Retrieve the royalty schedule for a book.</span>
@@ -47,13 +55,16 @@
       </div>
     </div>
 
+     <!-- ===================== TITLE-AUTHOR ENTITY ===================== -->
     <div class="bg-slate-800 p-6 rounded-lg shadow-lg border border-slate-700 h-fit">
       <h2 class="text-xl font-semibold text-purple-400 mb-4 border-b border-slate-700 pb-2">Title-Authors Entity</h2>
       <div class="space-y-3">
+         <!-- CREATE LINK AUTHOR TO TITLE -->
         <button (click)="openModal('TITLE_AUTHOR', 'POST', 'Link Title and Author')" class="w-full bg-green-900/20 py-3 px-4 rounded hover:bg-green-900/40 transition text-left flex flex-col gap-1 border border-green-800/50">
           <span class="font-bold text-sm text-green-300 uppercase tracking-wide">POST New Link</span>
           <span class="text-xs text-green-400/80">Create an association between an author and a book.</span>
         </button>
+        <!-- DELETE LINK -->
         <button (click)="openModal('TITLE_AUTHOR', 'DELETE', 'Remove Title-Author Link')" class="w-full bg-red-900/20 py-3 px-4 rounded hover:bg-red-900/40 transition text-left flex flex-col gap-1 border border-red-800/50">
           <span class="font-bold text-sm text-red-300 uppercase tracking-wide">DELETE Link</span>
           <span class="text-xs text-red-400/80">Remove an association between an author and a book.</span>
@@ -61,9 +72,11 @@
       </div>
     </div>
 
+    <!-- ===================== REPORT SECTION ===================== -->
     <div class="bg-slate-800 p-6 rounded-lg shadow-lg border border-slate-700 h-fit">
       <h2 class="text-xl font-semibold text-teal-400 mb-4 border-b border-slate-700 pb-2">Sales Report Endpoints</h2>
       <div class="space-y-3">
+        <!-- TOTAL SALES BY TITLE -->
         <button (click)="openModal('REPORT', 'REPORT_SALES_TITLE', '1.1 Total Sales by Title')" class="w-full bg-teal-900/20 py-3 px-4 rounded hover:bg-teal-900/40 transition text-left flex flex-col gap-1 border border-teal-800/50">
           <span class="font-bold text-sm text-teal-300 uppercase tracking-wide">GET Total Sales by Title</span>
           <span class="text-xs text-teal-400/80">Generate a report showing total sales volume.</span>
@@ -72,6 +85,8 @@
     </div>
 
   </div>
+
+  <!-- ===================== MODAL SECTION ===================== -->
 
   @if (isModalOpen) {
     <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -85,7 +100,7 @@
         </div>
 
         <div class="p-6 overflow-y-auto text-slate-200 grow">
-          
+          <!-- FILTER FORM (GET ALL) -->
           @if (currentModalType === 'GET_ALL') {
             <div class="bg-slate-900/50 p-4 rounded-lg mb-2 border border-slate-700">
               <h4 class="text-sm font-semibold text-blue-400 mb-3">Optional Search Filters</h4>
@@ -100,7 +115,7 @@
               </div>
             </div>
           }
-
+          <!-- SEARCH BY ID -->
           @if (currentModalType === 'GET_ID' || currentModalType === 'GET_AUTHORS' || currentModalType === 'GET_SALES' || currentModalType === 'GET_ROYALTIES' || (currentModalType === 'PUT' && !isEditMode)) {
             <div class="flex gap-2 mb-2">
               <input type="text" [(ngModel)]="searchId" placeholder="Enter Title ID..." class="border border-slate-600 rounded p-2 grow focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-900 text-slate-100 placeholder-slate-500">
@@ -109,7 +124,7 @@
               </button>
             </div>
           }
-
+          <!-- FORM FOR CREATE / UPDATE -->
           @if ((currentModalType === 'POST' || (currentModalType === 'PUT' && isEditMode)) && currentEntity === 'TITLE' && !apiResult) {
             <div class="bg-slate-900/50 p-6 rounded-lg mb-2 border border-slate-700">
               <h4 class="text-sm font-semibold text-green-400 mb-4 border-b border-slate-700 pb-2">
@@ -164,7 +179,7 @@
               </div>
             </div>
           }
-
+          <!-- FORM FOR CREATE -->
           @if (currentEntity === 'TITLE_AUTHOR' && currentModalType === 'POST' && !apiResult) {
             <div class="bg-slate-900/50 p-6 rounded-lg mb-2 border border-slate-700">
               <h4 class="text-sm font-semibold text-purple-400 mb-4 border-b border-slate-700 pb-2">Link Author to Title</h4>
@@ -179,7 +194,7 @@
               </div>
             </div>
           }
-
+          <!-- DELETE LINK -->
           @if (currentEntity === 'TITLE_AUTHOR' && currentModalType === 'DELETE') {
             <div class="bg-slate-900/50 p-6 rounded-lg mb-2 border border-slate-700">
                <h4 class="text-sm font-semibold text-red-400 mb-4 border-b border-slate-700 pb-2">Remove Author Link</h4>
@@ -191,12 +206,14 @@
             </div>
           }
 
+          <!-- REPORTING -->
           @if (currentModalType === 'REPORT_SALES_TITLE') {
             <div class="flex justify-end mb-2">
               <button (click)="executeAction()" class="bg-teal-600 text-white px-6 py-2 rounded font-medium hover:bg-teal-500 transition">Fetch Book-wise Sales</button>
             </div>
           }
 
+          <!-- LOADING STATE -->
           <div class="mt-4 border-t border-slate-700 pt-4">
             @if (isLoading) {
               <div class="flex items-center justify-center p-4 text-blue-400">
@@ -205,12 +222,14 @@
               </div>
             }
 
+            <!-- ERROR DISPLAY -->
             @if (errorMessage) {
               <div class="bg-red-900/30 border border-red-500/50 text-red-300 p-4 rounded-lg text-sm">
                 ⚠️ {{ errorMessage }}
               </div>
             }
 
+            <!-- RESULT TABLE -->
             @if (apiResult && isArr(apiResult)) {
               <div class="mt-4">
                 <h4 class="text-sm font-semibold text-slate-300 mb-2 flex justify-between">
@@ -255,7 +274,7 @@
                 </div>
               </div>
             }
-
+            <!-- SUCCESS MESSAGE -->
             @if (apiResult && !isArr(apiResult) && currentEntity === 'TITLE' && currentModalType !== 'DELETE') {
               <div class="bg-green-900/20 border border-green-500/50 p-6 rounded-xl">
                 <div class="flex items-center gap-3 text-green-400 mb-6">
@@ -291,3 +310,6 @@
     </div>
   }
 </div>
+
+
+

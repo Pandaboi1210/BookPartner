@@ -7,6 +7,12 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
+/**
+ * Data Transfer Object for creating and updating Title records.
+ * Acts as a protective barrier between the API layer and the database,
+ * ensuring only valid, sanitized data reaches the Service layer.
+ */
+
 public class TitleRequestDTO 
 {	
     @NotBlank(message = "Title ID is required")

@@ -1,5 +1,10 @@
 package com.sprint.BookPartnerApplication.dto.response.report;
 
+/**
+ * Data Transfer Object specifically designed for Reporting Projections.
+ * This class flattens aggregated data from the 'Titles' and 'Sales' tables into a single, easy-to-consume object for the frontend dashboard.
+ */
+
 public class SalesByTitleDTO {
 
     private String titleId;
