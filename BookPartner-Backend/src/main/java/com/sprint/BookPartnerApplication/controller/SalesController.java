@@ -19,53 +19,49 @@ public class SalesController {
 
     private final SalesService salesService;
 
-    
+    // Constructor
     public SalesController(SalesService salesService) {
         this.salesService = salesService;
     }
 
-    
+    // Create sale
     @PostMapping
     public ResponseEntity<SalesResponseDTO> createSale(
             @Valid @RequestBody SalesRequestDTO dto) {
 
         SalesResponseDTO data = salesService.createSale(dto);
-
         return created(data);
     }
 
-    
+    // Get all sales
     @GetMapping
     public ResponseEntity<List<SalesResponseDTO>> getAllSales() {
 
         List<SalesResponseDTO> data = salesService.getAllSales();
-
         return ok(data);
     }
 
-    
+    // Get sales by store
     @GetMapping("/store/{storeId}")
     public ResponseEntity<List<SalesResponseDTO>> getSalesByStore(
             @PathVariable String storeId) {
 
         List<SalesResponseDTO> data =
                 salesService.getSalesByStore(storeId);
-
         return ok(data);
     }
 
-   
+    // Get sales by title
     @GetMapping("/title/{titleId}")
     public ResponseEntity<List<SalesResponseDTO>> getSalesByTitle(
             @PathVariable String titleId) {
 
         List<SalesResponseDTO> data =
                 salesService.getSalesByTitle(titleId);
-
         return ok(data);
     }
 
-    
+    // Get sales by date range
     @GetMapping("/date-range")
     public ResponseEntity<List<SalesResponseDTO>> getSalesByDateRange(
             @RequestParam
@@ -78,15 +74,15 @@ public class SalesController {
 
         List<SalesResponseDTO> data =
                 salesService.getSalesByDateRange(from, to);
-
         return ok(data);
     }
 
-    
+    // OK response
     private <T> ResponseEntity<T> ok(T data) {
         return ResponseEntity.ok(data);
     }
 
+    // Created response
     private <T> ResponseEntity<T> created(T data) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

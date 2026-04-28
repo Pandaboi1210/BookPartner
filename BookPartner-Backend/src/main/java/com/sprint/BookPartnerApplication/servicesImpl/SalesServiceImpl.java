@@ -28,6 +28,7 @@ public class SalesServiceImpl implements SalesService {
     @Autowired
     private TitleRepository titleRepository;
 
+    // Convert request DTO to entity
     private Sales mapToEntity(SalesRequestDTO dto) {
         Sales sale = new Sales();
         sale.setStorId(dto.getStorId());
@@ -39,6 +40,7 @@ public class SalesServiceImpl implements SalesService {
         return sale;
     }
 
+    // Convert entity to response DTO
     private SalesResponseDTO mapToResponseDTO(Sales sale) {
         SalesResponseDTO dto = new SalesResponseDTO();
         dto.setStorId(sale.getStorId());
@@ -57,6 +59,7 @@ public class SalesServiceImpl implements SalesService {
         return dto;
     }
 
+    // Create sale
     @Override
     public SalesResponseDTO createSale(SalesRequestDTO dto) {
 
@@ -72,18 +75,18 @@ public class SalesServiceImpl implements SalesService {
             throw new BadRequestException("Order Number must not be blank");
         }
 
-        // ✅ Duplicate check
+        // Check duplicate sale
         SalesId id = new SalesId(dto.getStorId(), dto.getOrdNum(), dto.getTitleId());
         if (salesRepository.existsById(id)) {
             throw new BadRequestException("Sale already exists");
         }
 
-        // ✅ Store exists check
+        // Check store exists
         storeRepository.findById(dto.getStorId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + dto.getStorId()));
 
-        // ✅ Title exists check
+        // Check title exists
         if (!titleRepository.existsById(dto.getTitleId())) {
             throw new ResourceNotFoundException(
                     "Title not found with ID: " + dto.getTitleId());
@@ -93,6 +96,7 @@ public class SalesServiceImpl implements SalesService {
         return mapToResponseDTO(saved);
     }
 
+    // Get all sales
     @Override
     public List<SalesResponseDTO> getAllSales() {
         List<Sales> sales = salesRepository.findAll();
@@ -106,6 +110,7 @@ public class SalesServiceImpl implements SalesService {
                 .toList();
     }
 
+    // Get sales by store
     @Override
     public List<SalesResponseDTO> getSalesByStore(String storeId) {
 
@@ -129,6 +134,7 @@ public class SalesServiceImpl implements SalesService {
                 .toList();
     }
 
+    // Get sales by title
     @Override
     public List<SalesResponseDTO> getSalesByTitle(String titleId) {
 
@@ -148,6 +154,7 @@ public class SalesServiceImpl implements SalesService {
                 .toList();
     }
 
+    // Get sales by date range
     @Override
     public List<SalesResponseDTO> getSalesByDateRange(LocalDateTime from, LocalDateTime to) {
 

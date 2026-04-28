@@ -19,41 +19,38 @@ public class StoreController {
 
     private final StoreService storeService;
 
-    
+    // Constructor
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
     }
 
-    
+    // Create store
     @PostMapping
     public ResponseEntity<StoreResponseDTO> createStore(
             @Valid @RequestBody StoreRequestDTO dto) {
 
         StoreResponseDTO data = storeService.createStore(dto);
-
         return created(data);
     }
 
-   
+    // Get all stores
     @GetMapping
     public ResponseEntity<List<StoreResponseDTO>> getAllStores() {
 
         List<StoreResponseDTO> data = storeService.getAllStores();
-
         return ok(data);
     }
 
-    
+    // Get store by id
     @GetMapping("/{storeId}")
     public ResponseEntity<StoreResponseDTO> getStoreById(
             @PathVariable String storeId) {
 
         StoreResponseDTO data = storeService.getStoreById(storeId);
-
         return ok(data);
     }
 
-    
+    // Update store
     @PutMapping("/{storeId}")
     public ResponseEntity<StoreResponseDTO> updateStore(
             @PathVariable String storeId,
@@ -61,36 +58,35 @@ public class StoreController {
 
         StoreResponseDTO data =
                 storeService.updateStore(storeId, dto);
-
         return ok(data);
     }
 
-   
+    // Get sales by store
     @GetMapping("/{storeId}/sales")
     public ResponseEntity<List<SalesResponseDTO>> getSalesByStore(
             @PathVariable String storeId) {
 
         List<SalesResponseDTO> data =
                 storeService.getSalesByStore(storeId);
-
         return ok(data);
     }
 
-    
+    // Get discounts by store
     @GetMapping("/{storeId}/discounts")
     public ResponseEntity<List<DiscountResponseDTO>> getDiscountsByStore(
             @PathVariable String storeId) {
 
         List<DiscountResponseDTO> data =
                 storeService.getDiscountsByStore(storeId);
-
         return ok(data);
     }
 
+    // OK response
     private <T> ResponseEntity<T> ok(T data) {
         return ResponseEntity.ok(data);
     }
 
+    // Created response
     private <T> ResponseEntity<T> created(T data) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
