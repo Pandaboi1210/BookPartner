@@ -14,7 +14,6 @@ public class Employee {
     @Column(name = "fname", nullable = false)
     private String fname;
 
-    // ✅ NO NULL → default empty string
     @Column(name = "minit", nullable = false)
     private String minit = "";
 
@@ -31,7 +30,6 @@ public class Employee {
     @JoinColumn(name = "job_id")
     private Jobs job;
 
-    // ✅ Only DATE (no time)
     @Column(name = "hire_date")
     private LocalDate hireDate;
 

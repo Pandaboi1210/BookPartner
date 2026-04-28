@@ -6,10 +6,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice //used to handle the global exception                
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class) //used to handle the speciifc exception
     public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
         return notFound(ex.getMessage());
     }
