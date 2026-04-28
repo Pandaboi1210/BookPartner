@@ -173,11 +173,72 @@ export class PradeepComponent {
   handleError(err: any) {
     this.zone.run(() => {
       console.error('api error', err);
-      this.errorMessage = err?.error?.message || err?.message || 'Request failed.';
+      this.errorMessage = this.getFriendlyErrorMessage(err);
       this.tableData = [];
       this.isLoading = false;
       this.cdr.detectChanges();
     });
+  }
+
+  // converts raw HTTP errors into user-friendly messages based on status code and current endpoint
+  private getFriendlyErrorMessage(err: any): string {
+    // if the backend sent a meaningful message in the response body, prefer that
+    const backendMsg = err?.error?.message;
+    if (backendMsg && !backendMsg.includes('localhost') && !backendMsg.includes('127.0.0.1')) {
+      return backendMsg;
+    }
+
+    const status = err?.status;
+
+    // build a context hint based on which endpoint was called
+    let contextHint = '';
+    switch (this.endpointKey) {
+      case 'getDiscountsByStore':
+        contextHint = 'The Store ID you entered does not exist.';
+        break;
+      case 'getRoyaltyByTitle':
+        contextHint = 'The Title ID you entered does not exist.';
+        break;
+      case 'getAllDiscounts':
+        contextHint = 'No discounts matched your filters.';
+        break;
+      case 'createDiscount':
+        contextHint = 'Could not create the discount. Please check your input values.';
+        break;
+      case 'updateDiscount':
+        contextHint = 'Could not update the discount. The discount type may not exist.';
+        break;
+      case 'createRoyalty':
+        contextHint = 'Could not create the royalty. Please check your input values.';
+        break;
+      case 'updateRoyalty':
+        contextHint = 'Could not update the royalty. The royalty ID may not exist.';
+        break;
+      case 'getAuthorRoyalties':
+        contextHint = 'Could not load the author royalties report.';
+        break;
+      default:
+        contextHint = 'Please verify your input and try again.';
+    }
+
+    switch (status) {
+      case 0:
+        return 'Unable to reach the server. Please make sure the backend is running.';
+      case 400:
+        return `Bad Request — ${contextHint}`;
+      case 404:
+        return `Not Found — ${contextHint}`;
+      case 409:
+        return `Conflict — A record with the same key already exists.`;
+      case 422:
+        return `Invalid Data — ${contextHint}`;
+      case 500:
+        return `Server Error — Something went wrong on the server. Please try again later.`;
+      case 503:
+        return `Service Unavailable — The server is temporarily down. Please try again later.`;
+      default:
+        return contextHint || 'An unexpected error occurred. Please try again.';
+    }
   }
 
   // main dispatcher, figures out which service call to make based on endpointKey
