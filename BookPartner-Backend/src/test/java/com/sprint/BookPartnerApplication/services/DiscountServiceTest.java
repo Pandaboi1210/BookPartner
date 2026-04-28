@@ -30,7 +30,6 @@ public class DiscountServiceTest {
 
     @InjectMocks
     private DiscountServiceImpl discountService;
-
     private DiscountRequestDTO testDiscountRequestDTO;
     private Discounts testDiscount;
 

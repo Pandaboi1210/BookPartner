@@ -39,6 +39,9 @@ export class PradeepComponent {
   isDiscountEditMode = false;
   isRoyaltyEditMode = false;
 
+  // holds all fetched royalty slabs so user can pick which one to edit
+  royaltySlabs: any[] = [];
+
   // form for creating or updating a discount
   updateDiscountForm = {
     discountType: '',
@@ -114,6 +117,7 @@ export class PradeepComponent {
     this.isLoading = false;
     this.isDiscountEditMode = false;
     this.isRoyaltyEditMode = false;
+    this.royaltySlabs = [];
     this.updateDiscountForm = {
       discountType: '',
       storId: '',
@@ -419,36 +423,35 @@ export class PradeepComponent {
       return;
     }
 
-    // phase 1: load the royalty slab for this title
+    // phase 1: load ALL royalty slabs for this title so the user can pick one
     if (!this.isRoyaltyEditMode) {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';
       this.tableData = [];
+      this.royaltySlabs = [];
 
       this.service.getRoyaltyByTitle(this.updateRoyaltyForm.titleId).subscribe({
         next: (res: any) => {
           const rows = Array.isArray(res) ? res : (res?.content || res?.data || []);
-          const matchedRoyalty = rows[0]; // only editing the first slab returned
 
-          if (!matchedRoyalty) {
+          if (!rows || rows.length === 0) {
             this.errorMessage = `No royalty slab found for title: ${this.updateRoyaltyForm.titleId}`;
             this.isLoading = false;
             this.cdr.detectChanges();
             return;
           }
 
-          // save royaltyId now, we need it for the PUT in phase 2
-          this.updateRoyaltyForm = {
-            royaltyId: matchedRoyalty?.royschedId ?? matchedRoyalty?.royaltyId ?? null,
-            titleId: matchedRoyalty?.titleId ?? this.updateRoyaltyForm.titleId,
-            lorange: matchedRoyalty?.lorange ?? null,
-            hirange: matchedRoyalty?.hirange ?? null,
-            royalty: matchedRoyalty?.royalty ?? null
-          };
+          // if only one slab, auto-select it
+          if (rows.length === 1) {
+            this.selectRoyaltyRow(rows[0]);
+          } else {
+            // multiple slabs: show them in the table, let user click to pick
+            this.royaltySlabs = rows;
+            this.tableData = rows;
+            this.successMessage = `${rows.length} royalty slabs found. Click a row below to select which one to edit.`;
+          }
 
-          this.isRoyaltyEditMode = true;
-          this.successMessage = 'Royalty fetched. You can edit the fields now.';
           this.isLoading = false;
           this.cdr.detectChanges();
         },
@@ -481,5 +484,21 @@ export class PradeepComponent {
       },
       error: (err: any) => this.handleError(err)
     });
+  }
+
+  // called when user clicks a row in the royalty slabs table to select it for editing
+  selectRoyaltyRow(row: any) {
+    this.updateRoyaltyForm = {
+      royaltyId: row?.royschedId ?? row?.royaltyId ?? null,
+      titleId: row?.titleId ?? this.updateRoyaltyForm.titleId,
+      lorange: row?.lorange ?? null,
+      hirange: row?.hirange ?? null,
+      royalty: row?.royalty ?? null
+    };
+    this.isRoyaltyEditMode = true;
+    this.royaltySlabs = [];
+    this.tableData = [];
+    this.successMessage = 'Royalty slab selected. Edit the fields and click Update Royalty.';
+    this.cdr.detectChanges();
   }
 }
