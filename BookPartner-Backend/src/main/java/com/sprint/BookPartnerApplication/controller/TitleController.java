@@ -22,6 +22,7 @@ public class TitleController {
     @Autowired
     private TitleService titleService;
 
+    // GET ALL & FILTER
     @GetMapping
     public ResponseEntity<List<TitleResponseDTO>> getTitles(
             @RequestParam(required = false) String type, 
@@ -42,36 +43,42 @@ public class TitleController {
         return ok(data);
     }
 
+    // GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<TitleResponseDTO> getTitleById(@PathVariable String id) {
         TitleResponseDTO data = titleService.getTitleById(id);
         return ok(data);
     }
 
+    // CREATE
     @PostMapping
     public ResponseEntity<TitleResponseDTO> createTitle(@Valid @RequestBody TitleRequestDTO titleDTO) {
         TitleResponseDTO data = titleService.insertTitle(titleDTO); 
         return created(data); 
     }
 
+    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<TitleResponseDTO> updateTitle(@PathVariable String id, @Valid @RequestBody TitleRequestDTO titleDTO) { 
         TitleResponseDTO data = titleService.updateTitleById(id, titleDTO); 
         return ok(data); 
     }
 
+    // GET AUTHORS USING TITLE ID
     @GetMapping("/{titleId}/authors")
     public ResponseEntity<List<Authors>> getAuthorsByTitle(@PathVariable String titleId) {
         List<Authors> data = titleService.getAuthorsByTitle(titleId);
         return ok(data);
     }
 
+    // GET SALES USING TITLE ID
     @GetMapping("/{titleId}/sales")
     public ResponseEntity<List<Sales>> getSalesByTitle(@PathVariable String titleId) {
         List<Sales> data = titleService.getSalesByTitleId(titleId);
         return ok(data);
     }
 
+    // GET ROYALTIES USING TITLE ID
     @GetMapping("/{titleId}/royalties")
     public ResponseEntity<List<Roysched>> getRoyaltiesByTitle(@PathVariable String titleId) {
         List<Roysched> data = titleService.getRoyaltiesByTitleId(titleId);
@@ -80,10 +87,12 @@ public class TitleController {
 
     // --- Helper Methods ---
 
+    // Returns a 200 OK status
     private <T> ResponseEntity<T> ok(T data) {
         return ResponseEntity.ok(data);
     }
 
+    // Returns a 201 CREATED status
     private <T> ResponseEntity<T> created(T data) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

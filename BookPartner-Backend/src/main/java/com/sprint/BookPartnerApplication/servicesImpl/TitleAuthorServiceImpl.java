@@ -17,17 +17,23 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
     @Autowired
     private TitleAuthorRepository titleAuthorRepository;
 
+
+    // CREATE MAPPING    
     @Override
     public TitleAuthorResponseDTO createTitleAuthor(TitleAuthorRequestDTO titleAuthorDTO) 
     {
+        // 1. Manually construct the composite key
         TitleAuthorId id = new TitleAuthorId();
         id.setAuId(titleAuthorDTO.getAuId()); 
         id.setTitleId(titleAuthorDTO.getTitleId());
         
+        // 2. Fail-Fast Validation: Prevent composite key constraint violations in the DB
         if (titleAuthorRepository.existsById(id)) {
             throw new DuplicateResourceException(
                 "Mapping already exists for Author: " + titleAuthorDTO.getAuId() + " and Title: " + titleAuthorDTO.getTitleId());
         }
+
+        // 3. Map DTO to Entity
         TitleAuthor titleAuthor = new TitleAuthor();
         titleAuthor.setAuId(titleAuthorDTO.getAuId());
         titleAuthor.setTitleId(titleAuthorDTO.getTitleId());
@@ -35,10 +41,16 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
         titleAuthor.setRoyaltyper(titleAuthorDTO.getRoyaltyper());
         TitleAuthor savedTitleAuthor = titleAuthorRepository.save(titleAuthor);
         
+        // 4. THE HYDRATION HACK: Re-fetch the saved entity from the DB.
+        // Because Author and Title are marked insertable=false/updatable=false, 
+        // the initial save() object doesn't contain the joined Author/Title data. 
+        // Re-fetching ensures we have the full names to pass back to the frontend.
         TitleAuthor hydratedTitleAuthor = titleAuthorRepository.findById(id).orElse(savedTitleAuthor);
         return mapToResponseDTO(hydratedTitleAuthor);
     }
-    
+
+
+    // DELETE MAPPING
     @Override
     public void deleteByAuthorAndTitle(String auId, String titleId) 
     {    
@@ -46,6 +58,8 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
         id.setAuId(auId);        
         id.setTitleId(titleId); 
         
+        // Explicitly check existence so we can return a meaningful 404 error 
+        // instead of a generic 500 Internal Server Error if the delete fails.
         if (!titleAuthorRepository.existsById(id)) 
         {
             throw new ResourceNotFoundException("Title-Author relationship not found for Author: " + auId + " and Title: " + titleId);
@@ -53,13 +67,19 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
         
         titleAuthorRepository.deleteById(id);
     }
-    private TitleAuthorResponseDTO mapToResponseDTO(TitleAuthor titleAuthor) {
+
+    // DTO MAPPER (Data Enrichment)
+    private TitleAuthorResponseDTO mapToResponseDTO(TitleAuthor titleAuthor) 
+    {
         TitleAuthorResponseDTO dto = new TitleAuthorResponseDTO();
         
         dto.setAuId(titleAuthor.getAuId());
         dto.setTitleId(titleAuthor.getTitleId());
         dto.setAuOrd(titleAuthor.getAuOrd());
         dto.setRoyaltyper(titleAuthor.getRoyaltyper());
+
+        // Null-safe checks to safely extract flattened string data 
+        // from the associated objects.
         if (titleAuthor.getAuthor() != null) {
             dto.setAuthorFullName(titleAuthor.getAuthor().getAuFname() + " " + titleAuthor.getAuthor().getAuLname());
         }

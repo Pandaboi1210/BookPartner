@@ -1,5 +1,10 @@
 package com.sprint.BookPartnerApplication.dto.response;
 
+/**
+ * Data Transfer Object for outgoing Title-Author link data.
+ * Decouples the database join table representation from the API JSON response.
+ */
+
 public class TitleAuthorResponseDTO {
 
     private String auId;

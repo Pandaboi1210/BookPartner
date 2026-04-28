@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TitleRepository extends JpaRepository<Title, String> {
-
+public interface TitleRepository extends JpaRepository<Title, String> 
+{
     @Query("SELECT t FROM Title t WHERE t.type = :type")
     List<Title> findByType(@Param("type") String type);
 
