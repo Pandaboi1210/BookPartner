@@ -113,10 +113,19 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<DiscountResponseDTO> getDiscountsByStore(String storeId) {
-        return discountsRepository.findDiscountsByStoreId(storeId)
+        // validate that the store exists first
+        resolveStore(storeId);
+
+        List<DiscountResponseDTO> discounts = discountsRepository.findDiscountsByStoreId(storeId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+
+        if (discounts.isEmpty()) {
+            throw new ResourceNotFoundException("No discount records found for store ID: " + storeId);
+        }
+
+        return discounts;
     }
 
     @Override
