@@ -33,13 +33,12 @@ public class TitleServiceImpl implements TitleService
     @Autowired
     private RoyschedRepository royschedRepository; 
     
+
+    // READ OPERATIONS
     @Override
     public List<TitleResponseDTO> getAllTitles() 
     { 
-        return titleRepository.findAll()
-                .stream()
-                .map(this::mapToResponseDTO)
-                .toList(); 
+        return titleRepository.findAll().stream().map(this::mapToResponseDTO).toList(); 
     }
 
     @Override
@@ -87,6 +86,8 @@ public class TitleServiceImpl implements TitleService
         return mapToResponseDTO(title);
     }
 
+
+    // WRITE OPERATIONS
     @Override
     public TitleResponseDTO insertTitle(TitleRequestDTO titleDTO) 
     {
@@ -143,6 +144,7 @@ public class TitleServiceImpl implements TitleService
         return mapToResponseDTO(savedTitle);
     }
 
+    // DELETE OPERATIONS
     @Override
     public void deleteTitleById(String titleId) 
     { 
@@ -163,6 +165,8 @@ public class TitleServiceImpl implements TitleService
         titleRepository.deleteById(titleId); 
     }
 
+
+    // SUB-RESOURCE FETCHING
     @Override
     public List<TitleResponseDTO> getTitlesByPublisher(String pubId) 
     { 
@@ -218,6 +222,8 @@ public class TitleServiceImpl implements TitleService
         return royschedRepository.findByTitle_TitleId(titleId);
     }
 
+
+    // DATA MAPPING
     private TitleResponseDTO mapToResponseDTO(Title title) 
     {
         TitleResponseDTO dto = new TitleResponseDTO();

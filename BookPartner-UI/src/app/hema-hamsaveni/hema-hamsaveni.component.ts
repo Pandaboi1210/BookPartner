@@ -25,7 +25,6 @@ export class HemaHamsaveniComponent {
   errorMessage: string = '';
   isEditMode: boolean = false; 
   
-  // 🌟 HELPERS FOR HTML TEMPLATE 🌟
   protected readonly Array = Array;
   protected readonly Object = Object;
   isArr(val: any): boolean { return Array.isArray(val); }
@@ -184,7 +183,7 @@ export class HemaHamsaveniComponent {
     // --- HANDLE: POST (LINK AUTHOR) ---
     else if (this.currentModalType === 'POST' && this.currentEntity === 'TITLE_AUTHOR') {
       
-      // New Frontend Validations matching Backend DTO
+      //Frontend Validations matching Backend DTO
       const auIdRegex = /^[0-9]{3}-[0-9]{2}-[0-9]{4}$/;
       if (!this.newLink.auId || !auIdRegex.test(this.newLink.auId)) {
         this.errorMessage = 'Author ID is required and must be in XXX-XX-XXXX format.';
@@ -234,7 +233,7 @@ export class HemaHamsaveniComponent {
       });
     }
 
-    // 🌟 NEW: HANDLE TOTAL SALES REPORT 🌟
+    // HANDLE TOTAL SALES REPORT
     else if (this.currentModalType === 'REPORT_SALES_TITLE') {
       this.titleService.getTotalSalesByTitle().subscribe({
         next: (data) => {

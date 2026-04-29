@@ -18,8 +18,9 @@ public class Title {
     private String title;
 
     @NotBlank(message = "Type is required")
-    private String type = "UNDECIDED";
+    private String type = "UNDECIDED"; 
 
+    // Defines the relationship mapping back to the Publisher entity's foreign key
     @ManyToOne
     @JoinColumn(name = "pub_id")
     private Publishers publisher;
@@ -28,7 +29,7 @@ public class Title {
     private Double advance;
     private Integer royalty;
 
-    @Column(name = "ytd_sales")
+    @Column(name = "ytd_sales") 
     private Integer ytdSales;
 
     private String notes;
@@ -36,6 +37,7 @@ public class Title {
     @NotNull(message = "Publication date is required")
     private LocalDateTime pubdate;
 
+    // Getters & Setters
     public String getTitleId() { return titleId; }
     public void setTitleId(String titleId) { this.titleId = titleId; }
 

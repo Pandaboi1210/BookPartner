@@ -3,11 +3,12 @@ package com.sprint.BookPartnerApplication.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+/*Represents the join table between Authors and Titles*/
 @Entity
 @Table(name = "titleauthor")
-@IdClass(TitleAuthorId.class)
-public class TitleAuthor {
-
+@IdClass(TitleAuthorId.class) // Specifies the composite primary key class
+public class TitleAuthor 
+{
     @Id
     @Column(name = "au_id")
     @NotBlank(message = "Author ID is required")
@@ -27,12 +28,12 @@ public class TitleAuthor {
     private Title title; 
 
     @Column(name = "au_ord")
-    private Byte auOrd;
+    private Byte auOrd; 
 
     private Integer royaltyper;
     
     
-
+    // GETTERS & SETTERS
     public String getAuId() { return auId; }
     public void setAuId(String auId) { this.auId = auId; }
 

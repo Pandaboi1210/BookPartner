@@ -13,8 +13,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TitleAuthorRepository extends JpaRepository<TitleAuthor, TitleAuthorId> {
-
+public interface TitleAuthorRepository extends JpaRepository<TitleAuthor, TitleAuthorId> 
+{
+    // Fetches all Author-Title mappings for a specific title
     @Query("SELECT ta FROM TitleAuthor ta WHERE ta.titleId = :titleId")
     List<TitleAuthor> findByTitle_TitleId(@Param("titleId") String titleId);
 
