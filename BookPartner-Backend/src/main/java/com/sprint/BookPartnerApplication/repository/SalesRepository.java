@@ -15,17 +15,21 @@ import java.time.LocalDateTime;
 @Repository
 public interface SalesRepository extends JpaRepository<Sales, SalesId> 
 {
+    // Get sales by store id
     @Query("SELECT s FROM Sales s WHERE s.storId = :storId")
     List<Sales> findByStorId(String storId);
 
+    // Get sales by title id
     @Query("SELECT s FROM Sales s WHERE s.titleId = :titleId")
     List<Sales> findByTitleId(String titleId);
 
+    // Get sales between dates
     @Query("SELECT s FROM Sales s WHERE s.ordDate BETWEEN :from AND :to")
     List<Sales> findByOrdDateBetween(LocalDateTime from, LocalDateTime to);
+    
+ // ── Reporting queries ────────────────────────────────────────────────────
 
-    // ── Reporting queries ────────────────────────────────────────────────────
-
+    // Get total sales grouped by title
     @Query("SELECT new com.sprint.BookPartnerApplication.dto.response.report.SalesByTitleDTO(" +
            "t.titleId, t.title, CAST(SUM(s.qty) AS integer), SUM(s.qty * t.price)) " +
            "FROM Sales s JOIN Title t ON s.titleId = t.titleId " +
@@ -33,6 +37,7 @@ public interface SalesRepository extends JpaRepository<Sales, SalesId>
            "ORDER BY SUM(s.qty) DESC")
     List<SalesByTitleDTO> getSalesByTitle();
 
+    // Get total sales grouped by publisher
     @Query("SELECT new com.sprint.BookPartnerApplication.dto.response.report.SalesByPublisherDTO(" +
            "p.pubId, p.pubName, CAST(SUM(s.qty) AS integer), SUM(s.qty * t.price)) " +
            "FROM Sales s " +
@@ -42,6 +47,7 @@ public interface SalesRepository extends JpaRepository<Sales, SalesId>
            "ORDER BY SUM(s.qty) DESC")
     List<SalesByPublisherDTO> getSalesByPublisher();
 
+    // Get sales trend for date range
     @Query("SELECT new com.sprint.BookPartnerApplication.dto.response.report.SalesTrendDTO(" +
            "COUNT(s), CAST(SUM(s.qty) AS long)) " +
            "FROM Sales s WHERE s.ordDate BETWEEN :from AND :to")

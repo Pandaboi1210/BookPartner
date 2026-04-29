@@ -30,6 +30,7 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     private DiscountRepository discountsRepository;
 
+    // Convert request DTO to entity
     private Store mapToEntity(StoreRequestDTO dto) {
         Store store = new Store();
         store.setStorId(dto.getStorId());
@@ -41,6 +42,7 @@ public class StoreServiceImpl implements StoreService {
         return store;
     }
 
+    // Convert entity to response DTO
     private StoreResponseDTO mapToResponseDTO(Store store) {
         StoreResponseDTO dto = new StoreResponseDTO();
         dto.setStorId(store.getStorId());
@@ -57,6 +59,7 @@ public class StoreServiceImpl implements StoreService {
         return dto;
     }
 
+    // Create store
     @Override
     public StoreResponseDTO createStore(StoreRequestDTO dto) {
 
@@ -72,6 +75,7 @@ public class StoreServiceImpl implements StoreService {
         return mapToResponseDTO(saved);
     }
 
+    // Get all stores
     @Override
     public List<StoreResponseDTO> getAllStores() {
         List<Store> stores = storeRepository.findAll();
@@ -85,6 +89,7 @@ public class StoreServiceImpl implements StoreService {
                 .toList();
     }
 
+    // Get store by id
     @Override
     public StoreResponseDTO getStoreById(String storeId) {
 
@@ -99,6 +104,7 @@ public class StoreServiceImpl implements StoreService {
         return mapToResponseDTO(store);
     }
 
+    // Update store
     @Override
     public StoreResponseDTO updateStore(String storeId, StoreRequestDTO dto) {
 
@@ -120,6 +126,7 @@ public class StoreServiceImpl implements StoreService {
         return mapToResponseDTO(updated);
     }
 
+    // Get sales by store
     @Override
     public List<SalesResponseDTO> getSalesByStore(String storeId) {
 
@@ -147,29 +154,27 @@ public class StoreServiceImpl implements StoreService {
             dto.setQty(s.getQty());
             dto.setPayterms(s.getPayterms());
             if (s.getStore() != null) {
-            dto.setStoreName(s.getStore().getStorName());
-        }
-        if (s.getTitle() != null) {
-            dto.setTitleName(s.getTitle().getTitle());
-        }
+                dto.setStoreName(s.getStore().getStorName());
+            }
+            if (s.getTitle() != null) {
+                dto.setTitleName(s.getTitle().getTitle());
+            }
             return dto;
         }).toList();
     }
 
-   @Override
+    // Get discounts by store
+    @Override
     public List<DiscountResponseDTO> getDiscountsByStore(String storeId) {
 
-        // 1. Validate input
         if (storeId == null || storeId.isBlank()) {
             throw new BadRequestException("Store ID must not be blank");
         }
 
-        // 2. Check store exists
         storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with ID: " + storeId));
 
-        // 3. Fetch discounts from DB (ENTITY)
         List<Discounts> discounts =
                 discountsRepository.findDiscountsByStoreId(storeId);
 
@@ -178,7 +183,6 @@ public class StoreServiceImpl implements StoreService {
                     "No discounts found for store ID: " + storeId);
         }
 
-        // 4. Convert ENTITY → DTO
         return discounts.stream()
                 .map(d -> {
                     DiscountResponseDTO dto = new DiscountResponseDTO();

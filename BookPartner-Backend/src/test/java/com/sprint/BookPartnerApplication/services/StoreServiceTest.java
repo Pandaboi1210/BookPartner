@@ -38,6 +38,7 @@ public class StoreServiceTest {
         store.setStorName("Bookbeat");
     }
 
+    // Test create store
     @Test
     void testCreateStore() {
         when(storeRepository.existsById("7066")).thenReturn(false);
@@ -46,6 +47,7 @@ public class StoreServiceTest {
         assertNotNull(storeService.createStore(dto));
     }
 
+    // Test get store by id
     @Test
     void testGetStoreById() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
@@ -53,6 +55,7 @@ public class StoreServiceTest {
         assertNotNull(storeService.getStoreById("7066"));
     }
 
+    // Test get store by id when not found
     @Test
     void testGetStoreById_NotFound() {
         when(storeRepository.findById("7066")).thenReturn(Optional.empty());
@@ -61,6 +64,7 @@ public class StoreServiceTest {
                 () -> storeService.getStoreById("7066"));
     }
 
+    // Test get all stores with data
     @Test
     void testGetAllStores_WithData() {
         when(storeRepository.findAll()).thenReturn(List.of(store));
@@ -68,6 +72,7 @@ public class StoreServiceTest {
         assertEquals(1, storeService.getAllStores().size());
     }
 
+    // Test get all stores when empty
     @Test
     void testGetAllStores_Empty_ThrowsException() {
         when(storeRepository.findAll()).thenReturn(Collections.emptyList());
@@ -76,6 +81,7 @@ public class StoreServiceTest {
                 () -> storeService.getAllStores());
     }
 
+    // Test update store
     @Test
     void testUpdateStore() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
@@ -84,6 +90,7 @@ public class StoreServiceTest {
         assertNotNull(storeService.updateStore("7066", dto));
     }
 
+    // Test update store when not found
     @Test
     void testUpdateStore_NotFound() {
         when(storeRepository.findById("7066")).thenReturn(Optional.empty());
@@ -92,6 +99,7 @@ public class StoreServiceTest {
                 () -> storeService.updateStore("7066", dto));
     }
 
+    // Test get sales by store
     @Test
     void testGetSalesByStore() {
         Sales sale = new Sales();
@@ -103,6 +111,7 @@ public class StoreServiceTest {
         assertEquals(1, storeService.getSalesByStore("7066").size());
     }
 
+    // Test get sales by store when no sales exist
     @Test
     void testGetSalesByStore_NoSales() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
@@ -112,6 +121,7 @@ public class StoreServiceTest {
                 () -> storeService.getSalesByStore("7066"));
     }
 
+    // Test get discounts by store
     @Test
     void testGetDiscountsByStore() {
         Discounts d = new Discounts();
@@ -123,6 +133,7 @@ public class StoreServiceTest {
         assertEquals(1, storeService.getDiscountsByStore("7066").size());
     }
 
+    // Test get discounts by store when none exist
     @Test
     void testGetDiscountsByStore_NoDiscounts() {
         when(storeRepository.findById("7066")).thenReturn(Optional.of(store));
