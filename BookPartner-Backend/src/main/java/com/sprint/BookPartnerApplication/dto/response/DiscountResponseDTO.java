@@ -9,7 +9,7 @@ public class DiscountResponseDTO {
     private Integer lowqty;
     private Integer highqty;
     private BigDecimal discount;
-    private String storId;
+    private String storeId;
     private String storeName;
 
     public DiscountResponseDTO() {
@@ -56,11 +56,11 @@ public class DiscountResponseDTO {
     }
 
     public String getStorId() {
-        return storId;
+        return storeId;
     }
 
     public void setStorId(String storId) {
-        this.storId = storId;
+        this.storeId = storId;
     }
 
     public String getStoreName() {
