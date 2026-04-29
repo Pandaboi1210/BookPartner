@@ -17,7 +17,7 @@ public class JobsRequestDTO {
     @NotNull(message = "Maximum level is required")
     private Integer maxLvl;
 
-    // 🔹 Getters & Setters
+    //Getters & Setters
 
     public Short getJobId() {
         return jobId;
