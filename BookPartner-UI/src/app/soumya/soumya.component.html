@@ -14,29 +14,41 @@
   </div>
 
   <div class="grid">
-
+ <!-- GET /api/v1/authors → fetch all authors (with optional filters) -->
     <div class="card">
       <h2 class="purple-text">Authors Entity</h2>
       <button class="api-btn blue" (click)="openModal('AUTHOR', 'GET_ALL', 'Get All Authors')">
         <span>GET ALL AUTHORS</span>
         <small>Retrieve a list of all authors, with optional filters.</small>
       </button>
+      <!-- GET /api/v1/authors/{id} → fetch single author -->
       <button class="api-btn blue" (click)="openModal('AUTHOR', 'GET_ID', 'Find Author by ID')">
         <span>GET AUTHOR BY ID</span>
         <small>Fetch detailed information for a specific author.</small>
       </button>
+        <!-- POST /api/v1/authors → create new author -->
       <button class="api-btn green" (click)="openModal('AUTHOR', 'POST', 'Create New Author')">
         <span>POST NEW AUTHOR</span>
         <small>Add a new author record to the database.</small>
       </button>
+
+
+  <!-- PUT /api/v1/authors/{id} → update existing author -->
       <button class="api-btn yellow" (click)="openModal('AUTHOR', 'PUT', 'Update Existing Author')">
         <span>PUT UPDATE AUTHOR</span>
         <small>Modify an existing author's details.</small>
       </button>
+
+  <!-- DELETE /api/v1/authors/{id} → delete author -->
+
+
       <button class="api-btn red" (click)="openModal('AUTHOR', 'DELETE', 'Delete Author')">
         <span>DELETE AUTHOR</span>
         <small>Remove an author from the database.</small>
       </button>
+
+
+ <!-- GET /api/v1/authors/{id}/titles → get titles of author -->
       <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #334155;">
         <button class="api-btn purple" (click)="openModal('AUTHOR', 'GET_TITLES', 'Get Titles by Author ID')">
           <span>GET TITLES BY AUTHOR</span>
@@ -47,37 +59,50 @@
 
     <div class="card">
       <h2 class="teal-text">Publishers Entity</h2>
+
+      <!-- GET /api/v1/publishers → fetch all publishers -->
       <button class="api-btn blue" (click)="openModal('PUBLISHER', 'GET_ALL', 'Get All Publishers')">
         <span>GET ALL PUBLISHERS</span>
         <small>Retrieve a list of all publishers.</small>
       </button>
+
+       <!-- GET /api/v1/publishers/{id} → fetch single publisher -->
       <button class="api-btn blue" (click)="openModal('PUBLISHER', 'GET_ID', 'Find Publisher by ID')">
         <span>GET PUBLISHER BY ID</span>
         <small>Fetch detailed information for a specific publisher.</small>
       </button>
+
+       <!-- POST /api/v1/publishers → create publisher -->
       <button class="api-btn green" (click)="openModal('PUBLISHER', 'POST', 'Create New Publisher')">
         <span>POST NEW PUBLISHER</span>
         <small>Add a new publisher record to the database.</small>
       </button>
+       <!-- PUT /api/v1/publishers/{id} → update publisher -->
       <button class="api-btn yellow" (click)="openModal('PUBLISHER', 'PUT', 'Update Existing Publisher')">
         <span>PUT UPDATE PUBLISHER</span>
         <small>Modify an existing publisher's details.</small>
       </button>
+        <!-- DELETE /api/v1/publishers/{id} → delete publisher -->
+
       <button class="api-btn red" (click)="openModal('PUBLISHER', 'DELETE', 'Delete Publisher')">
         <span>DELETE PUBLISHER</span>
         <small>Remove a publisher from the database.</small>
       </button>
+
+       <!-- GET /api/v1/publishers/{id}/titles → get titles of publisher -->
       <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #334155;">
         <button class="api-btn purple" (click)="openModal('PUBLISHER', 'GET_TITLES', 'Get Titles by Publisher ID')">
           <span>GET TITLES BY PUBLISHER</span>
           <small>Retrieve all books released by a specific publisher.</small>
         </button>
+         <!-- GET /api/v1/publishers/{id}/employees → get employees -->
         <button class="api-btn purple" (click)="openModal('PUBLISHER', 'GET_EMPLOYEES', 'Get Employees by Publisher ID')">
           <span>GET EMPLOYEES BY PUBLISHER</span>
           <small>Retrieve all employees working for a specific publisher.</small>
         </button>
       </div>
     </div>
+      <!-- GET /api/v1/reports/sales/by-publisher → sales report -->
 
     <div class="card" style="height: fit-content;">
       <h2 class="green-text">Sales Report Endpoints</h2>
