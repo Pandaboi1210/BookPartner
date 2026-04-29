@@ -47,7 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         emp.setEmpId(dto.getEmpId());
         emp.setFname(dto.getFname());
 
-        // ✅ FIX: no NULL minit
+        // no NULL minit
         if (dto.getMinit() == null || dto.getMinit().isEmpty()) {
             emp.setMinit("");
         } else {
