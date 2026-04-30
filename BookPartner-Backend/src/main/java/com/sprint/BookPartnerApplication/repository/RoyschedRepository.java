@@ -23,7 +23,7 @@ public interface RoyschedRepository extends JpaRepository<Roysched, Integer> {
            THEN true ELSE false END
            FROM Roysched r
            WHERE r.title.titleId = :titleId
-           AND r.lorange = :lorange
+           AND r.lorange = :lorangez
            AND r.hirange = :hirange
            """)
     boolean existsRoyschedRange(

@@ -42,7 +42,7 @@ public class AuthorsServiceImpl implements AuthorsService {
     @Override
     public AuthorsResponseDTO getAuthorById(String id) {
         Authors author = authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + id));
 
         return mapToDTO(author);
     }
@@ -75,7 +75,7 @@ public class AuthorsServiceImpl implements AuthorsService {
     public AuthorsResponseDTO updateAuthor(String id, AuthorsRequestDTO dto) {
 
         Authors existing = authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + id));
 
         existing.setAuFname(dto.getAuFname());
         existing.setAuLname(dto.getAuLname());
@@ -95,12 +95,12 @@ public class AuthorsServiceImpl implements AuthorsService {
     @Override
     public void deleteAuthor(String id) {
         Authors author = authorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found with ID: " + id));
 
         List<Title> linkedTitles = authorRepository.getTitlesByAuthorId(id);
 
         if (linkedTitles != null && !linkedTitles.isEmpty()) {
-            throw new ResourceInUseException("Cannot delete author. Author is assigned to one or more titles.");
+            throw new ResourceInUseException("Cannot delete Author with ID: " + id + ". Author is assigned to one or more titles.");
         }
 
         authorRepository.delete(author);
@@ -110,9 +110,13 @@ public class AuthorsServiceImpl implements AuthorsService {
     @Override
     public List<Title> getTitlesByAuthor(String authorId) {
         if (!authorRepository.existsById(authorId)) {
-            throw new ResourceNotFoundException("Author not found with id: " + authorId);
+            throw new ResourceNotFoundException("Author not found with ID: " + authorId);
         }
-        return authorRepository.getTitlesByAuthorId(authorId);
+        List<Title> titles = authorRepository.getTitlesByAuthorId(authorId);
+        if (titles == null || titles.isEmpty()) {
+            throw new ResourceNotFoundException("No titles found for Author with ID: " + authorId);
+        }
+        return titles;
     }
 
     private AuthorsResponseDTO mapToDTO(Authors author) {

@@ -32,14 +32,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto) {
 
         if (empRepo.existsById(dto.getEmpId())) {
-            throw new EmployeeException("Employee already exists");
+            throw new EmployeeException("Employee already exists with ID: " + dto.getEmpId());
         }
 
         Jobs job = jobRepo.findById(dto.getJobId())
-                .orElseThrow(() -> new EmployeeException("Job not found"));
+                .orElseThrow(() -> new EmployeeException("Job not found with ID: " + dto.getJobId()));
 
         if (!pubRepo.existsById(dto.getPubId())) {
-            throw new EmployeeException("Publisher not found");
+            throw new EmployeeException("Publisher not found with ID: " + dto.getPubId());
         }
 
         Employee emp = new Employee();
@@ -78,7 +78,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResponseDTO getEmployeeById(String empId) {
         Employee emp = empRepo.findById(empId)
-                .orElseThrow(() -> new EmployeeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found with ID: " + empId));
 
         return mapToDTO(emp);
     }
@@ -87,7 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDTO updateEmployee(String empId, EmployeeRequestDTO dto) {
 
         Employee existing = empRepo.findById(empId)
-                .orElseThrow(() -> new EmployeeException("Employee not found"));
+                .orElseThrow(() -> new EmployeeException("Employee not found with ID: " + empId));
 
         existing.setFname(dto.getFname());
 
@@ -103,7 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (dto.getJobId() != null) {
             Jobs job = jobRepo.findById(dto.getJobId())
-                    .orElseThrow(() -> new EmployeeException("Job not found"));
+                    .orElseThrow(() -> new EmployeeException("Job not found with ID: " + dto.getJobId()));
             existing.setJob(job);
         }
 

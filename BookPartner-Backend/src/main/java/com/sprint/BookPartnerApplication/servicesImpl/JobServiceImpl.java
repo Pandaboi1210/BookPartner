@@ -56,7 +56,7 @@ public class JobServiceImpl implements JobsService {
     public JobsResponseDTO getJobById(Short jobId) {
 
         Jobs job = repo.findById(jobId)
-                .orElseThrow(() -> new JobsException("Job not found with id: " + jobId));
+                .orElseThrow(() -> new JobsException("Job not found with ID: " + jobId));
 
         return mapToResponse(job);
     }
@@ -66,7 +66,7 @@ public class JobServiceImpl implements JobsService {
     public JobsResponseDTO updateJob(Short jobId, JobsRequestDTO dto) {
 
         Jobs existing = repo.findById(jobId)
-                .orElseThrow(() -> new JobsException("Job not found"));
+                .orElseThrow(() -> new JobsException("Job not found with ID: " + jobId));
 
         existing.setJobDesc(dto.getJobDesc());
 

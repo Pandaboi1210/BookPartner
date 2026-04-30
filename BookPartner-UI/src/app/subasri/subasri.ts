@@ -250,6 +250,12 @@ export class SubasriComponent {
           this.isLoading = false;
           return;
         }
+        const jobIdNum = Number(this.searchId);
+        if (isNaN(jobIdNum) || jobIdNum < 1 || jobIdNum > 32767) {
+          this.errorMessage = `Job ID must be a valid number between 1 and 32767. Received: ${this.searchId}`;
+          this.isLoading = false;
+          return;
+        }
         this.jobService.getById(Number(this.searchId)).subscribe({
           next: res => {
             this.apiResult = [res];
@@ -257,7 +263,7 @@ export class SubasriComponent {
             this.cdr.detectChanges();
           },
           error: (err) => {
-            this.errorMessage = this.resolveErrorMessage(err, 'Job not found');
+            this.errorMessage = this.resolveErrorMessage(err, `Job not found with ID: ${this.searchId}`);
             this.isLoading = false;
             this.cdr.detectChanges();
           }

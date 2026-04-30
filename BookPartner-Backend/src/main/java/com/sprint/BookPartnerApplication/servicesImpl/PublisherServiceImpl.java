@@ -37,7 +37,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public PublishersResponseDTO getPublisherById(String id) {
         Publishers publisher = publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + id));
 
         return mapToDTO(publisher);
     }
@@ -66,7 +66,7 @@ public class PublisherServiceImpl implements PublisherService {
     public PublishersResponseDTO updatePublisher(String id, PublishersRequestDTO dto) {
 
         Publishers existing = publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + id));
 
         existing.setPubName(dto.getPubName());
         existing.setCity(dto.getCity());
@@ -83,17 +83,17 @@ public class PublisherServiceImpl implements PublisherService {
     public void deletePublisher(String id) {
 
         Publishers publisher = publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with ID: " + id));
 
        
         if (hasEmployees(id)) {
-            throw new ResourceInUseException("Cannot delete publisher. It has employees.");
+            throw new ResourceInUseException("Cannot delete Publisher with ID: " + id + ". It has employees.");
         }
 
         // check titles
         List<Title> titles = publisherRepository.getTitlesByPublisherId(id);
         if (titles != null && !titles.isEmpty()) {
-            throw new ResourceInUseException("Cannot delete publisher. It has titles.");
+            throw new ResourceInUseException("Cannot delete Publisher with ID: " + id + ". It has titles.");
         }
 
         publisherRepository.delete(publisher);
@@ -103,18 +103,26 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public List<Title> getTitlesByPublisher(String publisherId) {
         if (!publisherRepository.existsById(publisherId)) {
-            throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
+            throw new ResourceNotFoundException("Publisher not found with ID: " + publisherId);
         }
-        return publisherRepository.getTitlesByPublisherId(publisherId);
+        List<Title> titles = publisherRepository.getTitlesByPublisherId(publisherId);
+        if (titles == null || titles.isEmpty()) {
+            throw new ResourceNotFoundException("No titles found for Publisher with ID: " + publisherId);
+        }
+        return titles;
     }
 
     
     @Override
     public List<Employee> getEmployeesByPublisher(String publisherId) {
         if (!publisherRepository.existsById(publisherId)) {
-            throw new ResourceNotFoundException("Publisher not found with id: " + publisherId);
+            throw new ResourceNotFoundException("Publisher not found with ID: " + publisherId);
         }
-        return publisherRepository.getEmployeesByPublisherId(publisherId);
+        List<Employee> employees = publisherRepository.getEmployeesByPublisherId(publisherId);
+        if (employees == null || employees.isEmpty()) {
+            throw new ResourceNotFoundException("No employees found for Publisher with ID: " + publisherId);
+        }
+        return employees;
     }
 
 

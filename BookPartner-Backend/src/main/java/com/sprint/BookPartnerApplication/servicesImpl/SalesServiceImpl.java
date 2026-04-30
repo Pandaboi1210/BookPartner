@@ -78,7 +78,7 @@ public class SalesServiceImpl implements SalesService {
         // Check duplicate sale
         SalesId id = new SalesId(dto.getStorId(), dto.getOrdNum(), dto.getTitleId());
         if (salesRepository.existsById(id)) {
-            throw new BadRequestException("Sale already exists");
+            throw new BadRequestException("Sale already exists with Store ID: " + dto.getStorId() + ", Order: " + dto.getOrdNum() + ", Title ID: " + dto.getTitleId());
         }
 
         // Check store exists
@@ -126,7 +126,7 @@ public class SalesServiceImpl implements SalesService {
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No sales found for store ID: " + storeId);
+                    "No sales found for Store with ID: " + storeId);
         }
 
         return sales.stream()
@@ -146,7 +146,7 @@ public class SalesServiceImpl implements SalesService {
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No sales found for title ID: " + titleId);
+                    "No sales found for Title with ID: " + titleId);
         }
 
         return sales.stream()
@@ -170,7 +170,7 @@ public class SalesServiceImpl implements SalesService {
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No sales found between given dates");
+                    "No sales found between " + from + " and " + to);
         }
 
         return sales.stream()

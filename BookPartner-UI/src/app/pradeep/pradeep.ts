@@ -187,7 +187,10 @@ export class PradeepComponent {
   // converts raw HTTP errors into user-friendly messages based on status code and current endpoint
   private getFriendlyErrorMessage(err: any): string {
     // if the backend sent a meaningful message in the response body, prefer that
-    const backendMsg = err?.error?.message;
+    // backend returns plain strings (not JSON), so check typeof first
+    const backendMsg = typeof err?.error === 'string' && err.error.trim().length > 0
+      ? err.error
+      : err?.error?.message;
     if (backendMsg && !backendMsg.includes('localhost') && !backendMsg.includes('127.0.0.1')) {
       return backendMsg;
     }
@@ -198,25 +201,25 @@ export class PradeepComponent {
     let contextHint = '';
     switch (this.endpointKey) {
       case 'getDiscountsByStore':
-        contextHint = 'The Store ID you entered does not exist.';
+        contextHint = `Store not found with ID: ${this.storeIdInput}`;
         break;
       case 'getRoyaltyByTitle':
-        contextHint = 'The Title ID you entered does not exist.';
+        contextHint = `Royalty not found for Title ID: ${this.titleInput}`;
         break;
       case 'getAllDiscounts':
         contextHint = 'No discounts matched your filters.';
         break;
       case 'createDiscount':
-        contextHint = 'Could not create the discount. Please check your input values.';
+        contextHint = `Could not create discount. Store not found with ID: ${this.updateDiscountForm.storId}`;
         break;
       case 'updateDiscount':
-        contextHint = 'Could not update the discount. The discount type may not exist.';
+        contextHint = `Discount not found for type: ${this.updateDiscountForm.discountType}`;
         break;
       case 'createRoyalty':
-        contextHint = 'Could not create the royalty. Please check your input values.';
+        contextHint = `Could not create royalty. Title not found with ID: ${this.updateRoyaltyForm.titleId}`;
         break;
       case 'updateRoyalty':
-        contextHint = 'Could not update the royalty. The royalty ID may not exist.';
+        contextHint = `Royalty slab not found for Title with ID: ${this.updateRoyaltyForm.titleId}`;
         break;
       case 'getAuthorRoyalties':
         contextHint = 'Could not load the author royalties report.';

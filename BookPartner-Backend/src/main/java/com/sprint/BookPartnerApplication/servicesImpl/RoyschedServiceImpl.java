@@ -59,7 +59,7 @@ public class RoyschedServiceImpl implements RoyschedService {
 
         // prevent duplicate slabs with the same range for the same title
         if (royschedRepository.existsRoyschedRange(title.getTitleId(), requestDTO.getLorange(), requestDTO.getHirange())) {
-            throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for this title.");
+            throw new DuplicateResourceException("A royalty schedule with this exact low and high range already exists for Title ID: " + title.getTitleId());
         }
 
         Roysched roysched = new Roysched();
@@ -75,8 +75,12 @@ public class RoyschedServiceImpl implements RoyschedService {
     public List<RoyschedResponseDTO> getRoyschedByTitle(String titleId) {
         List<Roysched> schedules = royschedRepository.findByTitle_TitleId(titleId);
 
+        if (!titleRepository.existsById(titleId)) {
+            throw new ResourceNotFoundException("Title not found with ID: " + titleId);
+        }
+
         if (schedules.isEmpty()) {
-            throw new ResourceNotFoundException("No royalty schedules found for title ID: " + titleId);
+            throw new ResourceNotFoundException("No royalty schedules found for Title with ID: " + titleId);
         }
 
         return schedules.stream()
@@ -87,7 +91,7 @@ public class RoyschedServiceImpl implements RoyschedService {
     @Override
     public RoyschedResponseDTO updateRoysched(Integer royaltyId, RoyschedRequestDTO requestDTO) {
         Roysched roysched = royschedRepository.findById(royaltyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Royalty slab not found with id: " + royaltyId));
+                .orElseThrow(() -> new ResourceNotFoundException("Royalty slab not found with ID: " + royaltyId));
 
         // validate range before updating
         if (requestDTO.getLorange() != null && requestDTO.getHirange() != null) {

@@ -44,6 +44,19 @@ export class SoumyaComponent {
     private router: Router
   ) {}
 
+  private resolveErrorMessage(err: any, fallback: string): string {
+    if (typeof err?.error === 'string' && err.error.trim().length > 0) {
+      return err.error;
+    }
+    if (err?.error?.message) {
+      return err.error.message;
+    }
+    if (err?.message) {
+      return err.message;
+    }
+    return fallback;
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
@@ -95,7 +108,7 @@ export class SoumyaComponent {
           this.isLoading = false;
           this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Fetch failed.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, 'Fetch failed.'); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'GET_ID') {
       if (!this.searchId) { this.errorMessage = 'ID required.'; this.isLoading = false; return; }
@@ -110,7 +123,7 @@ export class SoumyaComponent {
           this.apiResult = Array.isArray(data) ? data : [data];
           this.isLoading = false; this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Record not found.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, `${this.currentEntity === 'AUTHOR' ? 'Author' : 'Publisher'} not found with ID: ${this.searchId}`); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'POST') {
       const payload = this.currentEntity === 'AUTHOR' ? this.newAuthor : this.newPublisher;
@@ -120,7 +133,7 @@ export class SoumyaComponent {
 
       obs.subscribe({
         next: (res: any) => { this.apiResult = res.data || res; this.isLoading = false; this.cdr.detectChanges(); },
-        error: (err: any) => { this.errorMessage = err.error?.message || 'Create failed.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, 'Create failed.'); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'PUT') {
       if (!this.isEditMode) {
@@ -137,7 +150,7 @@ export class SoumyaComponent {
             this.isEditMode = true;
             this.isLoading = false; this.cdr.detectChanges();
           },
-          error: () => { this.errorMessage = 'Record not found.'; this.isLoading = false; this.cdr.detectChanges(); }
+          error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, `${this.currentEntity === 'AUTHOR' ? 'Author' : 'Publisher'} not found with ID: ${this.searchId}`); this.isLoading = false; this.cdr.detectChanges(); }
         });
       } else {
         const payload = this.currentEntity === 'AUTHOR' ? this.newAuthor : this.newPublisher;
@@ -147,7 +160,7 @@ export class SoumyaComponent {
 
         obs.subscribe({
           next: (res: any) => { this.apiResult = res.data || res; this.isLoading = false; this.cdr.detectChanges(); },
-          error: (err: any) => { this.errorMessage = err.error?.message || 'Update failed.'; this.isLoading = false; this.cdr.detectChanges(); }
+          error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, 'Update failed.'); this.isLoading = false; this.cdr.detectChanges(); }
         });
       }
     } else if (this.currentModalType === 'DELETE') {
@@ -162,7 +175,7 @@ export class SoumyaComponent {
           this.apiResult = { message: res.message || 'Deleted successfully.' };
           this.isLoading = false; this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Delete failed.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, `Delete failed for ${this.currentEntity === 'AUTHOR' ? 'Author' : 'Publisher'} with ID: ${this.searchId}`); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'GET_TITLES') {
       if (!this.searchId) { this.errorMessage = 'ID required.'; this.isLoading = false; return; }
@@ -176,7 +189,7 @@ export class SoumyaComponent {
           this.apiResult = Array.isArray(data) ? data : [data];
           this.isLoading = false; this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Titles not found.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, `No titles found for ${this.currentEntity === 'AUTHOR' ? 'Author' : 'Publisher'} with ID: ${this.searchId}`); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'GET_EMPLOYEES' && this.currentEntity === 'PUBLISHER') {
       if (!this.searchId) { this.errorMessage = 'Publisher ID required.'; this.isLoading = false; return; }
@@ -186,7 +199,7 @@ export class SoumyaComponent {
           this.apiResult = Array.isArray(data) ? data : [data];
           this.isLoading = false; this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Employees not found.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, `No employees found for Publisher with ID: ${this.searchId}`); this.isLoading = false; this.cdr.detectChanges(); }
       });
     } else if (this.currentModalType === 'REPORT_SALES_PUBLISHER') {
       this.publishersService.getSalesReport().subscribe({
@@ -197,7 +210,7 @@ export class SoumyaComponent {
           this.isLoading = false;
           this.cdr.detectChanges();
         },
-        error: () => { this.errorMessage = 'Error fetching publisher sales report.'; this.isLoading = false; this.cdr.detectChanges(); }
+        error: (err: any) => { this.errorMessage = this.resolveErrorMessage(err, 'Error fetching publisher sales report.'); this.isLoading = false; this.cdr.detectChanges(); }
       });
     }
   }

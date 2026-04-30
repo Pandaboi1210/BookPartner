@@ -123,7 +123,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching stores.';
+          this.errorMessage = this.resolveErrorMessage(err, 'Error fetching stores.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -144,7 +144,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || `Store not found with ID: ${this.searchId}`;
+          this.errorMessage = this.resolveErrorMessage(err, `Store not found with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -196,7 +196,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || `Store not found with ID: ${this.searchId}`;
+          this.errorMessage = this.resolveErrorMessage(err, `Store not found with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -222,7 +222,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error updating store.';
+          this.errorMessage = this.resolveErrorMessage(err, `Error updating Store with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -244,7 +244,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, `No sales found for Store with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -266,7 +266,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching discounts.';
+          this.errorMessage = this.resolveErrorMessage(err, `No discounts found for Store with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -283,7 +283,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, 'Error fetching sales.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -299,7 +299,7 @@ export class HariniComponent {
       if (!this.newSale.payterms?.trim()) { this.errorMessage = 'Pay Terms is required.'; this.isLoading = false; return; }
 
       const qtyValue = Number(this.newSale.qty);
-      if (isNaN(qtyValue) || qtyValue < 1) { this.errorMessage = 'Quantity must be at least 1.'; this.isLoading = false; return; }
+      if (isNaN(qtyValue) || qtyValue < 1) { this.errorMessage = `Quantity must be at least 1. Received: ${this.newSale.qty}`; this.isLoading = false; return; }
 
       let ordDateValue: string = this.newSale.ordDate;
       if (ordDateValue && ordDateValue.length === 16) {
@@ -341,7 +341,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, `No sales found for Store with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -359,7 +359,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, `No sales found for Title with ID: ${this.searchId}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -383,7 +383,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales by date range.';
+          this.errorMessage = this.resolveErrorMessage(err, 'No sales found in the given date range.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -404,7 +404,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales trend.';
+          this.errorMessage = this.resolveErrorMessage(err, 'Error fetching sales trend.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -421,7 +421,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching top authors.';
+          this.errorMessage = this.resolveErrorMessage(err, 'Error fetching top authors.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }

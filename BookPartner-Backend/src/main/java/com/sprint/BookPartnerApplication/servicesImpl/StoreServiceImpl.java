@@ -68,7 +68,7 @@ public class StoreServiceImpl implements StoreService {
         }
 
         if (storeRepository.existsById(dto.getStorId())) {
-            throw new BadRequestException("Store already exists");
+            throw new BadRequestException("Store already exists with ID: " + dto.getStorId());
         }
 
         Store saved = storeRepository.save(mapToEntity(dto));
@@ -142,7 +142,7 @@ public class StoreServiceImpl implements StoreService {
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No sales found for store ID: " + storeId);
+                    "No sales found for Store with ID: " + storeId);
         }
 
         return sales.stream().map(s -> {
@@ -180,7 +180,7 @@ public class StoreServiceImpl implements StoreService {
 
         if (discounts.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No discounts found for store ID: " + storeId);
+                    "No discounts found for Store with ID: " + storeId);
         }
 
         return discounts.stream()

@@ -56,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
         LocalDateTime toDT   = to.atTime(23, 59, 59);
         SalesTrendDTO result = salesRepository.getSalesTrend(fromDT, toDT);
         if (result == null || result.getTotalSalesCount() == 0) {
-            throw new ResourceNotFoundException("No sales found in the given date range.");
+            throw new ResourceNotFoundException("No sales found between " + from + " and " + to + ".");
         }
         return result;
     }

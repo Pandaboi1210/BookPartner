@@ -6,7 +6,9 @@ import com.sprint.BookPartnerApplication.entity.TitleAuthor;
 import com.sprint.BookPartnerApplication.entity.TitleAuthorId;
 import com.sprint.BookPartnerApplication.exception.DuplicateResourceException;
 import com.sprint.BookPartnerApplication.exception.ResourceNotFoundException; 
+import com.sprint.BookPartnerApplication.repository.AuthorsRepository;
 import com.sprint.BookPartnerApplication.repository.TitleAuthorRepository;
+import com.sprint.BookPartnerApplication.repository.TitleRepository;
 import com.sprint.BookPartnerApplication.services.TitleAuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,12 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
 {
     @Autowired
     private TitleAuthorRepository titleAuthorRepository;
+
+    @Autowired
+    private AuthorsRepository authorsRepository;
+
+    @Autowired
+    private TitleRepository titleRepository;
 
 
     // CREATE MAPPING    
@@ -31,6 +39,14 @@ public class TitleAuthorServiceImpl implements TitleAuthorService
         if (titleAuthorRepository.existsById(id)) {
             throw new DuplicateResourceException(
                 "Mapping already exists for Author: " + titleAuthorDTO.getAuId() + " and Title: " + titleAuthorDTO.getTitleId());
+        }
+
+        // 2b. Validate that Author and Title actually exist in the database
+        if (!authorsRepository.existsById(titleAuthorDTO.getAuId())) {
+            throw new ResourceNotFoundException("Author not found with ID: " + titleAuthorDTO.getAuId());
+        }
+        if (!titleRepository.existsById(titleAuthorDTO.getTitleId())) {
+            throw new ResourceNotFoundException("Title not found with ID: " + titleAuthorDTO.getTitleId());
         }
 
         // 3. Map DTO to Entity

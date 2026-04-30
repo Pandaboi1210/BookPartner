@@ -153,13 +153,13 @@ public class TitleServiceImpl implements TitleService
         }
 
         if (!titleAuthorRepository.findByTitle_TitleId(titleId).isEmpty()) {
-            throw new ResourceInUseException("Cannot delete Title. It has assigned authors.");
+            throw new ResourceInUseException("Cannot delete Title with ID: " + titleId + ". It has assigned authors.");
         }
         if (!salesRepository.findByTitleId(titleId).isEmpty()) {
-            throw new ResourceInUseException("Cannot delete Title. It has existing sales records.");
+            throw new ResourceInUseException("Cannot delete Title with ID: " + titleId + ". It has existing sales records.");
         }
         if (!royschedRepository.findByTitle_TitleId(titleId).isEmpty()) {
-            throw new ResourceInUseException("Cannot delete Title. It has existing royalty schedules.");
+            throw new ResourceInUseException("Cannot delete Title with ID: " + titleId + ". It has existing royalty schedules.");
         }
 
         titleRepository.deleteById(titleId); 
@@ -173,8 +173,12 @@ public class TitleServiceImpl implements TitleService
         if (!publishersRepository.existsById(pubId)) {
             throw new ResourceNotFoundException("Publisher not found with ID: " + pubId);
         }
-        return titleRepository.findByPublisher_PubId(pubId)
-                .stream().map(this::mapToResponseDTO).toList(); 
+        List<TitleResponseDTO> titles = titleRepository.findByPublisher_PubId(pubId)
+                .stream().map(this::mapToResponseDTO).toList();
+        if (titles.isEmpty()) {
+            throw new ResourceNotFoundException("No titles found for Publisher with ID: " + pubId);
+        }
+        return titles; 
     }
 
     @Override
@@ -191,6 +195,9 @@ public class TitleServiceImpl implements TitleService
             throw new ResourceNotFoundException("Title not found with ID: " + titleId);
         }
         List<TitleAuthor> titleAuthors = titleAuthorRepository.findByTitle_TitleId(titleId);
+        if (titleAuthors.isEmpty()) {
+            throw new ResourceNotFoundException("No authors found for Title with ID: " + titleId);
+        }
         return titleAuthors.stream().map(TitleAuthor::getAuthor).toList(); 
     }
 
@@ -210,7 +217,11 @@ public class TitleServiceImpl implements TitleService
         if (!titleRepository.existsById(titleId)) {
             throw new ResourceNotFoundException("Title not found with ID: " + titleId);
         }
-        return salesRepository.findByTitleId(titleId);
+        List<Sales> sales = salesRepository.findByTitleId(titleId);
+        if (sales.isEmpty()) {
+            throw new ResourceNotFoundException("No sales found for Title with ID: " + titleId);
+        }
+        return sales;
     }
 
     @Override
@@ -219,7 +230,11 @@ public class TitleServiceImpl implements TitleService
         if (!titleRepository.existsById(titleId)) {
             throw new ResourceNotFoundException("Title not found with ID: " + titleId);
         }
-        return royschedRepository.findByTitle_TitleId(titleId);
+        List<Roysched> royalties = royschedRepository.findByTitle_TitleId(titleId);
+        if (royalties.isEmpty()) {
+            throw new ResourceNotFoundException("No royalty schedules found for Title with ID: " + titleId);
+        }
+        return royalties;
     }
 
 

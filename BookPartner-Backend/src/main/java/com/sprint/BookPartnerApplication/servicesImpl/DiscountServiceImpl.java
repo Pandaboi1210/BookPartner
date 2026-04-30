@@ -97,7 +97,7 @@ public class DiscountServiceImpl implements DiscountService {
                     .stream()
                     .anyMatch(d -> d.getStore() != null && d.getStore().getStorId().equals(requestDTO.getStorId()));
             if (sameStoreExists) {
-                throw new DuplicateResourceException("Discount type '" + requestDTO.getDiscounttype() + "' already exists for this store.");
+                throw new DuplicateResourceException("Discount type '" + requestDTO.getDiscounttype() + "' already exists for Store ID: " + requestDTO.getStorId());
             }
         }
 
@@ -122,7 +122,7 @@ public class DiscountServiceImpl implements DiscountService {
                 .collect(Collectors.toList());
 
         if (discounts.isEmpty()) {
-            throw new ResourceNotFoundException("No discount records found for store ID: " + storeId);
+            throw new ResourceNotFoundException("No discounts found for Store with ID: " + storeId);
         }
 
         return discounts;
