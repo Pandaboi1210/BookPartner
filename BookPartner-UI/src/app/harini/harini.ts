@@ -123,7 +123,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching stores.';
+          this.errorMessage = this.resolveErrorMessage(err, 'No stores found.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -133,7 +133,7 @@ export class HariniComponent {
     // ===== STORE: GET BY ID =====
     else if (this.currentEntity === 'STORE' && this.currentModalType === 'GET_ID') {
       if (!this.searchId.trim()) {
-        this.errorMessage = 'Please enter a Store ID.';
+        this.errorMessage = 'Store ID must not be blank.';
         this.isLoading = false;
         return;
       }
@@ -144,7 +144,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || `Store not found with ID: ${this.searchId}`;
+          this.errorMessage = this.resolveErrorMessage(err, `Store not found with ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -154,7 +154,7 @@ export class HariniComponent {
     // ===== STORE: POST (CREATE) =====
     else if (this.currentEntity === 'STORE' && this.currentModalType === 'POST') {
       if (!this.newStore.storId?.trim()) {
-        this.errorMessage = 'Store ID is required.';
+        this.errorMessage = 'Store ID must not be blank.';
         this.isLoading = false;
         return;
       }
@@ -174,7 +174,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = this.resolveErrorMessage(err, 'Error creating store.');
+          this.errorMessage = this.resolveErrorMessage(err, 'Store already exists or invalid data provided.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -184,7 +184,7 @@ export class HariniComponent {
     // ===== STORE: PUT (UPDATE) — STEP 1: load =====
     else if (this.currentEntity === 'STORE' && this.currentModalType === 'PUT' && !this.isEditMode) {
       if (!this.searchId.trim()) {
-        this.errorMessage = 'Please enter a Store ID to update.';
+        this.errorMessage = 'Store ID must not be blank.';
         this.isLoading = false;
         return;
       }
@@ -196,7 +196,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || `Store not found with ID: ${this.searchId}`;
+          this.errorMessage = this.resolveErrorMessage(err, `Store not found with ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -222,7 +222,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error updating store.';
+          this.errorMessage = this.resolveErrorMessage(err, `Store not found with ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -232,19 +232,19 @@ export class HariniComponent {
     // ===== STORE: GET SALES BY STORE =====
     else if (this.currentEntity === 'STORE' && this.currentModalType === 'GET_SALES_BY_STORE') {
       if (!this.searchId.trim()) {
-        this.errorMessage = 'Please enter a Store ID.';
+        this.errorMessage = 'Store ID must not be blank.';
         this.isLoading = false;
         return;
       }
       this.storeService.getSalesByStore(this.searchId.trim()).subscribe({
         next: (data) => {
           this.apiResult = data;
-          if (!data || data.length === 0) this.errorMessage = 'No sales found for this store.';
+          if (!data || data.length === 0) this.errorMessage = `No sales found for store ID: ${this.searchId.trim()}`;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, `No sales found for store ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -254,19 +254,19 @@ export class HariniComponent {
     // ===== STORE: GET DISCOUNTS =====
     else if (this.currentEntity === 'STORE' && this.currentModalType === 'GET_DISCOUNTS') {
       if (!this.searchId.trim()) {
-        this.errorMessage = 'Please enter a Store ID.';
+        this.errorMessage = 'Store ID must not be blank.';
         this.isLoading = false;
         return;
       }
       this.storeService.getDiscountsByStore(this.searchId.trim()).subscribe({
         next: (data) => {
           this.apiResult = data;
-          if (!data || data.length === 0) this.errorMessage = 'No discounts found for this store.';
+          if (!data || data.length === 0) this.errorMessage = `No discounts found for store ID: ${this.searchId.trim()}`;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching discounts.';
+          this.errorMessage = this.resolveErrorMessage(err, `No discounts found for store ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -283,7 +283,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, 'No sales records found.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -292,11 +292,11 @@ export class HariniComponent {
 
     // ===== SALES: POST (CREATE) =====
     else if (this.currentEntity === 'SALES' && this.currentModalType === 'POST') {
-      if (!this.newSale.storId?.trim()) { this.errorMessage = 'Store ID is required.'; this.isLoading = false; return; }
-      if (!this.newSale.ordNum?.trim()) { this.errorMessage = 'Order Number is required.'; this.isLoading = false; return; }
-      if (!this.newSale.titleId?.trim()) { this.errorMessage = 'Title ID is required.'; this.isLoading = false; return; }
-      if (!this.newSale.ordDate) { this.errorMessage = 'Order Date is required.'; this.isLoading = false; return; }
-      if (!this.newSale.payterms?.trim()) { this.errorMessage = 'Pay Terms is required.'; this.isLoading = false; return; }
+      if (!this.newSale.storId?.trim()) { this.errorMessage = 'Store ID must not be blank.'; this.isLoading = false; return; }
+      if (!this.newSale.ordNum?.trim()) { this.errorMessage = 'Order Number must not be blank.'; this.isLoading = false; return; }
+      if (!this.newSale.titleId?.trim()) { this.errorMessage = 'Title ID must not be blank.'; this.isLoading = false; return; }
+      if (!this.newSale.ordDate) { this.errorMessage = 'Order date is required.'; this.isLoading = false; return; }
+      if (!this.newSale.payterms?.trim()) { this.errorMessage = 'Payment terms must not be blank.'; this.isLoading = false; return; }
 
       const qtyValue = Number(this.newSale.qty);
       if (isNaN(qtyValue) || qtyValue < 1) { this.errorMessage = 'Quantity must be at least 1.'; this.isLoading = false; return; }
@@ -323,7 +323,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = this.resolveErrorMessage(err, 'Error creating sale.');
+          this.errorMessage = this.resolveErrorMessage(err, 'Sale already exists or invalid data provided.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -332,16 +332,16 @@ export class HariniComponent {
 
     // ===== SALES: GET BY STORE =====
     else if (this.currentEntity === 'SALES' && this.currentModalType === 'GET_BY_STORE') {
-      if (!this.searchId.trim()) { this.errorMessage = 'Please enter a Store ID.'; this.isLoading = false; return; }
+      if (!this.searchId.trim()) { this.errorMessage = 'Store ID must not be blank.'; this.isLoading = false; return; }
       this.salesService.getSalesByStore(this.searchId.trim()).subscribe({
         next: (data) => {
           this.apiResult = data;
-          if (!data || data.length === 0) this.errorMessage = 'No sales found for this store.';
+          if (!data || data.length === 0) this.errorMessage = `No sales found for store ID: ${this.searchId.trim()}`;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
+          this.errorMessage = this.resolveErrorMessage(err, `No sales found for store ID: ${this.searchId.trim()}`);
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -350,23 +350,38 @@ export class HariniComponent {
 
     // ===== SALES: GET BY TITLE =====
     else if (this.currentEntity === 'SALES' && this.currentModalType === 'GET_BY_TITLE') {
-      if (!this.searchId.trim()) { this.errorMessage = 'Please enter a Title ID.'; this.isLoading = false; return; }
-      this.salesService.getSalesByTitle(this.searchId.trim()).subscribe({
-        next: (data) => {
-          this.apiResult = data;
-          if (!data || data.length === 0) this.errorMessage = 'No sales found for this title.';
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales.';
-          this.isLoading = false;
-          this.cdr.detectChanges();
-        }
-      });
-    }
+  if (!this.searchId.trim()) {
+    this.errorMessage = 'Title ID must not be blank.';
+    this.isLoading = false;
+    return;
+  }
 
-    // ===== SALES: GET BY DATE RANGE =====
+  this.salesService.getSalesByTitle(this.searchId.trim()).subscribe({
+    next: (data) => {
+      this.apiResult = data;
+
+      if (!data || data.length === 0) {
+        this.errorMessage =
+          `No sales records found for title ID: ${this.searchId.trim()}`;
+      }
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    },
+
+    error: (err) => {
+      this.errorMessage = this.resolveErrorMessage(
+        err,
+        `Title ID does not exist: ${this.searchId.trim()}`
+      );
+
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+// ===== SALES: GET BY DATE RANGE =====
     else if (this.currentEntity === 'SALES' && this.currentModalType === 'GET_BY_DATE') {
       if (!this.dateFrom || !this.dateTo) {
         this.errorMessage = 'Please select both from and to dates.';
@@ -393,7 +408,7 @@ export class HariniComponent {
     // ===== REPORT: SALES TREND =====
     else if (this.currentEntity === 'REPORT' && this.currentModalType === 'SALES_TREND') {
       if (!this.dateFrom || !this.dateTo) {
-        this.errorMessage = 'Please select both from and to dates.';
+        this.errorMessage = 'Both from and to dates are required.';
         this.isLoading = false;
         return;
       }
@@ -404,7 +419,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching sales trend.';
+          this.errorMessage = this.resolveErrorMessage(err, 'No sales trend data found for the given date range.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }
@@ -421,7 +436,7 @@ export class HariniComponent {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Error fetching top authors.';
+          this.errorMessage = this.resolveErrorMessage(err, 'No authors found.');
           this.isLoading = false;
           this.cdr.detectChanges();
         }

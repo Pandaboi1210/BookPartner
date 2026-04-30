@@ -142,18 +142,24 @@ public class SalesServiceImpl implements SalesService {
             throw new BadRequestException("Title ID must not be blank");
         }
 
+        // Check title exists first
+        if (!titleRepository.existsById(titleId)) {
+            throw new ResourceNotFoundException(
+                    "Title ID does not exist: " + titleId);
+        }
+
         List<Sales> sales = salesRepository.findByTitleId(titleId);
 
         if (sales.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "No sales found for title ID: " + titleId);
+                    "No sales records found for title ID: " + titleId);
         }
 
         return sales.stream()
                 .map(this::mapToResponseDTO)
                 .toList();
     }
-
+    
     // Get sales by date range
     @Override
     public List<SalesResponseDTO> getSalesByDateRange(LocalDateTime from, LocalDateTime to) {
